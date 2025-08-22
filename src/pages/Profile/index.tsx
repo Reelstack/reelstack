@@ -1,6 +1,6 @@
 import styles from './style.module.css';
 
-export function Home() {
+export function Profile() {
   return (
     <>
       <div className={styles.header}>
