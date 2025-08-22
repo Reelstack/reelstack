@@ -1,0 +1,49 @@
+:root {
+  --contrast: #edb811;
+  --blue-dark: #241d4f;
+  --blue-standard: #262335;
+  --blue-light: #b4b4c7;
+
+  /*A DECIDIR*/
+  --primary-light: none; /* realces */
+  --primary: none; /* principal */
+  --primary-dark: none; /* hovers */
+
+  /*Links*/
+  --link-color: #b4b4c7; /* padrão */
+  --link-hover: #241d4f; /* hover */
+
+  /* Alertas */
+  --success: #22c55e;
+  --warning: #eab308;
+  --error: #991b1b;
+  --info: #0ea5e9;
+
+  --text-over-primary: #090a0a; /* Texto sobre fundo primário */
+  --text-over-primary-dark: #d5d5d5; /* Texto sobre variação escura */
+  --text-over-primary-light: #090a0a; /* Texto sobre variação clara */
+  --text-over-success: #090a0a; /* Texto sobre fundo sucesso */
+  --text-over-warning: #090a0a; /* Texto sobre fundo alerta */
+  --text-over-error: #d5d5d5; /* Texto sobre fundo erro */
+  --text-over-info: #090a0a; /* Texto sobre fundo informativo */
+
+  --text-default: #d5d5d5; /* Cor padrão */
+  --text-muted: #b4b4c7; /* Texto menos importante (placeholders, labels, etc.) */
+
+  /* Cores para botões e elementos desativados */
+  --disabled: #858c99;
+  --text-disabled: #b4b4c7;
+}
+
+:root[data-theme='light'] {
+  --contrast: #edb811;
+  --blue-dark: #241d4f;
+  --blue-standard: #262335;
+  --blue-light: #b4b4c7;
+
+  --text-default: #090a0a; /* Cor padrão */
+  --text-muted: #b4b4c7; /* Texto menos importante (placeholders, labels, etc.) */
+
+  --link-color: #241d4f; /* padrão */
+  --link-hover: #b4b4c7; /* hover */
+}
