@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const backgroundImages = {
-  '/home/': '/home.png',
+  '/home/': '/goncha.jpg',
   '/profile/': '/profile.png',
   '/': '/profile.png',
   // rotas
