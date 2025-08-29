@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import OMDBService from '../services/api/omdb';
-import type { OMDBSearchResponse, OMDBMovieDetail } from '../services/api/omdb';
+import type { OMDBSearchResponse, OMDBMovieDetail } from '../services/api/types';
 
 interface UseOMDBState {
     loading: boolean;
@@ -15,6 +15,8 @@ export const useOMDB = () => {
         data: null,
     });
 
+    const omdbService = new OMDBService();
+
     const searchMovies = useCallback(async (
         query: string,
         year?: string,
@@ -23,7 +25,7 @@ export const useOMDB = () => {
         setState(prev => ({ ...prev, loading: true, error: null }));
 
         try {
-            const result = await OMDBService.searchMovies(query, year, type);
+            const result = await omdbService.searchMovies(query, year, type);
             setState({ loading: false, error: null, data: result });
         } catch (error) {
             setState({
@@ -32,13 +34,13 @@ export const useOMDB = () => {
                 data: null
             });
         }
-    }, []);
+    }, [omdbService]);
 
     const getMovieById = useCallback(async (imdbId: string) => {
         setState(prev => ({ ...prev, loading: true, error: null }));
 
         try {
-            const result = await OMDBService.getMovieById(imdbId);
+            const result = await omdbService.getMovieById(imdbId);
             setState({ loading: false, error: null, data: result });
         } catch (error) {
             setState({
@@ -47,13 +49,13 @@ export const useOMDB = () => {
                 data: null
             });
         }
-    }, []);
+    }, [omdbService]);
 
     const getMovieByTitle = useCallback(async (title: string, year?: string) => {
         setState(prev => ({ ...prev, loading: true, error: null }));
 
         try {
-            const result = await OMDBService.getMovieByTitle(title, year);
+            const result = await omdbService.getMovieByTitle(title, year);
             setState({ loading: false, error: null, data: result });
         } catch (error) {
             setState({
@@ -62,7 +64,7 @@ export const useOMDB = () => {
                 data: null
             });
         }
-    }, []);
+    }, [omdbService]);
 
     const clearData = useCallback(() => {
         setState({ loading: false, error: null, data: null });
