@@ -45,9 +45,16 @@ body.blur-background::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: var(--bg-image) center/cover no-repeat;
+  background: var(--bg-image) center/cover no-repeat; /* default */
   filter: blur(2px);
   z-index: -1;
+}
+
+body.blur-background.home-background::before {
+  background: var(--bg-image) center no-repeat;
+  background-size: 70%;
+  filter: blur(8px);
+  background-color: #090a0a; /* fallback a ser decidido */
 }
 
 body.blur-background::after {

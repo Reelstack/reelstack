@@ -13,14 +13,21 @@ export function BackgroundBody() {
 
   useEffect(() => {
     const body = document.body;
-
     body.classList.add('blur-background');
 
-    // atualização dinamica
+    // limpa classe para evitar problemas
+    body.classList.remove('home-background');
+
     const bgImg =
       backgroundImages[location.pathname as keyof typeof backgroundImages];
+
     if (bgImg) {
       body.style.setProperty('--bg-image', `url(${bgImg})`);
+    }
+
+    // se for a home
+    if (location.pathname === '/home/') {
+      body.classList.add('home-background');
     }
   }, [location.pathname]);
 
