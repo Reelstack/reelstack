@@ -51,10 +51,14 @@ body.blur-background::before {
 }
 
 body.blur-background.home-background::before {
-  background: var(--bg-image) center no-repeat;
+  background:
+    linear-gradient(360deg, #262335 0%, rgba(38, 35, 53, 0.7) 100%),
+    var(--bg-image) center no-repeat;
+  /* linear-gradient(360deg, #262335 0%, rgba(38, 35, 53, 0.7) 100%),
+    var(--bg-image) center no-repeat; */
   background-size: 70%;
   filter: blur(8px);
-  background-color: #090a0a; /* fallback a ser decidido */
+  background-color: #262335; /* fallback a ser decidido */
 }
 
 body.blur-background::after {
