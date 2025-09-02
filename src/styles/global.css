@@ -56,7 +56,7 @@ body.blur-background.home-background::before {
     var(--bg-image) center no-repeat;
   background-size: 70%;
   filter: blur(8px);
-  background-color: #262335; /* fallback a ser decidido */
+  background-color: #262335; /* TODO: Finalize fallback color for home background. Requirements: should match brand palette, provide sufficient contrast, and work with overlay/blur effects. */
 }
 
 body.blur-background::after {
