@@ -15,7 +15,7 @@ export function BackgroundBody() {
     const body = document.body;
     body.classList.add('blur-background');
 
-    // limpa classe para evitar problemas
+    // Clear class to avoid conflicts
     body.classList.remove('home-background');
 
     const bgImg =
