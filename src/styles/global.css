@@ -37,39 +37,7 @@ body {
   color: var(--text-default);
   height: 100%;
   min-height: 100vh;
-  background-color: #0f0f23;
-  color: #ffffff;
 }
-
-/* Dark theme overrides */
-body {
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
-  color: #ffffff;
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #1a1a2e;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #667eea;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #764ba2;
-}
-
 body.blur-background::before {
   content: '';
   position: fixed;
@@ -77,9 +45,18 @@ body.blur-background::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: var(--bg-image) center/cover no-repeat;
+  background: var(--bg-image) center/cover no-repeat; /* default */
   filter: blur(2px);
   z-index: -1;
+}
+
+body.blur-background.home-background::before {
+  background:
+    linear-gradient(360deg, #262335 0%, rgba(38, 35, 53, 0.7) 100%),
+    var(--bg-image) center no-repeat;
+  background-size: 70%;
+  filter: blur(8px);
+  background-color: #262335; /* TODO: Finalize fallback color for home background. Requirements: should match brand palette, provide sufficient contrast, and work with overlay/blur effects. */
 }
 
 body.blur-background::after {
@@ -89,7 +66,6 @@ body.blur-background::after {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(9, 10, 10, 0.4);
-  /* overlay */
+  background: rgba(9, 10, 10, 0.4); /* overlay */
   z-index: -1;
 }
