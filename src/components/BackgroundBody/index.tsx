@@ -25,7 +25,7 @@ export function BackgroundBody() {
       body.style.setProperty('--bg-image', `url(${bgImg})`);
     }
 
-    // se for a home
+    // If on the home page
     if (location.pathname === '/home/') {
       body.classList.add('home-background');
     }
