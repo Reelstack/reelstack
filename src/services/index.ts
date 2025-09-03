@@ -1,5 +1,6 @@
 // Serviços da API
 export { default as OMDBService } from './api/omdb';
+export { default as RankingService } from './api/ranking';
 
 // Tipos
 export type {
@@ -7,7 +8,10 @@ export type {
     OMDBSearchResponse,
     OMDBMovieDetail,
     APIResponse,
-    APIConfig
+    APIConfig,
+    MovieRanking,
+    RankingCriteria,
+    TopMoviesResponse
 } from './api/types';
 
 // Classes Base

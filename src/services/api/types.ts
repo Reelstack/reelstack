@@ -50,3 +50,25 @@ export interface APIConfig {
     apiKey: string;
     timeout: number;
 }
+
+// Tipos para o sistema de ranking
+export interface MovieRanking {
+    movie: OMDBMovieDetail;
+    score: number;
+    ranking: number;
+    criteria: RankingCriteria;
+}
+
+export interface RankingCriteria {
+    imdbRating: number;
+    imdbVotes: number;
+    year: number;
+    runtime: number;
+    boxOffice: number;
+}
+
+export interface TopMoviesResponse {
+    movies: MovieRanking[];
+    totalCount: number;
+    lastUpdated: string;
+}
