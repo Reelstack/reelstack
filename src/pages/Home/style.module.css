@@ -1,25 +1,34 @@
-.header {
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
-  padding: 60px 20px 40px 20px;
-  text-align: center;
-  border-bottom: 1px solid #2a2a3e;
+.wrapper {
+  display: flex;
+  width: auto;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
-
-.header h1 {
-  font-size: 3rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 20px;
-  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.header p {
-  font-size: 1.2rem;
-  color: #a0a0a0;
-  max-width: 800px;
+.poster {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100rem;
   margin: 0 auto;
-  line-height: 1.6;
+  width: 55rem;
+  height: 80rem;
+  background-image: url('/goncha.jpg');
+  background-size: cover; /* stretch to fill width & height exactly */
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 5rem;
+  filter: brightness(90%);
+  overflow: hidden;
+}
+
+.info {
+  display: flex;
+  margin-bottom: auto;
+  width: 100%;
+  padding: 2rem;
+  justify-content: flex-end;
+  background-color: var(--blue-dark);
+  color: var(--contrast);
 }
