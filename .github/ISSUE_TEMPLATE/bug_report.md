@@ -24,4 +24,4 @@ Descreva o que deveria acontecer.
 - QA  
 - Infra  
 - DevOps  
-- Outro
+- Outro  
