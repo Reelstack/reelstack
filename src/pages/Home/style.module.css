@@ -16,22 +16,27 @@
   width: 55rem;
   height: 80rem;
   background-image: url('/goncha.jpg');
-  background-size: cover; /* stretch to fill width & height exactly */
+  background-size: cover; /* cobre além do poster original, trocar caso posteres não sejam padronizados */
   background-repeat: no-repeat;
   background-position: center;
   border-radius: 5rem;
   filter: brightness(90%);
   clip-path: inset(0 round 5rem);
-  border: 2px solid var(--blue-dark);
 }
 
+/* possivelmente adicionar um botão para estender componente */
 .info {
   display: flex;
+  flex-direction: column;
   margin-bottom: auto;
-  height: 20rem;
+  height: 22rem;
   width: 100%;
-  padding: 2rem;
-  justify-content: flex-end;
-  background-color: var(--blue-dark);
-  color: var(--contrast);
+  padding: 2rem 4rem 2rem 4rem;
+  background-color: var(--blue-standard);
+  color: var(--text-default);
+}
+
+.cdown {
+  margin: 1.5rem;
+  width: 2rem;
 }
