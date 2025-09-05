@@ -16,8 +16,8 @@ Explique de forma clara e objetiva o problema encontrado.
 ## ✅ Comportamento Esperado
 Descreva o que deveria acontecer.
 ## 🔎 Critérios de Aceitação
-- [ ] O botão deve salvar corretamente  
-- [ ] O feedback de sucesso deve aparecer  
+- [ ] O bug deve ser corrigido
+- [ ] O comportamento esperado deve ser validado
 ## 🔧 Área
 - Front  
 - Back  
