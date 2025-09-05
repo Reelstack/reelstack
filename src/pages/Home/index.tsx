@@ -44,7 +44,7 @@ export function Home() {
                       <h2>Action, Drama, Suspense</h2>
                     </div>
 
-                    <h2>Director: Martin Scorcese</h2>
+                    <h2>Director: Martin Scorsese</h2>
                     <h3>
                       Main Cast: Robert De Niro, Al Pacino, Gene Hackman, Harvey
                       keitel, John Cazale, Cybill Sheperd
