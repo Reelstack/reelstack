@@ -47,7 +47,7 @@ export function Home() {
                     <h2>Director: Martin Scorsese</h2>
                     <h3>
                       Main Cast: Robert De Niro, Al Pacino, Gene Hackman, Harvey
-                      keitel, John Cazale, Cybill Sheperd
+                      Keitel, John Cazale, Cybill Shepherd
                     </h3>
                     <div
                       style={{
