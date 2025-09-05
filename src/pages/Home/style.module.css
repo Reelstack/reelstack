@@ -18,7 +18,7 @@
   margin-left: 4rem;
   margin-top: 4rem;
   padding: 1.4rem;
-  background-color: red;
+  background-color: var(--blue-dark);
   width: fit-content;
   color: var(--text-default);
   text-align: center;
@@ -30,17 +30,20 @@
   display: flex;
   justify-content: space-between;
   position: fixed;
+  align-items: center; /* keep them aligned */
+  gap: 0.5rem;
   top: 0;
   right: 0;
   margin-right: 4rem;
   margin-top: 4rem;
   padding: 1.4rem;
-  background-color: red;
+  background-color: var(--blue-dark);
   width: fit-content;
   color: var(--text-default);
   text-align: center;
   font-size: 1.8rem;
   border-radius: 1.4rem;
+  cursor: pointer;
 }
 
 .arrow,
@@ -49,7 +52,17 @@
 }
 
 .arrow {
-  margin-left: 1rem;
+  height: 2rem;
+  display: inline-block;
+  flex-shrink: 0; /* don't let flex collapse it */
+  background-image: url('../../assets/arrow-right-circle.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: background-image 0.2s ease;
+}
+
+.navbar:hover .arrow {
+  background-image: url('../../assets/arrow-right-circle-filled.svg');
 }
 
 .page {
@@ -96,7 +109,7 @@
   box-shadow: 0 -0.8rem 3rem var(--blue-standard);
 }
 
-.cdown {
-  margin: 1.5rem;
+.expand {
+  margin: 2rem 1.5rem 1.5rem 0.4rem;
   width: 2rem;
 }

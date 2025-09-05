@@ -2,8 +2,6 @@ import { useState } from 'react';
 import styles from './style.module.css';
 import { AnimatePresence, motion } from 'motion/react';
 import expand from '../../assets/arrow-increase.svg';
-import arc from '../../assets/arrow-right-circle.svg';
-import arcf from '../../assets/arrow-right-circle-filled.svg';
 import filter from '../../assets/filter.svg';
 import { RouterLink } from '../../components/RouterLink';
 
@@ -16,10 +14,12 @@ export function Home() {
         <div className={styles.filterButton}>
           <img className={styles.filter} src={filter} />
         </div>
-        <div className={styles.navbar}>
-          Profile
-          <img className={styles.arrow} src={arc} />
-        </div>
+        <RouterLink href='/profile/'>
+          <div className={styles.navbar}>
+            Profile
+            <div className={styles.arrow} />
+          </div>
+        </RouterLink>
       </div>
       <div className={styles.page}>
         <div className={styles.wrapper}>
@@ -58,7 +58,7 @@ export function Home() {
                     >
                       <p>see synopsis</p>
                       <RouterLink href='/'>
-                        <img className={styles.cdown} src={expand} />
+                        <img className={styles.expand} src={expand} />
                       </RouterLink>
                     </div>
                   </div>
