@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg 
+   viewBox="0 0 600 600"
+   version="1.1"
+   id="svg9724"
+   sodipodi:docname="arrow-increase.svg"
+   inkscape:version="1.2.2 (1:1.2.2+202212051550+b0a8486541)"
+   width="600"
+   height="600"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs9728" />
+  <sodipodi:namedview
+     id="namedview9726"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="true"
+     inkscape:zoom="0.84118632"
+     inkscape:cx="-21.992749"
+     inkscape:cy="385.76471"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="0"
+     inkscape:window-y="1080"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g10449"
+     showguides="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid9972"
+       originx="0"
+       originy="0" />
+    <sodipodi:guide
+       position="-260,300"
+       orientation="0,-1"
+       id="guide383"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="300,400"
+       orientation="1,0"
+       id="guide385"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="240,520"
+       orientation="0,-1"
+       id="guide939"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="220,80"
+       orientation="0,-1"
+       id="guide941"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  
+  <g
+     id="g10449"
+     transform="matrix(0.95173205,0,0,0.95115787,13.901174,12.168794)"
+     style="stroke-width:1.05103">
+    <g
+       id="g946-6"
+       transform="rotate(180,300.60859,302.61139)">
+      <g
+         id="g934-5">
+        <path
+           id="path508"
+           style="color:#000000;fill:#000000;stroke-linecap:round;-inkscape-stroke:none"
+           d="M 193.34733 618.01644 A 42.041351 42.041351 0 0 0 235.38828 575.97476 A 42.041351 42.041351 0 0 0 193.34733 533.93307 L 128.87195 533.93307 L 267.32429 395.38483 A 42.041649 42.041649 0 0 0 267.30582 335.93015 A 42.041649 42.041649 0 0 0 207.84803 335.94864 L 69.477774 474.41269 L 69.477774 409.96205 A 42.041351 42.041351 0 0 0 27.436824 367.92036 A 42.041351 42.041351 0 0 0 -14.606177 409.96205 L -14.606177 575.97476 A 42.041351 42.041351 0 0 0 -14.561029 576.31152 A 42.041649 42.041649 0 0 0 -13.210695 586.5704 A 42.041351 42.041351 0 0 0 -13.173756 586.85582 A 42.041351 42.041351 0 0 0 -13.032155 587.19463 A 42.041649 42.041649 0 0 0 -9.0488749 596.81695 A 42.041351 42.041351 0 0 0 -8.9749965 596.9956 A 42.041351 42.041351 0 0 0 -8.7841438 597.24406 A 42.041649 42.041649 0 0 0 -2.3485089 605.63022 A 42.041351 42.041351 0 0 0 16.554116 616.58316 A 42.041351 42.041351 0 0 0 27.436824 618.01644 L 193.34733 618.01644 z " />
+        <path
+           id="path299-3-6"
+           style="color:#000000;fill:#000000;stroke-linecap:round;-inkscape-stroke:none"
+           d="M 363.64539 281.59671 A 42.041649 42.041649 0 0 0 393.36916 269.27414 L 531.73941 130.81009 L 531.73941 195.26073 A 42.041351 42.041351 0 0 0 573.78036 237.30242 A 42.041351 42.041351 0 0 0 615.82336 195.26073 L 615.82336 29.248021 A 42.041649 42.041649 0 0 0 615.63456 27.812682 A 42.041351 42.041351 0 0 0 614.38889 18.364904 A 42.041351 42.041351 0 0 0 610.19218 8.2271778 A 42.041351 42.041351 0 0 0 594.80289 -7.1611391 A 42.041351 42.041351 0 0 0 584.66307 -11.36038 A 42.041351 42.041351 0 0 0 573.78036 -12.793666 L 407.86986 -12.793666 A 42.041351 42.041351 0 0 0 365.82891 29.248021 A 42.041351 42.041351 0 0 0 407.86986 71.289708 L 472.34524 71.289708 L 333.89289 209.83795 A 42.041649 42.041649 0 0 0 333.91136 269.29262 A 42.041649 42.041649 0 0 0 363.64539 281.59671 z " />
+      </g>
+    </g>
+  </g>
+</svg>
