@@ -30,7 +30,7 @@
   display: flex;
   justify-content: space-between;
   position: fixed;
-  align-items: center; /* keep them aligned */
+  align-items: center;
   gap: 0.5rem;
   top: 0;
   right: 0;
