@@ -1,25 +1,136 @@
 .header {
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
-  padding: 60px 20px 40px 20px;
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  width: 100vw;
+  top: 0;
+  right: 0;
+  margin-right: 4rem;
+  margin-top: 4rem;
+}
+
+.filterButton {
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin-left: 4rem;
+  margin-top: 4rem;
+  padding: 1.4rem;
+  background-color: var(--blue-dark);
+  width: fit-content;
+  color: var(--text-default);
   text-align: center;
-  border-bottom: 1px solid #2a2a3e;
+  font-size: 1.8rem;
+  border-radius: 1.4rem;
 }
 
-.header h1 {
-  font-size: 3rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 20px;
-  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  align-items: center;
+  gap: 0.5rem;
+  top: 0;
+  right: 0;
+  margin-right: 4rem;
+  margin-top: 4rem;
+  padding: 1.4rem;
+  background-color: var(--blue-dark);
+  width: fit-content;
+  color: var(--text-default);
+  text-align: center;
+  font-size: 1.8rem;
+  border-radius: 1.4rem;
+  cursor: pointer;
 }
 
-.header p {
-  font-size: 1.2rem;
-  color: #a0a0a0;
-  max-width: 800px;
+.arrow,
+.filter {
+  width: 2rem;
+}
+
+.arrow {
+  height: 2rem;
+  display: inline-block;
+  flex-shrink: 0; /* don't let flex collapse it */
+  background-image: url('../../assets/arrow-right-circle.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: background-image 0.2s ease;
+}
+
+.navbar:hover .arrow {
+  background-image: url('../../assets/arrow-right-circle-filled.svg');
+}
+
+.page {
+  display: flex;
+  width: auto;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.wrapper {
+  display: inline-block;
+  filter: drop-shadow(0.2rem 0.2rem 2rem var(--blue-standard));
+}
+
+.poster {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  --height: 100rem;
   margin: 0 auto;
-  line-height: 1.6;
+  width: 55rem;
+  height: 80rem;
+  background-image: var(--poster-image, url('/goncha.jpg'));
+  background-size: cover; /* covers beyond original poster, change if posters are not standardized */
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: brightness(90%);
+  clip-path: inset(0 round 5rem);
+  overflow: hidden;
+}
+
+/* possibly add a button to extend component */
+.info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: 0;
+  height: auto;
+  width: auto;
+  gap: 0.5rem;
+  padding: 2rem 4rem;
+  background-color: var(--blue-standard);
+  color: var(--text-default);
+  box-shadow: 0 -0.8rem 3rem var(--blue-standard);
+  filter: none;
+}
+
+.seeMore {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 0 auto;
+  width: fit-content;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+  gap: 0.5rem;
+}
+
+.seeMore:hover p {
+  border-bottom: 1px solid currentColor;
+  filter: brightness(80%);
+}
+
+.expand {
+  margin-top: 0.2rem;
+  width: 2rem;
 }
