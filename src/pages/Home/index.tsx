@@ -14,7 +14,7 @@ export function Home() {
     <>
       <div className={styles.header}>
         <div className={styles.filterButton}>
-          <img className={styles.filter} src={filter} />
+          <img className={styles.filter} src={filter} alt="Filter" />
         </div>
         <RouterLink href='/profile/'>
           <div className={styles.navbar}>
