@@ -88,7 +88,7 @@
   margin: 0 auto;
   width: 55rem;
   height: 80rem;
-  background-image: url('/goncha.jpg');
+  background-image: var(--poster-image, url('/goncha.jpg'));
   background-size: cover; /* cobre além do poster original, trocar caso posteres não sejam padronizados */
   background-repeat: no-repeat;
   background-position: center;
