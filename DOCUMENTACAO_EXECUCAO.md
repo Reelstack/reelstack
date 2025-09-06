@@ -128,9 +128,9 @@ http://localhost:5173
 ### 9. Integração com APIs
 
 O projeto utiliza um cliente base de API (`BaseAPIClient`) que fornece:
- - Background dinâmico por rota
- - Sinopse expansível na Home
- - Botões de debug para QA
+ - Configuração de timeout para requisições
+ - Suporte a `AbortController` para cancelamento de requisições
+ - Tratamento centralizado de erros de API
 
 Serviços como OMDBService implementam métodos específicos (`searchMovies`, `getMovieById`, etc.), enquanto hooks como `useOMDB` gerenciam estado, loading e erros.
 
