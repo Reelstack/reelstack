@@ -97,7 +97,7 @@
   overflow: hidden;
 }
 
-/* possivelmente adicionar um botão para estender componente */
+/* possibly add a button to extend component */
 .info {
   display: flex;
   flex-direction: column;
