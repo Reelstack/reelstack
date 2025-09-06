@@ -30,7 +30,7 @@
   display: flex;
   justify-content: space-between;
   position: fixed;
-  align-items: center; /* keep them aligned */
+  align-items: center;
   gap: 0.5rem;
   top: 0;
   right: 0;
@@ -94,22 +94,43 @@
   background-position: center;
   filter: brightness(90%);
   clip-path: inset(0 round 5rem);
+  overflow: hidden;
 }
 
 /* possivelmente adicionar um botão para estender componente */
 .info {
   display: flex;
   flex-direction: column;
-  margin-bottom: auto;
-  height: 22rem;
-  width: 100%;
-  padding: 2rem 4rem 2rem 4rem;
+  justify-content: space-between;
+  margin-bottom: 0;
+  height: auto;
+  width: auto;
+  gap: 0.5rem;
+  padding: 2rem 4rem;
   background-color: var(--blue-standard);
   color: var(--text-default);
   box-shadow: 0 -0.8rem 3rem var(--blue-standard);
+  filter: none;
+}
+
+.seeMore {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 0 auto;
+  width: fit-content;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+  gap: 0.5rem;
+}
+
+.seeMore:hover p {
+  border-bottom: 1px solid currentColor;
+  filter: brightness(80%);
 }
 
 .expand {
-  margin: 2rem 1.5rem 1.5rem 0.4rem;
+  margin-top: 0.2rem;
   width: 2rem;
 }
