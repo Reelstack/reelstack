@@ -27,7 +27,7 @@ export function Home() {
         <div className={styles.wrapper}>
           <div
             className={styles.poster}
-            // hover de informações
+            // information hover
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
           >
