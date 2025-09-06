@@ -89,7 +89,7 @@
   width: 55rem;
   height: 80rem;
   background-image: var(--poster-image, url('/goncha.jpg'));
-  background-size: cover; /* cobre além do poster original, trocar caso posteres não sejam padronizados */
+  background-size: cover; /* covers beyond original poster, change if posters are not standardized */
   background-repeat: no-repeat;
   background-position: center;
   filter: brightness(90%);
