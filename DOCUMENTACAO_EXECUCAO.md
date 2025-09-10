@@ -40,7 +40,7 @@ cd reelstack
 
 ### 4. Instalação de dependências
 
-```
+```js
 # Usando npm
 npm install
 
@@ -111,7 +111,7 @@ src/
 
 1. Certifique-se de que o .env.local está configurado.
 2. Inicie o servidor de desenvolvimento:
-```
+```bash
 npm run dev
 ```
 3. Abra o navegador e acesse:
