@@ -23,78 +23,97 @@ O projeto utilizará **Histórias de Usuário** para representar os requisitos f
 ### Justificativa  
 Essa abordagem foi escolhida por ser adequada ao desenvolvimento incremental e centrado no usuário, permitindo descrever as funcionalidades sob a perspectiva de quem utiliza o sistema.  
 A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could, Won’t).  
-### Backlog do Produto (versão atual)  
-| ID   | Título                        | Valor de Negócio                                     | Prioridade | Estimativa (pts) | Dependências         |
-|------|--------------------------------|------------------------------------------------------|------------|------------------|----------------------|
-| US01 | Cadastrar novo usuário         | Permite o uso do sistema e armazenamento de preferências | Must       | 3                | N/A                  |
-| US02 | Fazer login                   | Acesso seguro e individualizado ao sistema           | Must       | 2                | US01                 |
-| US03 | Visualizar filme recomendado  | Início da experiência principal do usuário           | Must       | 3                | US02, API TMDB       |
-| US04 | Curtir/rejeitar filme (swipe) | Coleta dados para o algoritmo de recomendação        | Must       | 5                | US03                 |
-| US05 | Salvar interação no backend   | Armazena preferências do usuário                     | Must       | 4                | US04                 |
-| US06 | Visualizar histórico de curtidas | Permite ao usuário rever seus filmes favoritos     | Should     | 3                | US05                 |
-| US07 | Exibir mensagem de erro       | Garante feedback ao usuário em falhas                | Should     | 2                | US01, US02, US03     |
-| US08 | Design responsivo para web    | Permite uso confortável em qualquer navegador        | Could      | 3                | US03, US04           |
-| US09 | Interface de swipe animada    | Melhora a experiência de interação                   | Could      | 5                | US04                 |
-| US10 | Validação de campos no frontend | Evita erros de cadastro e login                    | Should     | 2                | US01, US02           |
-
- <p>As funcionalidades mais críticas estão relacionadas à experiência de recomendação: visualizar filmes, interagir com eles por meio de gestos (swipe) e manter um histórico de preferências. O cadastro e login garantem a vinculação dessas interações ao usuário, permitindo um aprendizado contínuo do algoritmo.</p>
-
 ---
-## Especificação dos requisitos funcionais  
-### US01 – Cadastrar novo usuário  
-**Responsável:** [Nome do integrante]  
-**Descrição:**  
-Como visitante, quero me cadastrar com e-mail e senha, para salvar minhas preferências e utilizar o sistema posteriormente.  
-**Critérios de aceite:**  
-- **GIVEN** que o visitante preenche o formulário com e-mail e senha válidos,  
- **WHEN** clicar em "Cadastrar",  
- **THEN** o sistema deve criar a conta e redirecionar o usuário à tela inicial.  
-- **GIVEN** que o e-mail já esteja cadastrado,  
- **WHEN** tentar registrar,  
- **THEN** o sistema deve informar que o e-mail já está em uso.  
-**Dependências:** Nenhuma  
+## Seção 1 – Backlog Resumido  
+| ID   | Título                          | Valor de Negócio                                                   | Prioridade | Estimativa (pts) | Dependências       |
+|------|----------------------------------|--------------------------------------------------------------------|------------|------------------|--------------------|
+| US01 | Autenticação e conta             | Permite consultar os dados cadastrados do usuário para autenticação | Must       | 3                | US02, US03         |
+| US02 | Cadastrar novo usuário           | Permite armazenamento de preferências                              | Must       | 3                | N/A                |
+| US03 | Fazer login                     | Acesso seguro e individualizado ao sistema                         | Must       | 2                | US02               |
+| US04 | Engajamento com conteúdo         | Experiência do usuário ao interagir com catálogo de filmes         | Must       | –                | US05, US06, US07   |
+| US05 | Visualizar filme recomendado     | Início da experiência principal                                    | Must       | 3                | –                  |
+| US06 | Curtir/rejeitar filme (swipe)    | Coleta dados para o algoritmo de recomendação                      | Must       | 5                | US03               |
+| US07 | Visualizar histórico de curtidas | Permite rever filmes favoritos                                     | Should     | 3                | US05               |
+| US08 | Comunicação e feedback ao usuário| Fornece informações claras sobre estados de carregamento           | Should     | –                | US09               |
+| US09 | Exibir mensagem de erro          | Garante feedback em falhas                                         | Should     | 2                | US01, US02, US03   |
 ---
-### US02 – Fazer login  
-**Responsável:** [Nome do integrante]  
-**Descrição:**  
-Como usuário registrado, quero fazer login com meu e-mail e senha, para acessar minhas preferências e continuar de onde parei.  
-**Critérios de aceite:**  
-- **GIVEN** que o usuário insira e-mail e senha válidos,  
- **WHEN** clicar em "Entrar",  
- **THEN** ele deve ser autenticado e redirecionado à tela inicial.  
-- Caso as credenciais sejam incorretas, o sistema deve exibir uma mensagem de erro.  
-**Dependências:** US01  
+## Seção 2 – Histórias Detalhadas  
+### US01 – Autenticação e conta  
+**Como** usuário,  
+**Quero** autenticar meus dados cadastrados no sistema,  
+**Para** garantir acesso seguro às minhas informações e funcionalidades.  
+**Critérios de aceite**  
+- **Dado** que o usuário já possua cadastro, **quando** inserir credenciais válidas, **então** o sistema deve autenticar e liberar o acesso.  
+- **Dado** que o usuário insira credenciais inválidas, **quando** tentar acessar, **então** o sistema deve negar o login e exibir mensagem de erro.  
+- **Dado** que o usuário não esteja autenticado, **quando** tentar acessar áreas restritas, **então** o sistema deve redirecioná-lo para a tela de login.  
 ---
-### US03 – Visualizar filme recomendado  
-**Responsável:** [Nome do integrante]  
-**Descrição:**  
-Como usuário logado, quero visualizar um card com dados de um filme (imagem, título, ano e sinopse), para decidir se me interesso por ele.  
-**Critérios de aceite:**  
-- O sistema deve exibir o card com informações básicas.  
-- A cada interação (curtir/rejeitar), um novo filme deve ser carregado.  
-- Em caso de erro com a API, uma mensagem de falha deve ser exibida.  
-**Dependências:** US02, API TMDB  
+### US02 – Cadastrar novo usuário  
+**Como** visitante,  
+**Quero** me cadastrar com e-mail e senha,  
+**Para** poder salvar minhas preferências e utilizar o sistema posteriormente.  
+**Critérios de aceite**  
+- **Dado** que o visitante preencha o formulário com dados válidos, **quando** clicar em “Cadastrar”, **então** a conta deve ser criada e o usuário redirecionado para a tela inicial.  
+- **Dado** que o visitante use um e-mail já existente, **quando** tentar cadastrar, **então** o sistema deve informar que o e-mail já está em uso.  
 ---
-### US04 – Curtir/rejeitar filme (swipe)  
-**Responsável:** [Nome do integrante]  
-**Descrição:**  
-Como usuário, quero curtir ou rejeitar um filme com um gesto (swipe), para treinar o algoritmo de recomendação.  
-**Critérios de aceite:**  
-- Swipe para a direita → marcar como “curtido”.  
-- Swipe para a esquerda → marcar como “rejeitado”.  
-- O sistema deve registrar a interação e exibir o próximo filme.  
-- A mesma interação não pode ser registrada mais de uma vez.  
-**Dependências:** US03  
+### US03 – Fazer login  
+**Como** usuário registrado,  
+**Quero** acessar o sistema com e-mail e senha,  
+**Para** continuar de onde parei e visualizar minhas preferências.  
+**Critérios de aceite**  
+- **Dado** que o usuário insira credenciais corretas, **quando** clicar em “Entrar”, **então** deve ser autenticado e redirecionado à tela inicial.  
+- **Dado** que o usuário insira credenciais inválidas, **quando** tentar autenticar, **então** deve visualizar uma mensagem de erro.  
 ---
-### US05 – Visualizar histórico de curtidas  
-**Responsável:** [Nome do integrante]  
-**Descrição:**  
-Como usuário, quero acessar uma tela com todos os filmes que já curti, para poder lembrar e procurar esses filmes depois.  
-**Critérios de aceite:**  
-- O sistema deve exibir lista com imagem e título dos filmes curtidos.  
-- Caso não haja filmes, deve exibir a mensagem “nenhum item encontrado”.  
-- O histórico só deve ser acessado após autenticação.  
-**Dependências:** US04  
+### US04 – Engajamento com conteúdo  
+**Como** usuário,  
+**Quero** interagir com o catálogo de filmes disponíveis,  
+**Para** ter uma experiência dinâmica e personalizada com o sistema.  
+**Critérios de aceite**  
+- **Dado** que o usuário esteja autenticado, **quando** acessar o catálogo, **então** deve visualizar os filmes disponíveis.  
+- **Dado** que o usuário interaja com filmes, **quando** realizar ações (curtir, rejeitar, visualizar), **então** o sistema deve registrar a interação corretamente.  
+---
+### US05 – Visualizar filme recomendado  
+**Como** usuário logado,  
+**Quero** visualizar cards com informações de filmes recomendados,  
+**Para** decidir se me interesso por eles.  
+**Critérios de aceite**  
+- **Dado** que o usuário esteja autenticado, **quando** acessar a tela de recomendações, **então** deve visualizar cards com título, imagem, ano e sinopse.  
+- **Dado** que o usuário interaja (curtir/rejeitar), **quando** concluir a ação, **então** o próximo filme deve ser carregado automaticamente.  
+---
+### US06 – Curtir/rejeitar filme (swipe)  
+**Como** usuário,  
+**Quero** curtir ou rejeitar filmes com um gesto (swipe),  
+**Para** treinar o algoritmo de recomendação com base nas minhas preferências.  
+**Critérios de aceite**  
+- **Dado** que o usuário faça swipe para a direita, **então** o filme deve ser marcado como curtido.  
+- **Dado** que o usuário faça swipe para a esquerda, **então** o filme deve ser marcado como rejeitado.  
+- **Dado** que o usuário já tenha interagido com o filme, **quando** tentar repetir a ação, **então** o sistema deve impedir duplicidade.  
+---
+### US07 – Visualizar histórico de curtidas  
+**Como** usuário,  
+**Quero** acessar uma tela com todos os filmes que já curti,  
+**Para** poder rever e procurar esses filmes depois.  
+**Critérios de aceite**  
+- **Dado** que o usuário tenha curtido filmes, **quando** acessar o histórico, **então** deve visualizar lista com título e imagem.  
+- **Dado** que não haja filmes curtidos, **quando** acessar o histórico, **então** o sistema deve exibir mensagem “nenhum item encontrado”.  
+- **Dado** que o usuário não esteja autenticado, **quando** tentar acessar o histórico, **então** deve ser redirecionado para o login.  
+---
+### US08 – Comunicação e feedback ao usuário  
+**Como** usuário,  
+**Quero** receber informações claras sobre o carregamento e estado das ações,  
+**Para** ter maior confiança e engajamento ao interagir com o sistema.  
+**Critérios de aceite**  
+- **Dado** que o sistema esteja processando uma requisição, **quando** houver carregamento, **então** deve exibir indicador visual (ex: spinner).  
+- **Dado** que a ação seja concluída com sucesso, **quando** finalizada, **então** deve exibir mensagem de confirmação.  
+- **Dado** que ocorra erro, **quando** detectado, **então** deve exibir mensagem clara ao usuário.  
+---
+### US09 – Exibir mensagem de erro  
+**Como** usuário,  
+**Quero** visualizar mensagens de erro claras,  
+**Para** entender problemas e tomar as ações necessárias.  
+**Critérios de aceite**  
+- **Dado** que o usuário insira credenciais incorretas, **quando** tentar login, **então** o sistema deve exibir mensagem de erro específica.  
+- **Dado** que ocorra falha de rede ou API, **quando** o sistema não conseguir carregar dados, **então** deve exibir mensagem de falha.  
+- **Dado** que uma ação seja inválida ou repetida, **quando** for detectada, **então** deve exibir aviso apropriado.  
 ---
 ## Lista de Regras de Negócio  
 - **RN-001 – Recomendação não repetida:** filmes rejeitados não devem ser exibidos novamente.  
@@ -114,14 +133,12 @@ Como usuário, quero acessar uma tela com todos os filmes que já curti, para po
 - **RNF-006 – Manutenibilidade:** código deve seguir convenções e documentar todas as funções públicas.  
 ---
 ## Declaração de uso ético e responsável de IA  
-O grupo declara que utilizou ferramentas de inteligência artificial generativa, especificamente o modelo [**ChatGPT-4 (OpenAI)**](https://openai.com/pt-BR/index/chatgpt/), para auxiliar na estruturação, formulação e revisão deste documento (maio de 2025).  
+O grupo declara que utilizou ferramentas de inteligência artificial generativa, especificamente o modelo **[ChatGPT-4 (OpenAI)](https://openai.com/pt-BR/index/chatgpt/)**, para auxiliar na estruturação, formulação e revisão deste documento (maio de 2025).  
 - Seções com suporte da IA: Introdução, requisitos funcionais, histórias de usuário, regras de negócio, requisitos não funcionais e revisão técnica.  
 - Todo o conteúdo foi revisado criticamente pelos membros do grupo, garantindo exatidão, clareza e conformidade acadêmica.  
 - Dados sensíveis não foram incluídos; apenas exemplos genéricos foram usados.  
-- O uso de IA foi ético, transparente e em conformidade com as diretrizes institucionais de integridade acadêmica.
-
-  ---
-  
-<p align="center">
- <img src="https://ucb.catolica.edu.br/hs-fs/hubfs/Logo%20Cat%C3%B3lica-01%201.png?width=200&height=40&name=Logo%20Cat%C3%B3lica-01%201.png" alt="UCB" width="300">
+- O uso de IA foi ético, transparente e em conformidade com as diretrizes institucionais de integridade acadêmica.  
+---
+<p align="center">  
+<img src="https://ucb.catolica.edu.br/hs-fs/hubfs/Logo%20Cat%C3%B3lica-01%201.png?width=200&height=40" alt="UCB" width="300">  
 </p>
