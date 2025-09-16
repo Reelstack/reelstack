@@ -114,9 +114,14 @@ Como usuário, quero acessar uma tela com todos os filmes que já curti, para po
 - **RNF-006 – Manutenibilidade:** código deve seguir convenções e documentar todas as funções públicas.  
 ---
 ## Declaração de uso ético e responsável de IA  
-O grupo declara que utilizou ferramentas de inteligência artificial generativa, especificamente o modelo **ChatGPT-4 (OpenAI)**, para auxiliar na estruturação, formulação e revisão deste documento (maio de 2025).  
+O grupo declara que utilizou ferramentas de inteligência artificial generativa, especificamente o modelo [**ChatGPT-4 (OpenAI)**](https://openai.com/pt-BR/index/chatgpt/), para auxiliar na estruturação, formulação e revisão deste documento (maio de 2025).  
 - Seções com suporte da IA: Introdução, requisitos funcionais, histórias de usuário, regras de negócio, requisitos não funcionais e revisão técnica.  
 - Todo o conteúdo foi revisado criticamente pelos membros do grupo, garantindo exatidão, clareza e conformidade acadêmica.  
 - Dados sensíveis não foram incluídos; apenas exemplos genéricos foram usados.  
-- O uso de IA foi ético, transparente e em conformidade com as diretrizes institucionais de integridade acadêmica.  
-**UCB, 2025**
+- O uso de IA foi ético, transparente e em conformidade com as diretrizes institucionais de integridade acadêmica.
+
+  ---
+  
+<p align="center">
+ <img src="https://ucb.catolica.edu.br/hs-fs/hubfs/Logo%20Cat%C3%B3lica-01%201.png?width=200&height=40&name=Logo%20Cat%C3%B3lica-01%201.png" alt="UCB" width="300">
+</p>
