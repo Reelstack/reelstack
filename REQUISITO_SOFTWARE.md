@@ -125,7 +125,7 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **Impacto:** Requisito US05 – Visualizar filme recomendado; US06 – Curtir/rejeitar filme.  
 ---
 ### RN-002 – Interação única por filme  
-- **Descrição:** Cada usuário pode curtir ou rejeitar um filme apenas uma vez. Filmes sugeridos novamente deverão ter seu registro de rejeição anteriormente apagado.
+- **Descrição:** Cada usuário pode curtir ou rejeitar um filme apenas uma vez. Filmes sugeridos novamente deverão ter seu registro de rejeição anterior apagado.
 - **Objetivo:** Evitar duplicidade de registros que possam distorcer o algoritmo de recomendação.  
 - **Fonte/autoridade:** Lógica de integridade do banco de dados.  
 - **Impacto:** Requisito US06 – Curtir/rejeitar filme; US05 – Salvar interação no backend.  
