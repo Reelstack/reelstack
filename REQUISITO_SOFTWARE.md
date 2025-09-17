@@ -1,7 +1,7 @@
 # ReelStack  
 **Grupo:**  
 **Documento de Requisitos de Software**  
-**Data:** 16/09/25  
+**Data:** 17/09/25  
 ---
 ## Introdução  
 ### Propósito do documento  
@@ -11,11 +11,11 @@ Este documento tem como objetivo definir e consolidar os requisitos do sistema *
 - **TMDB** – The Movie Database: API gratuita utilizada para obter dados de filmes e séries.  
 - **MVP** – Produto Mínimo Viável.  
 - **Swipe** – Gesto horizontal (arrastar para esquerda/direita) usado para rejeitar ou aceitar sugestões.  
-### Metodologia de elicitação  
-Os requisitos foram identificados por meio das seguintes técnicas:  
-- Discussões em grupo entre os membros da equipe (abril–maio de 2025).  
-- Prototipagem inicial de interface e fluxo de usuário (versão 0.1, maio de 2025).  
-- Entrevistas informais com colegas consumidores de streaming (amostra de 5 pessoas).  
+### Metodologia de Levantamento de Requisitos
+O levantamento de requisitos foi conduzido com base em abordagens colaborativas e centradas no usuário, integrando práticas de _Design Thinking_, _Scrum_ e _User-Centered Design_. Inicialmente, a equipe realizou sessões de discussão em grupo para explorar o problema e levantar hipóteses sobre as necessidades dos usuários. Em paralelo, foi desenvolvida uma prototipagem inicial da interface e do fluxo de navegação, permitindo testes exploratórios e coleta de feedback qualitativo.
+
+Para enriquecer a compreensão do perfil do usuário, foram realizadas entrevistas informais com consumidores reais do serviço, o que possibilitou validar expectativas e ajustar funcionalidades. As informações obtidas foram organizadas em histórias de usuário e estruturadas em um backlog, que passou por ciclos de refinamento e priorização com base em novas discussões internas. Todo o processo foi alinhado às diretrizes metodológicas da disciplina, garantindo coerência entre os objetivos técnicos e pedagógicos do projeto.
+  
 ---
 ## Visão geral dos requisitos funcionais  
 ### Escolha de abordagem  
@@ -23,6 +23,7 @@ O projeto utilizará **Histórias de Usuário** para representar os requisitos f
 ### Justificativa  
 Essa abordagem foi escolhida por ser adequada ao desenvolvimento incremental e centrado no usuário, permitindo descrever as funcionalidades sob a perspectiva de quem utiliza o sistema.  
 A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could, Won’t).  
+
 ---
 ## Seção 1 – Backlog Resumido  
 | ID   | Título                          | Valor de Negócio                                                   | Prioridade | Estimativa (pts) | Dependências       |
@@ -38,14 +39,15 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 | US09 | Exibir mensagem de erro          | Garante feedback em falhas                                         | Should     | 2                | US01, US02, US03   |
 ---
 ## Seção 2 – Histórias Detalhadas  
-### US01 – Autenticação e conta  
+### US01 – Autenticar e conta  
 **Como** usuário,  
 **Quero** autenticar meus dados cadastrados no sistema,  
 **Para** garantir acesso seguro às minhas informações e funcionalidades.  
 **Critérios de aceite**  
 - **Dado** que o usuário já possua cadastro, **quando** inserir credenciais válidas, **então** o sistema deve autenticar e liberar o acesso.  
 - **Dado** que o usuário insira credenciais inválidas, **quando** tentar acessar, **então** o sistema deve negar o login e exibir mensagem de erro.  
-- **Dado** que o usuário não esteja autenticado, **quando** tentar acessar áreas restritas, **então** o sistema deve redirecioná-lo para a tela de login.  
+- **Dado** que o usuário não esteja autenticado, **quando** tentar acessar áreas restritas, **então** o sistema deve redirecioná-lo para a tela de login.
+- **Dado** que o usuário não esteja cadastrado, **quando** tentar realizar o login, **então** o sistema deve redirecioná-lo para a tela de cadastro.  
 ---
 ### US02 – Cadastrar novo usuário  
 **Como** visitante,  
@@ -116,13 +118,47 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **Dado** que uma ação seja inválida ou repetida, **quando** for detectada, **então** deve exibir aviso apropriado.  
 ---
 ## Lista de Regras de Negócio  
-- **RN-001 – Recomendação não repetida:** filmes rejeitados não devem ser exibidos novamente.  
-- **RN-002 – Interação única por filme:** cada usuário só pode curtir ou rejeitar um filme uma vez.  
-- **RN-003 – Acesso restrito ao histórico:** apenas usuários autenticados podem visualizar seu histórico.  
-- **RN-004 – Dados mínimos obrigatórios:** cada filme deve ter título, imagem, ano e descrição.  
-- **RN-005 – Fonte exclusiva de dados:** os filmes devem ser obtidos apenas da API TMDB.  
-- **RN-006 – Validação obrigatória de campos:** cadastro e login só podem ser feitos com e-mail e senha preenchidos.  
-- **RN-007 – Mensagens de erro obrigatórias:** qualquer falha deve gerar feedback claro ao usuário.  
+### RN-001 – Recomendação não repetida  
+- **Descrição:** Um filme rejeitado por determinado usuário não pode ser sugerido novamente para ele nos próximos 2 meses.  
+- **Objetivo:** Garantir que a experiência de recomendação seja personalizada e não repetitiva.  
+- **Fonte/autoridade:** Política de recomendação do ReelStack, versão 1.0.  
+- **Impacto:** Requisito US05 – Visualizar filme recomendado; US06 – Curtir/rejeitar filme.  
+---
+### RN-002 – Interação única por filme  
+- **Descrição:** Cada usuário pode curtir ou rejeitar um filme apenas uma vez. Filmes sugeridos novamente deverão ter seu registro de rejeição anterior apagado.
+- **Objetivo:** Evitar duplicidade de registros que possam distorcer o algoritmo de recomendação.  
+- **Fonte/autoridade:** Lógica de integridade do banco de dados.  
+- **Impacto:** Requisito US06 – Curtir/rejeitar filme; US05 – Salvar interação no backend.  
+---
+### RN-003 – Acesso restrito ao histórico  
+- **Descrição:** Apenas usuários autenticados podem acessar o histórico de filmes curtidos.  
+- **Objetivo:** Garantir segurança e privacidade dos dados de preferência do usuário.  
+- **Fonte/autoridade:** Política mínima de autenticação para acesso a dados personalizados.  
+- **Impacto:** Requisito US07 – Visualizar histórico de curtidas.  
+---
+### RN-004 – Dados mínimos obrigatórios do filme  
+- **Descrição:** Todo filme exibido deve conter, no mínimo, título, imagem, ano de lançamento e sinopse.  
+- **Objetivo:** Assegurar consistência nas informações apresentadas e melhor experiência de navegação.  
+- **Fonte/autoridade:** Estrutura da API TMDB.  
+- **Impacto:** Requisito US05 – Visualizar filme recomendado.  
+---
+### RN-005 – Fonte de dados exclusiva  
+- **Descrição:** Todos os dados de filmes e séries devem ser obtidos exclusivamente da API oficial do TMDB.  
+- **Objetivo:** Garantir padronização, confiabilidade e atualização contínua das informações.  
+- **Fonte/autoridade:** Decisão técnica de integração, Documento de Visão v1.0.  
+- **Impacto:** Requisitos US05 – Visualizar filme recomendado; US06 – Curtir/rejeitar filme.  
+---
+### RN-006 – Validação obrigatória de campos  
+- **Descrição:** O sistema deve validar o preenchimento de campos obrigatórios (e-mail e senha) antes de permitir cadastro ou login.  
+- **Objetivo:** Prevenir falhas de autenticação e melhorar a experiência de uso.  
+- **Fonte/autoridade:** Boas práticas de UX e validação de entrada.  
+- **Impacto:** Requisitos US02 – Cadastrar novo usuário; US03 – Fazer login.  
+---
+### RN-007 – Mensagem de erro obrigatória  
+- **Descrição:** Toda operação que falhar (login inválido, erro de carregamento, tentativa duplicada) deve gerar mensagem clara e específica ao usuário.  
+- **Objetivo:** Garantir feedback adequado para que o usuário compreenda a falha e saiba como agir.  
+- **Fonte/autoridade:** Diretriz de usabilidade e feedback visual do sistema.  
+- **Impacto:** Requisitos US01, US02, US03, US09.
 ---
 ## Lista de Requisitos Não Funcionais  
 - **RNF-001 – Desempenho:** resposta ao swipe em ≤ 1 s para 90% dos casos (até 100 usuários simultâneos).  
@@ -133,7 +169,7 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **RNF-006 – Manutenibilidade:** código deve seguir convenções e documentar todas as funções públicas.  
 ---
 ## Declaração de uso ético e responsável de IA  
-O grupo declara que utilizou ferramentas de inteligência artificial generativa, especificamente o modelo **[ChatGPT-4 (OpenAI)](https://openai.com/pt-BR/index/chatgpt/)**, para auxiliar na estruturação, formulação e revisão deste documento (maio de 2025).  
+O grupo declara que utilizou ferramentas de inteligência artificial generativa, especificamente o modelo **[ChatGPT-4 (OpenAI)](https://openai.com/pt-BR/index/chatgpt/)**, para auxiliar na estruturação, formulação e revisão deste documento (maio de 2025 - setembro de 2025).  
 - Seções com suporte da IA: Introdução, requisitos funcionais, histórias de usuário, regras de negócio, requisitos não funcionais e revisão técnica.  
 - Todo o conteúdo foi revisado criticamente pelos membros do grupo, garantindo exatidão, clareza e conformidade acadêmica.  
 - Dados sensíveis não foram incluídos; apenas exemplos genéricos foram usados.  
