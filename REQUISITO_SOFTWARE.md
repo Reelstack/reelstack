@@ -12,10 +12,16 @@ Este documento tem como objetivo definir e consolidar os requisitos do sistema *
 - **MVP** – Produto Mínimo Viável.  
 - **Swipe** – Gesto horizontal (arrastar para esquerda/direita) usado para rejeitar ou aceitar sugestões.  
 ### Metodologia de elicitação  
-Os requisitos foram identificados por meio das seguintes técnicas:  
-- Discussões em grupo entre os membros da equipe (abril–maio de 2025).  
-- Prototipagem inicial de interface e fluxo de usuário (versão 0.1, maio de 2025).  
-- Entrevistas informais com colegas consumidores de streaming (amostra de 5 pessoas).  
+Inicialmente (abril-maio de 2025), os requisitos foram levantados por:  
+- Discussões em grupo entre os membros da equipe.  
+- Prototipagem inicial de interface e fluxo de usuário (versão 0.1).  
+- Entrevistas informais com colegas consumidores de streaming (amostra de 5 pessoas).
+
+Posteriormente (setembro de 2025), a equipe revisou e refinou os requisitos com base em:
+- Nova rodada de discussões e priorizaçãodem grupo.
+- Consolidação das histórias de usuário em backlog estruturado.
+- Adequação às orientações metodológicas da disciplina.
+  
 ---
 ## Visão geral dos requisitos funcionais  
 ### Escolha de abordagem  
@@ -23,6 +29,7 @@ O projeto utilizará **Histórias de Usuário** para representar os requisitos f
 ### Justificativa  
 Essa abordagem foi escolhida por ser adequada ao desenvolvimento incremental e centrado no usuário, permitindo descrever as funcionalidades sob a perspectiva de quem utiliza o sistema.  
 A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could, Won’t).  
+
 ---
 ## Seção 1 – Backlog Resumido  
 | ID   | Título                          | Valor de Negócio                                                   | Prioridade | Estimativa (pts) | Dependências       |
@@ -133,7 +140,7 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **RNF-006 – Manutenibilidade:** código deve seguir convenções e documentar todas as funções públicas.  
 ---
 ## Declaração de uso ético e responsável de IA  
-O grupo declara que utilizou ferramentas de inteligência artificial generativa, especificamente o modelo **[ChatGPT-4 (OpenAI)](https://openai.com/pt-BR/index/chatgpt/)**, para auxiliar na estruturação, formulação e revisão deste documento (maio de 2025).  
+O grupo declara que utilizou ferramentas de inteligência artificial generativa, especificamente o modelo **[ChatGPT-4 (OpenAI)](https://openai.com/pt-BR/index/chatgpt/)**, para auxiliar na estruturação, formulação e revisão deste documento (maio de 2025 - setembro de 2025).  
 - Seções com suporte da IA: Introdução, requisitos funcionais, histórias de usuário, regras de negócio, requisitos não funcionais e revisão técnica.  
 - Todo o conteúdo foi revisado criticamente pelos membros do grupo, garantindo exatidão, clareza e conformidade acadêmica.  
 - Dados sensíveis não foram incluídos; apenas exemplos genéricos foram usados.  
