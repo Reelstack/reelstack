@@ -11,16 +11,10 @@ Este documento tem como objetivo definir e consolidar os requisitos do sistema *
 - **TMDB** – The Movie Database: API gratuita utilizada para obter dados de filmes e séries.  
 - **MVP** – Produto Mínimo Viável.  
 - **Swipe** – Gesto horizontal (arrastar para esquerda/direita) usado para rejeitar ou aceitar sugestões.  
-### Metodologia de elicitação  
-Inicialmente (abril-maio de 2025), os requisitos foram levantados por:  
-- Discussões em grupo entre os membros da equipe.  
-- Prototipagem inicial de interface e fluxo de usuário (versão 0.1).  
-- Entrevistas informais com colegas consumidores de streaming (amostra de 5 pessoas).
+### Metodologia de Levantamento de Requisitos
+O levantamento de requisitos foi conduzido com base em abordagens colaborativas e centradas no usuário, integrando práticas de _Design Thinking_, _Scrum_ e _User-Centered Design_. Inicialmente, a equipe realizou sessões de discussão em grupo para explorar o problema e levantar hipóteses sobre as necessidades dos usuários. Em paralelo, foi desenvolvida uma prototipagem inicial da interface e do fluxo de navegação, permitindo testes exploratórios e coleta de feedback qualitativo.
 
-Posteriormente (setembro de 2025), a equipe revisou e refinou os requisitos com base em:
-- Nova rodada de discussões e priorizaçãodem grupo.
-- Consolidação das histórias de usuário em backlog estruturado.
-- Adequação às orientações metodológicas da disciplina.
+Para enriquecer a compreensão do perfil do usuário, foram realizadas entrevistas informais com consumidores reais do serviço, o que possibilitou validar expectativas e ajustar funcionalidades. As informações obtidas foram organizadas em histórias de usuário e estruturadas em um backlog, que passou por ciclos de refinamento e priorização com base em novas discussões internas. Todo o processo foi alinhado às diretrizes metodológicas da disciplina, garantindo coerência entre os objetivos técnicos e pedagógicos do projeto.
   
 ---
 ## Visão geral dos requisitos funcionais  
@@ -45,14 +39,15 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 | US09 | Exibir mensagem de erro          | Garante feedback em falhas                                         | Should     | 2                | US01, US02, US03   |
 ---
 ## Seção 2 – Histórias Detalhadas  
-### US01 – Autenticação e conta  
+### US01 – Autenticar e conta  
 **Como** usuário,  
 **Quero** autenticar meus dados cadastrados no sistema,  
 **Para** garantir acesso seguro às minhas informações e funcionalidades.  
 **Critérios de aceite**  
 - **Dado** que o usuário já possua cadastro, **quando** inserir credenciais válidas, **então** o sistema deve autenticar e liberar o acesso.  
 - **Dado** que o usuário insira credenciais inválidas, **quando** tentar acessar, **então** o sistema deve negar o login e exibir mensagem de erro.  
-- **Dado** que o usuário não esteja autenticado, **quando** tentar acessar áreas restritas, **então** o sistema deve redirecioná-lo para a tela de login.  
+- **Dado** que o usuário não esteja autenticado, **quando** tentar acessar áreas restritas, **então** o sistema deve redirecioná-lo para a tela de login.
+- **Dado** que o usuário não esteja cadastrado, **quando** tentar realizar o login, **então** o sistema deve redirecioná-lo para a tela de cadastro.  
 ---
 ### US02 – Cadastrar novo usuário  
 **Como** visitante,  
