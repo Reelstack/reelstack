@@ -7,8 +7,22 @@ export function Login() {
       <div className={styles.header}>
         <h1>Login</h1>
         <form className={styles.form}>
-          <input type='text' placeholder='Username' />
-          <input type='password' placeholder='Password' />
+          <input
+            type='text'
+            id='username'
+            name='username'
+            placeholder='Username'
+            autoComplete='username'
+            required
+          />
+          <input
+            type='password'
+            id='password'
+            name='password'
+            placeholder='Password'
+            autoComplete='current-password'
+            required
+          />
           <button type='submit'>Login</button>
         </form>
         <RouterLink href='/home/'>HOME</RouterLink>
