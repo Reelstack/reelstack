@@ -1,7 +1,7 @@
 # ReelStack  
 **Grupo:**  
 **Documento de Requisitos de Software**  
-**Data:** 16/09/25  
+**Data:** 17/09/25  
 ---
 ## Introdução  
 ### Propósito do documento  
@@ -118,13 +118,47 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **Dado** que uma ação seja inválida ou repetida, **quando** for detectada, **então** deve exibir aviso apropriado.  
 ---
 ## Lista de Regras de Negócio  
-- **RN-001 – Recomendação não repetida:** filmes rejeitados não devem ser exibidos novamente.  
-- **RN-002 – Interação única por filme:** cada usuário só pode curtir ou rejeitar um filme uma vez.  
-- **RN-003 – Acesso restrito ao histórico:** apenas usuários autenticados podem visualizar seu histórico.  
-- **RN-004 – Dados mínimos obrigatórios:** cada filme deve ter título, imagem, ano e descrição.  
-- **RN-005 – Fonte exclusiva de dados:** os filmes devem ser obtidos apenas da API TMDB.  
-- **RN-006 – Validação obrigatória de campos:** cadastro e login só podem ser feitos com e-mail e senha preenchidos.  
-- **RN-007 – Mensagens de erro obrigatórias:** qualquer falha deve gerar feedback claro ao usuário.  
+### RN-001 – Recomendação não repetida  
+- **Descrição:** Um filme rejeitado por determinado usuário não pode ser sugerido novamente para ele nos próximos 2 meses.  
+- **Objetivo:** Garantir que a experiência de recomendação seja personalizada e não repetitiva.  
+- **Fonte/autoridade:** Política de recomendação do ReelStack, versão 1.0.  
+- **Impacto:** Requisito US05 – Visualizar filme recomendado; US06 – Curtir/rejeitar filme.  
+---
+### RN-002 – Interação única por filme  
+- **Descrição:** Cada usuário pode curtir ou rejeitar um filme apenas uma vez. Filmes sugeridos novamente deverão ter seu registro de rejeição anteriormente apagado.
+- **Objetivo:** Evitar duplicidade de registros que possam distorcer o algoritmo de recomendação.  
+- **Fonte/autoridade:** Lógica de integridade do banco de dados.  
+- **Impacto:** Requisito US06 – Curtir/rejeitar filme; US05 – Salvar interação no backend.  
+---
+### RN-003 – Acesso restrito ao histórico  
+- **Descrição:** Apenas usuários autenticados podem acessar o histórico de filmes curtidos.  
+- **Objetivo:** Garantir segurança e privacidade dos dados de preferência do usuário.  
+- **Fonte/autoridade:** Política mínima de autenticação para acesso a dados personalizados.  
+- **Impacto:** Requisito US07 – Visualizar histórico de curtidas.  
+---
+### RN-004 – Dados mínimos obrigatórios do filme  
+- **Descrição:** Todo filme exibido deve conter, no mínimo, título, imagem, ano de lançamento e sinopse.  
+- **Objetivo:** Assegurar consistência nas informações apresentadas e melhor experiência de navegação.  
+- **Fonte/autoridade:** Estrutura da API TMDB.  
+- **Impacto:** Requisito US05 – Visualizar filme recomendado.  
+---
+### RN-005 – Fonte de dados exclusiva  
+- **Descrição:** Todos os dados de filmes e séries devem ser obtidos exclusivamente da API oficial do TMDB.  
+- **Objetivo:** Garantir padronização, confiabilidade e atualização contínua das informações.  
+- **Fonte/autoridade:** Decisão técnica de integração, Documento de Visão v1.0.  
+- **Impacto:** Requisitos US05 – Visualizar filme recomendado; US06 – Curtir/rejeitar filme.  
+---
+### RN-006 – Validação obrigatória de campos  
+- **Descrição:** O sistema deve validar o preenchimento de campos obrigatórios (e-mail e senha) antes de permitir cadastro ou login.  
+- **Objetivo:** Prevenir falhas de autenticação e melhorar a experiência de uso.  
+- **Fonte/autoridade:** Boas práticas de UX e validação de entrada.  
+- **Impacto:** Requisitos US02 – Cadastrar novo usuário; US03 – Fazer login.  
+---
+### RN-007 – Mensagem de erro obrigatória  
+- **Descrição:** Toda operação que falhar (login inválido, erro de carregamento, tentativa duplicada) deve gerar mensagem clara e específica ao usuário.  
+- **Objetivo:** Garantir feedback adequado para que o usuário compreenda a falha e saiba como agir.  
+- **Fonte/autoridade:** Diretriz de usabilidade e feedback visual do sistema.  
+- **Impacto:** Requisitos US01, US02, US03, US09.
 ---
 ## Lista de Requisitos Não Funcionais  
 - **RNF-001 – Desempenho:** resposta ao swipe em ≤ 1 s para 90% dos casos (até 100 usuários simultâneos).  
