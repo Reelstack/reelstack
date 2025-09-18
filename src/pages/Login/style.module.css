@@ -1,4 +1,33 @@
-.header {
-  height: 100rem;
-  color: red;
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.formWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  width: fit-content;
+  background-color: blue;
+  border-radius: 1rem;
+  padding: 2rem;
+}
+.loginForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.formInput {
+  margin: 0.4rem;
+  border-radius: 0.5rem;
+  background-color: palevioletred;
+}
+
+.formButton {
+  margin-top: 0.4rem;
+  background-color: aqua;
 }

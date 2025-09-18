@@ -1,41 +1,24 @@
-import { RouterLink } from '../../components/RouterLink';
 import styles from './style.module.css';
 
 export function Login() {
   return (
     <>
-      <div className={styles.header}>
-        <h1>Login</h1>
-        <form className={styles.form}>
-          <input
-            type='text'
-            id='username'
-            name='username'
-            placeholder='Username'
-            autoComplete='username'
-            required
-          />
-          <input
-            type='password'
-            id='password'
-            name='password'
-            placeholder='Password'
-            autoComplete='current-password'
-            required
-          />
-          <button type='submit'>Login</button>
-        </form>
-        <RouterLink href='/home/'>HOME</RouterLink>
-        <RouterLink href='/profile/'>PROFILE</RouterLink>
-      </div>
-      <div className={styles.content}>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam, quis
-          sed ab dolorem pariatur provident rem ut et vitae, repellendus minima
-          fuga alias nam autem ea consequatur adipisci earum ad ipsum nihil.
-        </p>
-        <RouterLink href='/home/'>HOME</RouterLink>
-        <RouterLink href='/profile/'>PROFILE</RouterLink>
+      <div className={styles.page}>
+        <div className={styles.formWrapper}>
+          <h2>ReelStack</h2>
+          <form className={styles.loginForm}>
+            <input className={styles.formInput} name='login' />
+            <input className={styles.formInput} name='password' />
+            <h6>Forgot your password?</h6>
+            <button className={styles.formButton} type='submit'>
+              Sign In
+            </button>
+            <h5>Dont have an account yet?</h5>
+            <button className={styles.formButton} type='submit'>
+              Sign Up
+            </button>
+          </form>
+        </div>
       </div>
     </>
   );
