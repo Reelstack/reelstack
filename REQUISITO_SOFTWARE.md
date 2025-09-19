@@ -160,14 +160,67 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **Fonte/autoridade:** Diretriz de usabilidade e feedback visual do sistema.  
 - **Impacto:** Requisitos US01, US02, US03, US09.
 ---
+
 ## Lista de Requisitos Não Funcionais  
-- **RNF-001 – Desempenho:** resposta ao swipe em ≤ 1 s para 90% dos casos (até 100 usuários simultâneos).  
-- **RNF-002 – Segurança:** toda comunicação deve usar TLS 1.3 com certificado válido.  
-- **RNF-003 – Usabilidade:** onboarding concluído em até 5 min com taxa de sucesso ≥ 85%.  
-- **RNF-004 – Compatibilidade:** suporte a Chrome, Firefox e Edge (últimas versões).  
-- **RNF-005 – Usabilidade:** mensagens de erro claras e específicas em todas as falhas.  
-- **RNF-006 – Manutenibilidade:** código deve seguir convenções e documentar todas as funções públicas.  
+
+### RNF 001 – Desempenho: Tempo de Resposta ao Swipe
+- **Descrição:** O sistema deve responder à interação de swipe (curtir/rejeitar) em ≤ 1 s para 90 % das requisições, considerando até 100 usuários simultâneos no MVP.
+- **Classificação:** Eficiência de desempenho
+- **Método de verificação:** Teste de carga com JMeter simulando 100 usuários concorrentes
+- **Critério de aceitação:** Relatório de testes demonstra percentil 90 ≤ 1 s
+- **Impacto na arquitetura:** Requer uso de endpoints otimizados e baixo acoplamento entre frontend e backend
 ---
+
+### RNF 002 – Segurança: Criptografia em Trânsito
+
+- **Descrição:** Toda comunicação entre cliente e servidor deve ser protegida com `TLS 1.3` e certificado digital válido emitido por autoridade certificadora confiável.
+- **Classificação:** Segurança
+- **Método de verificação:** Auditoria de configuração `HTTPS` e scanner de segurança (`OWASP ZAP`)
+- **Critério de aceitação:** OWASP ZAP não deve identificar falhas críticas ou de alto risco na criptografia
+- **Impacto na arquitetura:** Exige configuração de servidor com `HTTPS` forçado e biblioteca cliente compatível com `TLS 1.3`
+
+---
+
+### RNF 003 – Usabilidade: Fluxo de Onboarding
+
+- **Descrição:** Usuários iniciantes devem concluir o cadastro e a primeira interação com o sistema em ≤ 5 min, com taxa de sucesso ≥ 85 % em teste moderado.
+- **Classificação:** Usabilidade
+- **Método de verificação:** Teste de usabilidade com 20 participantes representativos
+- **Critério de aceitação:** ≥ 17 participantes concluem com sucesso em até 5 min
+- **Impacto na arquitetura:** Interfaces simples, navegação linear e feedback visual devem estar implementados
+
+---
+
+### RNF 004 – Compatibilidade: Suporte a Navegadores
+
+- **Descrição:** O sistema deve funcionar corretamente nas versões estáveis mais recentes dos navegadores Google Chrome, Mozilla Firefox e Microsoft Edge.
+- **Classificação:** Compatibilidade
+- **Método de verificação:** Teste manual de interface com checklist funcional por navegador
+- **Critério de aceitação:** 100 % das funcionalidades devem operar sem erros em todos os navegadores indicados
+- **Impacto na arquitetura:** O frontend deve seguir padrões web modernos e evitar recursos incompatíveis
+
+---
+
+### RNF 005 – Usabilidade: Mensagens de Erro
+
+- **Descrição:** O sistema deve exibir mensagens de erro claras e específicas ao usuário em falhas como login inválido, campos não preenchidos ou falha de rede.
+- **Classificação:** Usabilidade
+- **Método de verificação:** Testes manuais com cenários de erro comuns
+- **Critério de aceitação:** 100 % dos casos simulados devem resultar em mensagem adequada e compreensível
+- **Impacto na arquitetura:** Necessita de tratamento centralizado de exceções e mensagens pré-definidas no frontend
+
+---
+
+### RNF 006 – Manutenibilidade: Qualidade do Código
+
+- **Descrição:** O código-fonte deve seguir convenções de nomenclatura e conter comentários explicativos em 100 % das funções públicas.
+- **Classificação:** Manutenibilidade
+- **Método de verificação:** Auditoria de código e checklist de conformidade
+- **Critério de aceitação:** Nenhuma função ou classe pública sem documentação até o fechamento do projeto
+- **Impacto na arquitetura:** Padrões de codificação e boas práticas devem ser seguidos desde a primeira sprint
+
+---
+
 ## Declaração de uso ético e responsável de IA  
 O grupo declara que utilizou ferramentas de inteligência artificial generativa, especificamente o modelo **[ChatGPT-4 (OpenAI)](https://openai.com/pt-BR/index/chatgpt/)**, para auxiliar na estruturação, formulação e revisão deste documento (maio de 2025 - setembro de 2025).  
 - Seções com suporte da IA: Introdução, requisitos funcionais, histórias de usuário, regras de negócio, requisitos não funcionais e revisão técnica.  
