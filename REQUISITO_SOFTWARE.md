@@ -27,9 +27,9 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 ## Seção 1 – Backlog Resumido  
 | ID   | Título                          | Valor de Negócio                                                   | Prioridade | Estimativa (pts) | Dependências       |
 |------|----------------------------------|--------------------------------------------------------------------|------------|------------------|--------------------|
-| US01 | Autenticação e conta             | Permite consultar os dados cadastrados do usuário para autenticação | Must       | 3                | US02, US03         |
-| US02 | Cadastrar novo usuário           | Permite armazenamento de preferências                              | Must       | 3                | N/A                |
-| US03 | Fazer login                     | Acesso seguro e individualizado ao sistema                         | Must       | 2                | US02               |
+| US01 | Autenticar e conta             | Permite consultar os dados cadastrados do usuário para autenticação | Must       | 3                | N/A                 |
+| US02 | Cadastrar novo usuário           | Permite armazenamento de preferências                              | Must       | 3                | US01               |
+| US03 | Fazer login                     | Acesso seguro e individualizado ao sistema                         | Must       | 2                | US01, US02          |
 | US04 | Engajamento com conteúdo         | Experiência do usuário ao interagir com catálogo de filmes         | Must       | –                | US05, US06, US07   |
 | US05 | Visualizar filme recomendado     | Início da experiência principal                                    | Must       | 3                | –                  |
 | US06 | Curtir/rejeitar filme (swipe)    | Coleta dados para o algoritmo de recomendação                      | Must       | 5                | US03               |
@@ -61,8 +61,8 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 **Quero** acessar o sistema com e-mail e senha,  
 **Para** continuar de onde parei e visualizar minhas preferências.  
 **Critérios de aceite**  
-- **Dado** que o usuário insira credenciais corretas, **quando** clicar em “Entrar”, **então** deve ser autenticado e redirecionado à tela inicial.  
-- **Dado** que o usuário insira credenciais inválidas, **quando** tentar autenticar, **então** deve visualizar uma mensagem de erro.  
+- **Dado** que o usuário insira credenciais corretas, **quando** clicar em “Entrar”, **então** deve ser ado e redirecionado à tela inicial.  
+- **Dado** que o usuário insira credenciais inválidas, **quando** tentar ar, **então** deve visualizar uma mensagem de erro.  
 ---
 ### US04 – Engajamento com conteúdo  
 **Como** usuário,  
@@ -118,13 +118,15 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 ---
 ## Lista de Regras de Negócio  
 ### RN-001 – Recomendação não repetida  
-- **Descrição:** Um filme rejeitado por determinado usuário não pode ser sugerido novamente para ele nos próximos 2 meses.  
+- **Descrição:** Um filme rejeitado por um usuário não deverá ser incluído nas recomendações desse usuário nos próximos **60 dias** contados a partir da data de rejeição. Exceções só poderão ocorrer mediante ação excplícita do usuário (p.ex. "reavaliar recomendações") ou campanhas de reengajamento autorizadas pelo administrador, que devem ser registradas e apresentadas ao usuário 
 - **Objetivo:** Garantir que a experiência de recomendação seja personalizada e não repetitiva.  
 - **Fonte/autoridade:** Política de recomendação do ReelStack, versão 1.0.  
 - **Impacto:** Requisito US05 – Visualizar filme recomendado; US06 – Curtir/rejeitar filme.  
 ---
 ### RN-002 – Interação única por filme  
-- **Descrição:** Cada usuário pode curtir ou rejeitar um filme apenas uma vez. Filmes sugeridos novamente deverão ter seu registro de rejeição anterior apagado.
+- **Descrição:** Cada usuário mantém no máximo um registro ativo de reação (curtiu / rejeitou) por filme. Se o usuário mudar de opinião, o registro deve ser atualizado (campo reaction, update_at) - não criado duplicadamente.
+- - O histórico de interações deve ser preservado para fins analíticos (audit trail).
+  - Se um filme for re-sugerido após o período definido em RN-001, o sistema não deve apagar automaticamente o histórico anterior; permite-se que o usuário atualize a reação se desejar.
 - **Objetivo:** Evitar duplicidade de registros que possam distorcer o algoritmo de recomendação.  
 - **Fonte/autoridade:** Lógica de integridade do banco de dados.  
 - **Impacto:** Requisito US06 – Curtir/rejeitar filme; US05 – Salvar interação no backend.  
