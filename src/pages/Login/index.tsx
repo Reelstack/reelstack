@@ -5,18 +5,32 @@ export function Login() {
     <>
       <div className={styles.page}>
         <div className={styles.formWrapper}>
-          <h2>ReelStack</h2>
           <form className={styles.loginForm}>
-            <input className={styles.formInput} name='login' />
-            <input className={styles.formInput} name='password' />
-            <h6>Forgot your password?</h6>
-            <button className={styles.formButton} type='submit'>
-              Sign In
-            </button>
-            <h5>Dont have an account yet?</h5>
-            <button className={styles.formButton} type='submit'>
-              Sign Up
-            </button>
+            <h2>ReelStack</h2>
+            <div className={styles.formGroup}>
+              <input
+                className={styles.formInput}
+                type='text'
+                placeholder='Email'
+              />
+
+              <input
+                className={styles.formInput}
+                type='password'
+                placeholder='Password'
+              />
+              <h6>Forgot your password?</h6>
+            </div>
+
+            <div className={styles.formGroup}>
+              <button className={styles.formButton}>Login</button>
+            </div>
+            <div className={styles.formGroup}>
+              <div className={styles.signup}>
+                <h5>Dont have an account yet?</h5>
+                <a>Sign Up Now</a>
+              </div>
+            </div>
           </form>
         </div>
       </div>

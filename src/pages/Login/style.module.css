@@ -8,26 +8,79 @@
 .formWrapper {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  margin: auto;
+  justify-content: space-evenly;
   width: fit-content;
-  background-color: blue;
+  height: 40rem;
+  width: 30rem;
+  margin: auto;
+  background-color: var(--blue-dark);
   border-radius: 1rem;
   padding: 2rem;
+  filter: drop-shadow(0 0.5rem 1rem rgba(0, 0, 0, 1));
 }
+
 .loginForm {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  width: 100%;
+}
+
+.loginForm h2 {
+  text-align: center;
+  width: 100%;
+}
+
+.loginForm h6 {
+  text-align: end;
+  width: 80%;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.signup {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.signup a {
+  font-size: 1.4rem;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  color: var(--contrast);
 }
 
 .formInput {
-  margin: 0.4rem;
+  margin: 1rem;
+  padding: 1rem;
   border-radius: 0.5rem;
-  background-color: palevioletred;
+  width: 80%;
+  color: var(--text-default);
+  background-color: var(--blue-light);
+  border: transparent;
 }
 
 .formButton {
-  margin-top: 0.4rem;
-  background-color: aqua;
+  margin-top: 0.8rem;
+  padding: 1rem;
+  width: 40%;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: var(--contrast);
+}
+
+.formButton:hover {
+  filter: brightness(90%);
+}
+
+.formButton:active {
+  filter: brightness(60%);
 }
