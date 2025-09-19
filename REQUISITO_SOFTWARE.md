@@ -1,5 +1,4 @@
 # ReelStack  
-**Grupo:**  
 **Documento de Requisitos de Software**  
 **Data:** 17/09/25  
 ---
