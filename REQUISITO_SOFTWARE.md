@@ -222,11 +222,17 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 ---
 
 ## Declaração de uso ético e responsável de IA  
-O grupo declara que utilizou ferramentas de inteligência artificial generativa, especificamente o modelo **[ChatGPT-4 (OpenAI)](https://openai.com/pt-BR/index/chatgpt/)**, para auxiliar na estruturação, formulação e revisão deste documento (maio de 2025 - setembro de 2025).  
-- Seções com suporte da IA: Introdução, requisitos funcionais, histórias de usuário, regras de negócio, requisitos não funcionais e revisão técnica.  
-- Todo o conteúdo foi revisado criticamente pelos membros do grupo, garantindo exatidão, clareza e conformidade acadêmica.  
-- Dados sensíveis não foram incluídos; apenas exemplos genéricos foram usados.  
-- O uso de IA foi ético, transparente e em conformidade com as diretrizes institucionais de integridade acadêmica.  
+O grupo declara que utilizou ferramentas de inteligência artificial generativa, especificamente o modelo **[ChatGPT-4 (OpenAI)](https://openai.com/pt-BR/index/chatgpt/)**, para auxiliar na estruturação e revisão deste documento (maio de 2025 - setembro de 2025).  
+
+As seções que receberam suporte automatizado incluem:
+- Introdução (estrutura e revisão textual),
+- Visão geral dos requisitos funcionais,
+- Lista de regras de negócio,
+- Requisitos não funcionais,
+- Revisão técnica e estilística do conteúdo.
+  
+**Toda a produção gerada por IA foi revisada criticamente pelos membros do grupo**, que permanecem integralmente responsáveis pela exatidão, completude, clareza e conformidade acadêmica do conteúdo final apresentado.
+
 ---
 <p align="center">  
 <img src="https://ucb.catolica.edu.br/hs-fs/hubfs/Logo%20Cat%C3%B3lica-01%201.png?width=200&height=40" alt="UCB" width="300">  
