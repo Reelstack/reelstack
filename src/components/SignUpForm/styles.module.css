@@ -41,7 +41,7 @@
   padding: 1rem;
   border-radius: 0.5rem;
   width: 80%;
-  color: var(--text-default);
+  color: var(--text-over-primary);
   background-color: var(--blue-light);
   border: transparent;
 }
