@@ -10,6 +10,11 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
 );
 
+
+type Users = {
+  email: string;
+  // Add other user properties as needed
+};
 export function Login() {
   const [isSigning, setIsSigning] = useState(false);
   const [users, setUsers] = useState<Users[]>([]);
