@@ -12,28 +12,11 @@
   justify-content: space-evenly;
   width: fit-content;
   width: 30rem;
+
   margin: auto;
   background-color: var(--blue-dark);
   border-radius: 1rem;
   padding: 2rem;
   filter: drop-shadow(0 0.5rem 1rem rgba(0, 0, 0, 1));
   transition: all 0.3s ease;
-}
-
-.loginForm {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  flex: 1;
-  width: 100%;
-}
-
-.loginForm h2 {
-  text-align: center;
-  width: 100%;
-}
-
-.loginForm h6 {
-  text-align: end;
-  width: 80%;
 }

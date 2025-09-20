@@ -66,4 +66,5 @@
 .error {
   color: var(--error);
   font-size: 1.4rem;
+  gap: 0.5rem;
 }

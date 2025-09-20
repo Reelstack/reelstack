@@ -13,7 +13,7 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,14 +51,14 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
     const errors = rules.filter(rule => !rule.test()).map(rule => rule.msg);
 
     if (errors.length) {
-      setError(errors.join('\n'));
+      setError(errors);
       return;
     }
 
-    setError('');
+    setError([]);
     setLoading(true);
 
-    // call addUser from your context
+    // call addUser
     const newUser = await addUser({ email, password });
 
     setLoading(false);
@@ -69,7 +69,7 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
       setConfirm('');
       console.log('User signed up:', newUser);
     } else {
-      setError('Failed to create user.');
+      setError(['Failed to create user.']);
     }
   };
 
@@ -111,20 +111,25 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
       </div>
 
       <div className={styles.formGroup}>
-        <AnimatePresence mode='wait'>
-          {error && (
-            <motion.p
-              className={styles.error}
-              key={error}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.3 }}
-            >
-              {error}
-            </motion.p>
-          )}
-        </AnimatePresence>
+        {error.length > 0 && (
+          <div>
+            <AnimatePresence mode='wait'>
+              {error.map((err, index) => (
+                <motion.p
+                  key={index}
+                  className={styles.error}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {err}
+                </motion.p>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
+
         <button className={styles.formButton} disabled={loading}>
           {loading ? 'Signing Up...' : 'Sign Up'}
         </button>
