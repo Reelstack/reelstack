@@ -1,0 +1,64 @@
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  width: 100%;
+}
+
+.loginForm h2 {
+  text-align: center;
+  width: 100%;
+}
+
+.loginForm h6 {
+  text-align: end;
+  width: 80%;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.signup {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.signup a {
+  font-size: 1.4rem;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  color: var(--contrast);
+}
+
+.formInput {
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  width: 80%;
+  color: var(--text-over-primary);
+  background-color: var(--blue-light);
+  border: transparent;
+}
+
+.formButton {
+  margin-top: 0.8rem;
+  padding: 1rem;
+  width: 40%;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: var(--contrast);
+}
+
+.formButton:hover {
+  filter: brightness(90%);
+}
+
+.formButton:active {
+  filter: brightness(60%);
+}
