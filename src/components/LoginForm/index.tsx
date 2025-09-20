@@ -32,7 +32,7 @@ export function LoginForm({ onSwitch }: LoginFormProps) {
       </div>
       <div className={styles.formGroup}>
         <div className={styles.signup}>
-          Dont have an account yet?
+          Don't have an account yet?
           <a
             href='#'
             onClick={e => {
