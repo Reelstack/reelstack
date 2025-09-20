@@ -62,3 +62,8 @@
 .formButton:active {
   filter: brightness(60%);
 }
+
+.error {
+  color: var(--error);
+  font-size: 1.4rem;
+}

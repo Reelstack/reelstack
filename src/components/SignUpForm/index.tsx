@@ -1,33 +1,76 @@
-import { motion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import styles from './styles.module.css';
 import { useState } from 'react';
+import { useUsers } from '../../contexts/UserContext/userHook';
 
 type SignUpFormProps = {
   onSwitch: () => void;
 };
 
 export function SignUpForm({ onSwitch }: SignUpFormProps) {
+  const { addUser } = useUsers();
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Simple validation
-    if (!email || !password || !confirm) {
-      setError('Please fill in all fields');
-      return;
-    }
+    const rules = [
+      { test: () => !!email, msg: 'Email is required.' },
+      {
+        test: () => email.includes('@') && email.endsWith('.com'),
+        msg: 'Invalid email format.',
+      },
+      { test: () => !!password, msg: 'Password is required.' },
+      {
+        test: () => password.length >= 8,
+        msg: 'Password must be at least 12 characters.',
+      },
+      {
+        test: () => /[A-Z]/.test(password),
+        msg: 'Password must include at least one uppercase letter.',
+      },
+      {
+        test: () => /[a-z]/.test(password),
+        msg: 'Password must include at least one lowercase letter.',
+      },
+      {
+        test: () => /[0-9]/.test(password),
+        msg: 'Password must include at least one number.',
+      },
+      {
+        test: () => /[!@#$%^&*]/.test(password),
+        msg: 'Password must include at least one symbol.',
+      },
+      { test: () => password === confirm, msg: 'Passwords do not match.' },
+    ];
 
-    if (password !== confirm) {
-      setError('Passwords do not match');
+    const errors = rules.filter(rule => !rule.test()).map(rule => rule.msg);
+
+    if (errors.length) {
+      setError(errors.join('\n'));
       return;
     }
 
     setError('');
-    console.log('Sign Up Data:', { email, password, confirm });
+    setLoading(true);
+
+    // call addUser from your context
+    const newUser = await addUser({ email, password });
+
+    setLoading(false);
+
+    if (newUser) {
+      setEmail('');
+      setPassword('');
+      setConfirm('');
+      console.log('User signed up:', newUser);
+    } else {
+      setError('Failed to create user.');
+    }
   };
 
   return (
@@ -68,8 +111,23 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
       </div>
 
       <div className={styles.formGroup}>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button className={styles.formButton}>Sign Up</button>
+        <AnimatePresence mode='wait'>
+          {error && (
+            <motion.p
+              className={styles.error}
+              key={error}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.3 }}
+            >
+              {error}
+            </motion.p>
+          )}
+        </AnimatePresence>
+        <button className={styles.formButton} disabled={loading}>
+          {loading ? 'Signing Up...' : 'Sign Up'}
+        </button>
       </div>
       <div className={styles.formGroup}>
         <div className={styles.signup}>
