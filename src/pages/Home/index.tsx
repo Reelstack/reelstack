@@ -1,20 +1,32 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './style.module.css';
 import { AnimatePresence, motion } from 'motion/react';
 import expand from '../../assets/arrow-increase.svg';
 import shrink from '../../assets/arrow-decrease.svg';
 import filter from '../../assets/filter.svg';
 import { RouterLink } from '../../components/RouterLink';
+import { useAuth } from '../../contexts/AuthContext/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export function Home() {
   const [isHover, setHover] = useState(false);
   const [isExpanded, setExpanded] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/'); // volta pro login se n tiver logado
+    }
+  }, [user, navigate]);
+
+  if (!user) return null;
 
   return (
     <>
       <div className={styles.header}>
         <div className={styles.filterButton}>
-          <img className={styles.filter} src={filter} alt="Filter" />
+          <img className={styles.filter} src={filter} alt='Filter' />
         </div>
         <RouterLink href='/profile/'>
           <div className={styles.navbar}>
