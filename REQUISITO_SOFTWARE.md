@@ -96,7 +96,7 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - Dado que o usuário não esteja autenticado, **quando** tentar acessar dados pessoais, **então** o sistema deve redirecionar para a tela de login.
 - Dado que o usuário não exista, **quando** for feita a consulta, **então** o sistema deve exibir mensagem “usuário não encontrado”.
 ---
-### US06– Visualizar filme  
+### US06 – Visualizar filme  
 **Como** usuário logado,  
 **Quero** visualizar cards com informações de filmes recomendados,  
 **Para** decidir se me interesso por eles.  
