@@ -220,7 +220,7 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 ## Lista de Regras de Negócio  
 
 ### RN-001 – Recomendação não repetida  
-- **Descrição:** Um filme rejeitado por um usuário não deverá ser incluído nas recomendações desse usuário nos próximos **60 dias** contados a partir da data de rejeição. Exceções só poderão ocorrer mediante ação excplícita do usuário (p.ex. "reavaliar recomendações") ou campanhas de reengajamento autorizadas pelo administrador, que devem ser registradas e apresentadas ao usuário 
+- **Descrição:** Um filme rejeitado por um usuário não deverá ser incluído nas recomendações desse usuário nos próximos **60 dias** contados a partir da data de rejeição. Exceções só poderão ocorrer mediante ação explícita do usuário (p.ex. "reavaliar recomendações") ou campanhas de reengajamento autorizadas pelo administrador, que devem ser registradas e apresentadas ao usuário 
 - **Objetivo:** Garantir que a experiência de recomendação seja personalizada e não repetitiva.  
 - **Fonte/autoridade:** Política de recomendação do ReelStack, versão 1.0.  
 - **Impacto:** Requisito US05 – Visualizar filme recomendado; US06 – Curtir/rejeitar filme.  
