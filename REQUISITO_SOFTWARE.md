@@ -227,7 +227,7 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 ---
 ### RN-002 – Interação única por filme  
 - **Descrição:** Cada usuário mantém no máximo um registro ativo de reação (curtiu / rejeitou) por filme. Se o usuário mudar de opinião, o registro deve ser atualizado (campo reaction, update_at) - não criado duplicadamente.
-- - O histórico de interações deve ser preservado para fins analíticos (audit trail).
+- O histórico de interações deve ser preservado para fins analíticos (audit trail).
   - Se um filme for re-sugerido após o período definido em RN-001, o sistema não deve apagar automaticamente o histórico anterior; permite-se que o usuário atualize a reação se desejar.
 - **Objetivo:** Evitar duplicidade de registros que possam distorcer o algoritmo de recomendação.  
 - **Fonte/autoridade:** Lógica de integridade do banco de dados.  
