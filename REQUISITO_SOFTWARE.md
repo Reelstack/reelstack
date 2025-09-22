@@ -30,7 +30,7 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 | US01 | Autenticar usuário              | Permite consultar os dados cadastrados do usuário para autenticação| Must       | 3                | N/A                |
 | US02 | Cadastrar novo usuário          | Permite armazenamento de preferências                              | Must       | 3                | US01               |
 | US03 | Editar usuário                  | Acesso seguro e individualizado ao sistema                         | Must       | 2                | US01, US02         |
-| US04 | Excluir usuário                 | Experiência do usuário ao interagir com catálogo de filmes         | Must       | –                | US05, US06, US07   |
+| US04 | Excluir usuário                 | Garante controle e privacidade dos dados do usuário                | Must       | –                | US05, US06, US07   |
 | US05 | Visualizar filme recomendado    | Início da experiência principal                                    | Must       | 3                | –                  |
 | US06 | Curtir/rejeitar filme (swipe)   | Coleta dados para o algoritmo de recomendação                      | Must       | 5                | US03, US05         |
 | US07 | Visualizar histórico de curtidas| Permite rever filmes favoritos                                     | Should     | 3                | US06               |
