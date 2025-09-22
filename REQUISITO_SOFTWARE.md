@@ -35,7 +35,7 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 | US06 | Visualizar filme recomendado    | Início da experiência principal                                    | Must       | 3                | –                  |
 | US07 | Curtir/rejeitar filme (swipe)   | Coleta dados para o algoritmo de recomendação                      | Must       | 5                | US03, US05         |
 | US08 | Visualizar histórico de curtidas| Permite rever filmes favoritos                                     | Should     | 3                | US06               |
-| US09 | Comunicar e feedback ao usuário | Fornece informações claras sobre estados de carregamento           | Should     | –                | US09               |
+| US09 | Comunicar e feedback ao usuário | Fornece informações claras sobre estados de carregamento           | Should     | –                | –                  |
 | US10 | Revogar curtida                 | Permite o usuário remover uma curtida anterior                     | Should     | 2                | US07               |
 | US11 | Consultar sinopse de filme      | Permite ver informações detalhadas antes da decisão                | Must       | 2                | US05               |
 | US12 | Ver recomendação de filme       | Gera lista personalizada de títulos recomendados                   | Must       | 4                | US06, US11         |
