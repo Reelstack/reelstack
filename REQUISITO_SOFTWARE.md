@@ -1,6 +1,6 @@
 # ReelStack  
 **Documento de Requisitos de Software**  
-**Data:** 17/09/25  
+**Data:** 22/09/25  
 ---
 ## Introdução  
 ### Propósito do documento  
