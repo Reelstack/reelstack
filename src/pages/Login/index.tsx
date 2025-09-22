@@ -1,12 +1,23 @@
 import styles from './style.module.css';
 import { LoginForm } from '../../components/LoginForm';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SignUpForm } from '../../components/SignUpForm';
-
+import { supabase } from '../../lib/supabaseClient';
 import { AnimatePresence, motion } from 'motion/react';
 
 export function Login() {
   const [isSigning, setIsSigning] = useState(false);
+  const [users, setUsers] = useState<Users[]>([]);
+  useEffect(() => {
+    getUsers();
+  }, []);
+  async function getUsers() {
+    const { data } = await supabase.from<'users', Users>('users').select();
+    setUsers(data ?? []);
+  }
+  useEffect(() => {
+    console.log(users.map(user => user.email));
+  }, [users]);
 
   return (
     <>
