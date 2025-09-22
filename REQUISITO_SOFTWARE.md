@@ -29,8 +29,8 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 |------|---------------------------------|--------------------------------------------------------------------|------------|------------------|--------------------|
 | US01 | Autenticar usuário              | Permite consultar os dados cadastrados do usuário para autenticação| Must       | 3                | N/A                |
 | US02 | Cadastrar novo usuário          | Permite armazenamento de preferências                              | Must       | 3                | US01               |
-| US03 | Fazer login                     | Acesso seguro e individualizado ao sistema                         | Must       | 2                | US01, US02         |
-| US04 | Engajamento com conteúdo        | Experiência do usuário ao interagir com catálogo de filmes         | Must       | –                | US05, US06, US07   |
+| US03 | Editar usuário                  | Acesso seguro e individualizado ao sistema                         | Must       | 2                | US01, US02         |
+| US04 | Excluir usuário                 | Experiência do usuário ao interagir com catálogo de filmes         | Must       | –                | US05, US06, US07   |
 | US05 | Visualizar filme recomendado    | Início da experiência principal                                    | Must       | 3                | –                  |
 | US06 | Curtir/rejeitar filme (swipe)   | Coleta dados para o algoritmo de recomendação                      | Must       | 5                | US03, US05         |
 | US07 | Visualizar histórico de curtidas| Permite rever filmes favoritos                                     | Should     | 3                | US06               |
@@ -267,7 +267,7 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **Descrição:** Toda operação que falhar (login inválido, erro de carregamento, tentativa duplicada) deve gerar mensagem clara e específica ao usuário. As mensagens devem ser visíveis, objetivas e evitar termos técnicos confusos.
 - **Objetivo:** Garantir feedback adequado para que o usuário compreenda a falha e saiba como agir.
 - **Fonte/autoridade:** Diretriz de usabilidade e feedback visual do sistema.
-- **Impacto:** Requisitos US01 – Autenticar usuário; US02 – Cadastrar novo usuário; US03 – Fazer login; US09 – Exibir mensagem de erro.
+- **Impacto:** Em todas as histórias de usuário.
 ---
 ## Lista de Requisitos Não Funcionais  
 
