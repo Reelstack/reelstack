@@ -27,7 +27,7 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
       { test: () => !!password, msg: 'Password is required.' },
       {
         test: () => password.length >= 8,
-        msg: 'Password must be at least 12 characters.',
+        msg: 'Password must be at least 8 characters.',
       },
       {
         test: () => /[A-Z]/.test(password),
