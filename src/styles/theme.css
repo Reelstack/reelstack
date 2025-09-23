@@ -16,7 +16,7 @@
   /* Alertas */
   --success: #22c55e;
   --warning: #eab308;
-  --error: #991b1b;
+  --error: rgb(226, 15, 15);
   --info: #0ea5e9;
 
   --text-over-primary: #090a0a; /* Texto sobre fundo primário */
