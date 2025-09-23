@@ -23,7 +23,7 @@ export function GuardedRoute({
 
   // logado porém não pode → redirect
   if (!requireAuth && user)
-    return <Navigate to={redirectTo || '/home'} replace />;
+    return <Navigate to={redirectTo || '/home/'} replace />;
 
   return children;
 }
