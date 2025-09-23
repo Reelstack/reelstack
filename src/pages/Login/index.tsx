@@ -7,14 +7,17 @@ import { AnimatePresence, motion } from 'motion/react';
 
 export function Login() {
   const [isSigning, setIsSigning] = useState(false);
-  const [users, setUsers] = useState<Users[]>([]);
+  const [users, setUsers] = useState<DBusers[]>([]);
+
+  // pega usuarios pro log
   useEffect(() => {
     getUsers();
   }, []);
   async function getUsers() {
-    const { data } = await supabase.from<'users', Users>('users').select();
+    const { data } = await supabase.from<'users', DBusers>('users').select();
     setUsers(data ?? []);
   }
+  // mostra usuarios no log
   useEffect(() => {
     console.log(users.map(user => user.email));
   }, [users]);

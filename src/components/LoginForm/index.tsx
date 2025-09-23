@@ -3,6 +3,7 @@ import styles from './styles.module.css';
 import { useState } from 'react';
 import { useUsers } from '../../contexts/UserContext/userHook';
 import { supabase } from '../../lib/supabaseClient';
+import { useNavigate } from 'react-router-dom';
 
 type LoginFormProps = {
   onSwitch: () => void;
@@ -14,6 +15,7 @@ export function LoginForm({ onSwitch }: LoginFormProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +43,7 @@ export function LoginForm({ onSwitch }: LoginFormProps) {
       getUsers();
       setEmail('');
       setPassword('');
+      navigate('/home');
     }
   };
 
@@ -74,7 +77,7 @@ export function LoginForm({ onSwitch }: LoginFormProps) {
 
       <div className={styles.formGroup}>
         {error && <p style={{ color: 'var(--error)' }}>{error}</p>}
-        <button className={styles.formButton}>
+        <button className={styles.formButton} disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </button>
       </div>
