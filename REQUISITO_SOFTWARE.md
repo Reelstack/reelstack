@@ -161,7 +161,7 @@ graph TD
 
 ---
 
-### 1.2 Diagrama de casos de Uso - Coleções
+### 1.3 Diagrama de casos de Uso - Coleções
 
 ![Coleções](./public/Package%20Coleções.png)
 
