@@ -138,6 +138,17 @@ graph TD
 ```
 
 ---
+
+##  Escopo Não Funcional / Restrições
+Além dos requisitos não funcionais já descritos, o sistema deve respeitar as seguintes restrições:
+- **Fonte de dados exclusiva**: Somente a API TMDB será utilizada como provedora de informações de filmes.  
+- **Disponibilidade inicial (MVP)**: O produto mínimo viável (MVP) será web first, suportando até **100 usuários simultâneos**.  
+- **Escopo de autenticação**: O login será realizado exclusivamente por e-mail e senha (não serão incluídos provedores externos como Google ou Facebook no MVP).  
+- **Compatibilidade de navegadores**: O sistema deve ser compatível com as versões estáveis mais recentes de Google Chrome e Mozilla Firefox.  
+- **Infraestrutura de backend**: O backend deve ser hospedado em ambiente de nuvem pública, com banco de dados relacional PostgreSQL.  
+- **Limitação de persistência**: Não haverá suporte a armazenamento offline no MVP (funcionalidade pode ser considerada em futuras iterações).  
+
+---
 ## Visão geral dos requisitos funcionais  
 ### Escolha de abordagem  
 O projeto utilizará **Histórias de Usuário** para representar os requisitos funcionais.  
