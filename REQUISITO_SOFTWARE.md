@@ -149,6 +149,21 @@ Além dos requisitos não funcionais já descritos, o sistema deve respeitar as 
 - **Limitação de persistência**: Não haverá suporte a armazenamento offline no MVP (funcionalidade pode ser considerada em futuras iterações).  
 
 ---
+
+##  Premissas e Dependências
+O desenvolvimento do sistema **ReelStack** assume as seguintes premissas e depende de fatores externos para seu funcionamento adequado:
+### Premissas
+- A API **TMDB** estará disponível e manterá seu modelo gratuito de acesso básico durante todo o ciclo do projeto.  
+- Os usuários terão conexão estável com a internet, visto que o sistema é totalmente **online**.  
+- A infraestrutura de nuvem contratada (servidor e banco de dados) terá disponibilidade mínima de 99%.  
+- Os requisitos levantados junto aos stakeholders representam de forma fiel as necessidades iniciais do produto.  
+### Dependências
+- Dependência da **API TMDB** para fornecimento de informações (títulos, imagens, sinopses, ano de lançamento).  
+- Dependência da **infraestrutura de nuvem** (hospedagem backend e banco de dados PostgreSQL).  
+- Dependência do **navegador do usuário** para correta renderização da interface web.  
+- Dependência da equipe acadêmica/professores para validação dos artefatos de requisitos e feedback contínuo.
+
+---
 ## Visão geral dos requisitos funcionais  
 ### Escolha de abordagem  
 O projeto utilizará **Histórias de Usuário** para representar os requisitos funcionais.  
