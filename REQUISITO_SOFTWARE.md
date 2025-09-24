@@ -13,6 +13,10 @@ Este documento tem como objetivo definir e consolidar os requisitos do sistema *
 - **TMDB** – The Movie Database: API gratuita utilizada para obter dados de filmes e séries.  
 - **MVP** – Produto Mínimo Viável.  
 - **Swipe** – Gesto horizontal (arrastar para esquerda/direita) usado para rejeitar ou aceitar sugestões.  
+- **Coleção** - Coleção: Lista personalizada de filmes criada pelo usuário, que pode ser editada, visualizada e compartilhada.
+- **Histórico de curtidas**: Registro dos filmes que o usuário marcou como favoritos, permitindo consulta posterior.
+- **Sinopse**: Resumo textual de um filme, contendo informações como título, ano e descrição, obtido da API TMDB.
+
 ### Metodologia de Levantamento de Requisitos
 O levantamento de requisitos foi conduzido com base em abordagens colaborativas e centradas no usuário, integrando práticas de _Design Thinking_, _Scrum_ e _User-Centered Design_. Inicialmente, a equipe realizou sessões de discussão em grupo para explorar o problema e levantar hipóteses sobre as necessidades dos usuários. Em paralelo, foi desenvolvida uma prototipagem inicial da interface e do fluxo de navegação, permitindo testes exploratórios e coleta de feedback qualitativo.
 
