@@ -108,7 +108,7 @@ graph TD
 ```mermaid
 graph TD
    D[Interações do Usuário]
-   D --> D1[Curtir/Rejeitar -swipe]
+   D --> D1[Curtir/Rejeitar - swipe]
    D --> D2[Histórico de curtidas]
    D --> D3[Revogar curtida]
    D --> D4[Consultar sinopse]
