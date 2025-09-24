@@ -1,6 +1,9 @@
 # ReelStack  
+
 **Documento de Requisitos de Software**  
+**Grupo:** Felipe Vasconcelos Cardoso, Gabriel de Oliveira Batista, Guilherme Akio Suguino Sampaio, Pedro Lourenço Jovino Martins, Guilherme Nunes Lobo, Victor Assis Oliveira.
 **Data:** 22/09/25  
+
 ---
 ## Introdução  
 ### Propósito do documento  
@@ -15,6 +18,125 @@ O levantamento de requisitos foi conduzido com base em abordagens colaborativas 
 
 Para enriquecer a compreensão do perfil do usuário, foram realizadas entrevistas informais com consumidores reais do serviço, o que possibilitou validar expectativas e ajustar funcionalidades. As informações obtidas foram organizadas em histórias de usuário e estruturadas em um backlog, que passou por ciclos de refinamento e priorização com base em novas discussões internas. Todo o processo foi alinhado às diretrizes metodológicas da disciplina, garantindo coerência entre os objetivos técnicos e pedagógicos do projeto.
   
+---
+
+## Visão do Produto
+O **ReelStack** é um sistema de recomendação e organização de filmes, com foco em oferecer ao usuário uma experiência dinâmica e personalizada na descoberta de conteúdos audiovisuais.  
+Seu principal objetivo é facilitar a escolha do que assistir, tornando o processo mais simples, atrativo e interativo.
+### Objetivos principais
+- Proporcionar recomendações de filmes personalizadas com base nas interações do usuário (curtidas, rejeições, histórico).  
+- Permitir que usuários organizem seus títulos preferidos em **coleções personalizadas**, que podem ser editadas, visualizadas e compartilhadas.  
+- Garantir uma experiência fluida e intuitiva, com **interações por swipe**, feedback imediato e mensagens de erro claras.  
+- Oferecer informações confiáveis sobre os filmes (título, imagem, ano e sinopse), obtidas exclusivamente da API do **TMDB**.  
+### Stakeholders
+- **Usuário final** → pessoa que acessa o sistema para descobrir, curtir/rejeitar e organizar filmes em coleções.  
+- **Administrador** → responsável por gerenciar dados do sistema e acompanhar métricas de uso.  
+- **Equipe de desenvolvimento** → encarregada de implementar, testar e manter o sistema conforme os requisitos especificados.  
+### Diferenciais do ReelStack
+- Utiliza uma **interface baseada em gestos (swipe)**, tornando a navegação mais intuitiva e próxima da experiência mobile.  
+- Integração com a API **TMDB**, garantindo dados sempre atualizados e padronizados.  
+- Possibilita a criação e o compartilhamento de coleções, promovendo maior engajamento social e personalização da experiência.  
+- Define requisitos funcionais e não funcionais claros, assegurando desempenho, segurança e usabilidade desde o MVP.
+
+---
+
+## Escopo do Sistema
+O escopo funcional do **ReelStack** pode ser dividido em cinco grandes módulos principais:
+1. **Gerenciamento de Usuário**
+  - Cadastro, autenticação e edição de dados do usuário.  
+  - Exclusão de conta e gerenciamento de sessão.  
+  - Consulta de informações cadastrais e histórico de interações.  
+2. **Catálogo e Recomendações**
+  - Integração com a API **TMDB** para obtenção de dados de filmes.  
+  - Exibição de cards com informações (título, ano, imagem, sinopse).  
+  - Sistema de recomendações personalizadas com base em curtidas e rejeições.  
+3. **Interações do Usuário**
+  - Curtir ou rejeitar filmes via gesto **swipe**.  
+  - Histórico de filmes curtidos.  
+  - Revogação de curtida.  
+  - Consulta da sinopse detalhada de cada filme.  
+4. **Coleções de Filmes**
+  - Criação, edição e exclusão de coleções personalizadas.  
+  - Adição e remoção de filmes em coleções.  
+  - Visualização de coleções criadas.  
+  - Compartilhamento de coleções por link público.  
+5. **Feedback e Comunicação**
+  - Exibição de mensagens de erro específicas e claras.  
+  - Indicadores de carregamento e feedback de ações concluídas.  
+  - Mensagens de confirmação e avisos de status do sistema.  
+### Escopo Não Funcional
+Além dos módulos funcionais, o sistema contempla requisitos não funcionais críticos, tais como:
+- **Desempenho** → resposta de interações (ex.: swipe) em ≤ 1s para 90% das requisições no MVP.  
+- **Segurança** → uso obrigatório de TLS 1.3 em toda a comunicação cliente-servidor.  
+- **Usabilidade** → onboarding simplificado e mensagens de erro claras.  
+- **Compatibilidade** → suporte a navegadores modernos (Chrome, Firefox e Edge).  
+- **Manutenibilidade** → código com padrões de nomenclatura e documentação consistente.
+
+---
+## Visão geral (alto nível)
+
+```mermaid
+graph   LR
+   A[ReelStack  Sistema]  -->  B[Gerenciamento de Usuário]
+   A --> C[Catálogo e Recomendações]
+   A --> D[Interações do Usuário]
+   A --> E[Coleções de Filmes]
+   A --> F[Feedback e Comunicação]
+   A --> G[Requisitos Não Funcionais]
+```
+---
+```mermaid
+graph TD
+   B[Gerenciamento de Usuário]
+   B --> B1[Cadastro/Autenticação]
+   B --> B2[Edição/Exclusão de conta]
+   B --> B3[Consulta de dados]
+```
+---
+```mermaid
+graph TD
+   C[Catálogo e Recomendações]
+   C --> C1[Integração TMDB]
+   C --> C2[Exibição de cards]
+   C --> C3[Recomendações personalizadas]
+```
+---
+```mermaid
+graph TD
+   D[Interações do Usuário]
+   D --> D1[Curtir/Rejeitar -swipe]
+   D --> D2[Histórico de curtidas]
+   D --> D3[Revogar curtida]
+   D --> D4[Consultar sinopse]
+```
+---
+```mermaid
+graph TD
+   E[Coleções de Filmes]
+   E --> E1[Criar/Editar/Excluir coleção]
+   E --> E2[Adicionar/Remover filmes]
+   E --> E3[Visualizar coleções]
+   E --> E4[Compartilhar coleções]
+```
+---
+```mermaid
+graph TD
+   F[Feedback e Comunicação]
+   F --> F1[Mensagens de erro]
+   F --> F2[Feedback visual]
+   F --> F3[Confirmações de ação]
+```
+---
+```mermaid
+graph TD
+   G[Requisitos Não Funcionais]
+   G --> G1[Desempenho ≤1s]
+   G --> G2[TLS 1.3 obrigatório]
+   G --> G3[Onboarding simples]
+   G --> G4[Compatibilidade navegadores]
+   G --> G5[Código documentado]
+```
+
 ---
 ## Visão geral dos requisitos funcionais  
 ### Escolha de abordagem  
