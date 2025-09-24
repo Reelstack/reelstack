@@ -1,10 +1,10 @@
-.top10-container {
+.container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
 }
 
-.top10-title {
+.title {
   font-size: 2.5rem;
   font-weight: bold;
   text-align: center;
@@ -12,7 +12,7 @@
   color: #1f2937;
 }
 
-.controls-container {
+.controlsContainer {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
@@ -35,34 +35,34 @@
   cursor: not-allowed;
 }
 
-.btn-primary {
+.btnPrimary {
   background-color: #2563eb;
   color: white;
 }
 
-.btn-primary:hover:not(:disabled) {
+.btnPrimary:hover:not(:disabled) {
   background-color: #1d4ed8;
 }
 
-.btn-success {
+.btnSuccess {
   background-color: #059669;
   color: white;
 }
 
-.btn-success:hover:not(:disabled) {
+.btnSuccess:hover:not(:disabled) {
   background-color: #047857;
 }
 
-.btn-purple {
+.btnPurple {
   background-color: #7c3aed;
   color: white;
 }
 
-.btn-purple:hover:not(:disabled) {
+.btnPurple:hover:not(:disabled) {
   background-color: #6d28d9;
 }
 
-.genre-select {
+.genreSelect {
   padding: 12px 16px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
@@ -70,39 +70,39 @@
   background-color: white;
 }
 
-.genre-select:focus {
+.genreSelect:focus {
   outline: none;
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.custom-list-container {
+.customListContainer {
   margin-bottom: 32px;
   padding: 24px;
   background-color: #f9fafb;
   border-radius: 8px;
 }
 
-.custom-list-title {
+.customListTitle {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 16px;
   color: #374151;
 }
 
-.custom-list-content {
+.customListContent {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
 @media (min-width: 768px) {
-  .custom-list-content {
+  .customListContent {
     flex-direction: row;
   }
 }
 
-.custom-list-textarea {
+.customListTextarea {
   flex: 1;
   padding: 12px;
   border: 1px solid #d1d5db;
@@ -113,17 +113,17 @@
   font-family: inherit;
 }
 
-.custom-list-textarea:focus {
+.customListTextarea:focus {
   outline: none;
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.custom-list-btn {
+.customListBtn {
   align-self: flex-start;
 }
 
-.error-message {
+.errorMessage {
   margin-bottom: 24px;
   padding: 16px;
   background-color: #fef2f2;
@@ -132,7 +132,7 @@
   border-radius: 8px;
 }
 
-.loading-container {
+.loadingContainer {
   text-align: center;
   padding: 32px;
 }
@@ -148,34 +148,36 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.loading-text {
+.loadingText {
   margin-top: 8px;
   color: #6b7280;
 }
 
-.results-container {
+.resultsContainer {
   margin-top: 24px;
 }
 
-.results-header {
+.resultsHeader {
   text-align: center;
   margin-bottom: 24px;
 }
 
-.results-update {
+.resultsUpdate {
   color: #6b7280;
   margin-bottom: 4px;
 }
 
-.results-success {
+.resultsSuccess {
   font-size: 14px;
   color: #9ca3af;
 }
 
-.movie-card {
+.movieCard {
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -183,99 +185,99 @@
   margin-bottom: 24px;
 }
 
-.movie-content {
+.movieContent {
   display: flex;
   flex-direction: column;
 }
 
 @media (min-width: 768px) {
-  .movie-content {
+  .movieContent {
     flex-direction: row;
   }
 }
 
-.movie-poster {
+.moviePoster {
   width: 100%;
   height: 300px;
   flex-shrink: 0;
 }
 
 @media (min-width: 768px) {
-  .movie-poster {
+  .moviePoster {
     width: 192px;
     height: 288px;
   }
 }
 
-.movie-poster img {
+.moviePoster img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.movie-info {
+.movieInfo {
   flex: 1;
   padding: 24px;
 }
 
-.movie-header {
+.movieHeader {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 16px;
 }
 
-.movie-title {
+.movieTitle {
   font-size: 24px;
   font-weight: bold;
   color: #1f2937;
   margin-bottom: 8px;
 }
 
-.movie-meta {
+.movieMeta {
   color: #6b7280;
   margin-bottom: 4px;
 }
 
-.movie-director {
+.movieDirector {
   color: #9ca3af;
   font-size: 14px;
 }
 
-.movie-score {
+.movieScore {
   text-align: right;
 }
 
-.score-value {
+.scoreValue {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 4px;
 }
 
-.score-label {
+.scoreLabel {
   font-size: 14px;
   color: #9ca3af;
 }
 
-.score-excellent {
+.scoreExcellent {
   color: #059669;
 }
 
-.score-good {
+.scoreGood {
   color: #d97706;
 }
 
-.score-poor {
+.scorePoor {
   color: #dc2626;
 }
 
-.movie-plot {
+.moviePlot {
   color: #374151;
   margin-bottom: 16px;
   line-height: 1.6;
 }
 
-.criteria-grid {
+.criteriaGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
@@ -283,137 +285,137 @@
 }
 
 @media (min-width: 768px) {
-  .criteria-grid {
+  .criteriaGrid {
     grid-template-columns: repeat(5, 1fr);
   }
 }
 
-.criteria-item {
+.criteriaItem {
   text-align: center;
   padding: 12px;
   border-radius: 8px;
 }
 
-.criteria-value {
+.criteriaValue {
   font-weight: 600;
   margin-bottom: 4px;
 }
 
-.criteria-label {
+.criteriaLabel {
   margin-bottom: 4px;
 }
 
-.criteria-percentage {
+.criteriaPercentage {
   font-size: 12px;
 }
 
-.criteria-imdb {
+.criteriaImdb {
   background-color: #eff6ff;
 }
 
-.criteria-imdb .criteria-value {
+.criteriaImdb .criteriaValue {
   color: #1d4ed8;
 }
 
-.criteria-imdb .criteria-label {
+.criteriaImdb .criteriaLabel {
   color: #2563eb;
 }
 
-.criteria-imdb .criteria-percentage {
+.criteriaImdb .criteriaPercentage {
   color: #3b82f6;
 }
 
-.criteria-votes {
+.criteriaVotes {
   background-color: #f0fdf4;
 }
 
-.criteria-votes .criteria-value {
+.criteriaVotes .criteriaValue {
   color: #047857;
 }
 
-.criteria-votes .criteria-label {
+.criteriaVotes .criteriaLabel {
   color: #059669;
 }
 
-.criteria-votes .criteria-percentage {
+.criteriaVotes .criteriaPercentage {
   color: #10b981;
 }
 
-.criteria-year {
+.criteriaYear {
   background-color: #fffbeb;
 }
 
-.criteria-year .criteria-value {
+.criteriaYear .criteriaValue {
   color: #d97706;
 }
 
-.criteria-year .criteria-label {
+.criteriaYear .criteriaLabel {
   color: #f59e0b;
 }
 
-.criteria-year .criteria-percentage {
+.criteriaYear .criteriaPercentage {
   color: #fbbf24;
 }
 
-.criteria-runtime {
+.criteriaRuntime {
   background-color: #faf5ff;
 }
 
-.criteria-runtime .criteria-value {
+.criteriaRuntime .criteriaValue {
   color: #7c3aed;
 }
 
-.criteria-runtime .criteria-label {
+.criteriaRuntime .criteria-label {
   color: #8b5cf6;
 }
 
-.criteria-runtime .criteria-percentage {
+.criteriaRuntime .criteria-percentage {
   color: #a78bfa;
 }
 
-.criteria-boxoffice {
+.criteriaBoxoffice {
   background-color: #fef2f2;
 }
 
-.criteria-boxoffice .criteria-value {
+.criteriaBoxoffice .criteriaValue {
   color: #dc2626;
 }
 
-.criteria-boxoffice .criteria-label {
+.criteriaBoxoffice .criteriaLabel {
   color: #ef4444;
 }
 
-.criteria-boxoffice .criteria-percentage {
+.criteriaBoxoffice .criteriaPercentage {
   color: #f87171;
 }
 
-.instructions-container {
+.instructionsContainer {
   text-align: center;
   padding: 48px 24px;
   color: #6b7280;
 }
 
-.instructions-title {
+.instructionsTitle {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 16px;
 }
 
-.instructions-list {
+.instructionsList {
   max-width: 512px;
   margin: 0 auto 24px;
   text-align: left;
 }
 
-.instructions-list p {
+.instructionsList p {
   margin-bottom: 8px;
 }
 
-.instructions-list strong {
+.instructionsList strong {
   color: #374151;
 }
 
-.instructions-footer {
+.instructionsFooter {
   font-size: 14px;
   color: #9ca3af;
 }
