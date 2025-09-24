@@ -80,7 +80,7 @@ Além dos módulos funcionais, o sistema contempla requisitos não funcionais cr
 ## Visão geral (alto nível)
 
 ```mermaid
-graph   LR
+graph LR
    A[ReelStack  Sistema]  -->  B[Gerenciamento de Usuário]
    A --> C[Catálogo e Recomendações]
    A --> D[Interações do Usuário]
