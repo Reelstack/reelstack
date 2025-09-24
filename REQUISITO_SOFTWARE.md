@@ -139,6 +139,30 @@ graph TD
 
 ---
 
+## Diagrama de casos de uso simplificado
+
+![Diagrama simplificado](./public/Diagrama%20simplificado.png)
+
+---
+
+### 1.1 Diagrama de casos de Uso - Gerenciamento de Usuário
+
+![Gerenciamento de Usuário](./public/Package%20Gerenciamento%20de%20Usuário.png)
+
+---
+
+### 1.2 Diagrama de casos de Uso - Interação com Filmes
+
+![Interação com Filmes](./public/Package%20Interação%20com%20filmes.png)
+
+---
+
+### 1.2 Diagrama de casos de Uso - Coleções
+
+![Coleções](./public/Package%20Coleções.png)
+
+---
+
 ##  Escopo Não Funcional / Restrições
 Além dos requisitos não funcionais já descritos, o sistema deve respeitar as seguintes restrições:
 - **Fonte de dados exclusiva**: Somente a API TMDB será utilizada como provedora de informações de filmes.  
