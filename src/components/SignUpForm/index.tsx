@@ -21,7 +21,7 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
     const rules = [
       { test: () => !!email, msg: 'Email is required.' },
       {
-        test: () => email.includes('@') && email.endsWith('.com'),
+        test: () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
         msg: 'Invalid email format.',
       },
       { test: () => !!password, msg: 'Password is required.' },
