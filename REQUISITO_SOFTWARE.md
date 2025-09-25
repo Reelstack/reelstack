@@ -2,7 +2,7 @@
 
 **Documento de Requisitos de Software**  
 **Grupo:** Felipe Vasconcelos Cardoso, Gabriel de Oliveira Batista, Guilherme Akio Suguino Sampaio, Pedro Lourenço Jovino Martins, Guilherme Nunes Lobo, Victor Assis Oliveira.  
-**Data:** 22/09/25  
+**Data:** 24/09/25  
 
 ---
 ## Introdução  
