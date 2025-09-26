@@ -5,11 +5,6 @@ import { SignUpForm } from '../../components/SignUpForm';
 import { supabase } from '../../lib/supabaseClient';
 import { AnimatePresence, motion } from 'motion/react';
 
-
-type Users = {
-  email: string;
-  // Add other user properties as needed
-};
 export function Login() {
   const [isSigning, setIsSigning] = useState(false);
   const [users, setUsers] = useState<DBusers[]>([]);

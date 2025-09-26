@@ -1,4 +1,53 @@
-.header {
-  height: 100rem;
-  color: purple;
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  width: 70vw;
+  margin: auto;
+  background: var(--blue-standard);
+  box-shadow:
+    0 0 1rem var(--blue-standard),
+    0 0 3rem var(--blue-dark);
+  overflow-y: visible;
+}
+.nav {
+  display: flex;
+  height: 10rem;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 5rem;
+}
+
+.settingsButton {
+  display: flex;
+  justify-content: center;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.configsvg {
+  max-width: 4.4rem;
+  margin: auto;
+}
+
+.stats {
+  height: 25rem;
+}
+
+.history {
+  height: 50rem;
+}
+
+.collections {
+  height: auto;
+}
+.footer {
+  height: 10rem;
 }
