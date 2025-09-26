@@ -9,6 +9,7 @@ export function ProfileSpace() {
           <h3>email ipsum dolor si amet</h3>
           <h3>telefonen ipsum</h3>
         </div>
+        {/* componentizar no futuro*/}
         <div className={styles.userStats}>
           <div className={styles.statsRow}>
             <h4>Movies Liked:</h4>
@@ -28,7 +29,27 @@ export function ProfileSpace() {
           </div>
         </div>
       </div>
-      <div className={styles.history}>teste 3</div>
+      {/* componentizar no futuro*/}
+      <div className={styles.history}>
+        <h1>Liked Movies</h1>
+        <div className={styles.historySpace}>
+          <div className={styles.moviePoster}>
+            <img src='/goncha.jpg' />
+          </div>
+          <div className={styles.moviePoster}>
+            <img src='/goncha.jpg' />
+          </div>
+          <div className={styles.moviePoster}>
+            <img src='/goncha.jpg' />
+          </div>
+          <div className={styles.moviePoster}>
+            <img src='/goncha.jpg' />
+          </div>
+          <div className={styles.moviePoster}>
+            <img src='/goncha.jpg' />
+          </div>
+        </div>
+      </div>
       <div className={styles.footer}>teste 4</div>
     </div>
   );
