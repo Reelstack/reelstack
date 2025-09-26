@@ -15,7 +15,7 @@
   box-shadow:
     0 0 1rem var(--blue-standard),
     0 0 3rem var(--blue-dark);
-  overflow-y: visible;
+  overflow-y: visible; /* consertar scroll dps*/
 }
 .nav {
   display: flex;
@@ -35,19 +35,4 @@
 .configsvg {
   max-width: 4.4rem;
   margin: auto;
-}
-
-.stats {
-  height: 25rem;
-}
-
-.history {
-  height: 50rem;
-}
-
-.collections {
-  height: auto;
-}
-.footer {
-  height: 10rem;
 }

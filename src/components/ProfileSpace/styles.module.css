@@ -1,5 +1,28 @@
-.stats {
+.userSpace {
+  display: flex;
   height: 25rem;
+  justify-content: space-between;
+}
+
+.userInfo {
+  margin-left: 20rem;
+}
+
+.userStats {
+  display: flex;
+  margin-right: 20rem;
+  text-align: center;
+}
+
+.statsRow {
+  display: flex;
+  flex-direction: column;
+  margin: 0rem 2rem;
+}
+
+.stats {
+  font-size: 2rem;
+  color: var(--contrast);
 }
 
 .history {
