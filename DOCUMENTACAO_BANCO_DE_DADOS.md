@@ -4,169 +4,195 @@
 
 ```mermaid
 erDiagram
-    USUARIO ||--o{ INTERACAO : realiza
-    USUARIO ||--o{ COLECAO : possui
-    FILME ||--o{ INTERACAO : recebe
-    FILME ||--o{ COLECAO_FILME : pertence
-    COLECAO ||--o{ COLECAO_FILME : contem
+    USUÁRIO ||--o{ INTERAÇÃO_FILME : realiza
+    FILME ||--o{ INTERAÇÃO_FILME : recebe
 
-    USUARIO {
+    USUÁRIO {
         id ID_PK
         email EMAIL
-        profile_name NOME
-        created_at DATA_CRIACAO
+        nome_perfil TEXTO
+        data_criacao TIMESTAMP
     }
 
     FILME {
         tconst ID_PK
-        titleType TIPO
-        primaryTitle TITULO
-        originalTitle TITULO_ORIGINAL
-        isAdult BOOL
-        startYear ANO_INICIO
-        endYear ANO_FIM
-        runtimeMinutes DURACAO
-        genres GENEROS
-        averageRating NOTA_MEDIA
-        numVotes NUM_VOTOS
+        tipo_titulo TEXTO
+        titulo_principal TEXTO
+        titulo_original TEXTO
+        conteudo_adulto BOOL
+        ano_inicio BIGINT
+        ano_fim BIGINT
+        duracao_minutos BIGINT
+        generos TEXTO
+        nota_media DECIMAL
+        numero_votos BIGINT
     }
 
-    INTERACAO {
-        id_user ID_FK
-        id_movie_liked ID_FILME_FK
-        id_movie_disliked ID_FILME_FK
-        created_at DATA_CRIACAO
-    }
-
-    COLECAO {
-        id ID_PK
-        id_user ID_FK
-        nome TEXTO
-        descricao TEXTO
-        is_public BOOL
-        created_at DATA_CRIACAO
-    }
-
-    COLECAO_FILME {
-        id_colecao ID_FK
-        id_filme ID_FK
-        created_at DATA_CRIACAO
+    INTERAÇÃO_FILME {
+        id_usuario ID_FK
+        id_filme_curtido ID_FILME_FK
+        id_filme_rejeitado ID_FILME_FK
+        data_criacao TIMESTAMP
     }
 ```
 
+---
+
 ## 2. Modelo Lógico
 
-### USUARIO
+### USUÁRIO
 | Campo | Tipo | Restrição |
 |-------|------|-----------|
-| id | INTEGER | PK |
-| email | VARCHAR(255) | UNIQUE |
-| profile_name | VARCHAR(100) | |
-| created_at | TIMESTAMP | |
+| id | BIGINT | PK, IDENTITY |
+| email | VARCHAR | UNIQUE, NOT NULL |
+| nome_perfil | TEXT | UNIQUE, NOT NULL |
+| data_criacao | TIMESTAMP | NOT NULL |
 
 ### FILME
 | Campo | Tipo | Restrição |
 |-------|------|-----------|
-| tconst | VARCHAR(10) | PK |
-| titleType | VARCHAR(50) | |
-| primaryTitle | VARCHAR(500) | |
-| originalTitle | VARCHAR(500) | |
-| isAdult | BOOLEAN | |
-| startYear | INTEGER | |
-| endYear | INTEGER | |
-| runtimeMinutes | INTEGER | |
-| genres | TEXT | |
-| averageRating | FLOAT | |
-| numVotes | INTEGER | |
+| tconst | TEXT | PK |
+| tipo_titulo | TEXT | |
+| titulo_principal | TEXT | |
+| titulo_original | TEXT | |
+| conteudo_adulto | BOOLEAN | |
+| ano_inicio | BIGINT | |
+| ano_fim | BIGINT | |
+| duracao_minutos | BIGINT | |
+| generos | TEXT | |
+| nota_media | DOUBLE PRECISION | |
+| numero_votos | BIGINT | |
 
-### INTERACAO
+### INTERAÇÃO_FILME
 | Campo | Tipo | Restrição |
 |-------|------|-----------|
-| id_user | INTEGER | FK |
-| id_movie_liked | VARCHAR(10) | FK |
-| id_movie_disliked | VARCHAR(10) | FK |
-| created_at | TIMESTAMP | |
-| | | PK(id_user, id_movie_liked, id_movie_disliked) |
+| id | BIGINT | PK, IDENTITY |
+| id_usuario | BIGINT | FK |
+| id_filme_curtido | TEXT | FK |
+| id_filme_rejeitado | TEXT | FK |
+| data_criacao | TIMESTAMP | NOT NULL |
 
-### COLECAO
-| Campo | Tipo | Restrição |
-|-------|------|-----------|
-| id | INTEGER | PK |
-| id_user | INTEGER | FK |
-| nome | VARCHAR(100) | |
-| descricao | TEXT | |
-| is_public | BOOLEAN | |
-| created_at | TIMESTAMP | |
-
-### COLECAO_FILME
-| Campo | Tipo | Restrição |
-|-------|------|-----------|
-| id_colecao | INTEGER | FK |
-| id_filme | VARCHAR(10) | FK |
-| created_at | TIMESTAMP | |
-| | | PK(id_colecao, id_filme) |
+---
 
 ## 3. Modelo Físico (Script SQL)
 
 ```sql
 -- Criação das tabelas
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    profile_name VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
 
 CREATE TABLE movies (
-    tconst VARCHAR(10) PRIMARY KEY,
-    titleType VARCHAR(50) NOT NULL,
-    primaryTitle VARCHAR(500) NOT NULL,
-    originalTitle VARCHAR(500) NOT NULL,
-    isAdult BOOLEAN DEFAULT FALSE,
-    startYear INTEGER,
-    endYear INTEGER,
-    runtimeMinutes INTEGER,
-    genres TEXT,
-    averageRating FLOAT,
-    numVotes INTEGER
+  tconst text NOT NULL,
+  titleType text,
+  primaryTitle text,
+  originalTitle text,
+  isAdult boolean,
+  startYear bigint,
+  endYear bigint,
+  runtimeMinutes bigint,
+  genres text,
+  averageRating double precision,
+  numVotes bigint,
+  CONSTRAINT movies_pkey PRIMARY KEY (tconst)
 );
 
-CREATE TABLE interactions (
-    id_user INTEGER REFERENCES users(id),
-    id_movie_liked VARCHAR(10) REFERENCES movies(tconst),
-    id_movie_disliked VARCHAR(10) REFERENCES movies(tconst),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id_user, id_movie_liked, id_movie_disliked)
+CREATE TABLE users (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  email character varying NOT NULL UNIQUE,
+  profile_name text NOT NULL DEFAULT ''::text UNIQUE,
+  CONSTRAINT users_pkey PRIMARY KEY (id)
 );
 
-CREATE TABLE collections (
-    id SERIAL PRIMARY KEY,
-    id_user INTEGER REFERENCES users(id),
-    nome VARCHAR(100) NOT NULL,
-    descricao TEXT,
-    is_public BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE users_movies (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  id_movie_liked text,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  id_movie_disliked text,
+  id_user bigint NOT NULL,
+  CONSTRAINT users_movies_pkey PRIMARY KEY (id),
+  CONSTRAINT users_profile_id_movie_fkey FOREIGN KEY (id_movie_liked) REFERENCES movies(tconst),
+  CONSTRAINT users_movies_id_movie_disliked_fkey FOREIGN KEY (id_movie_disliked) REFERENCES movies(tconst),
+  CONSTRAINT users_movies_id_user_fkey FOREIGN KEY (id_user) REFERENCES users(id)
 );
-
-CREATE TABLE collection_movies (
-    id_collection INTEGER REFERENCES collections(id),
-    id_movie VARCHAR(10) REFERENCES movies(tconst),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id_collection, id_movie)
-);
-
--- Índices para otimização
-CREATE INDEX idx_user_email ON users(email);
-CREATE INDEX idx_movie_title ON movies(primaryTitle);
-CREATE INDEX idx_interactions_user ON interactions(id_user);
-CREATE INDEX idx_collections_user ON collections(id_user);
-
--- Constraints adicionais
-ALTER TABLE interactions
-ADD CONSTRAINT check_movie_interaction
-CHECK (id_movie_liked IS NOT NULL OR id_movie_disliked IS NOT NULL);
-
-ALTER TABLE collections
-ADD CONSTRAINT unique_collection_name_per_user
-UNIQUE (id_user, nome);
 ```
+---
+## 1. Requisitos Funcionais
+Os requisitos abaixo descrevem as principais funcionalidades do sistema que envolvem operações com o banco de dados:
+
+- **Cadastro de usuários**
+  - Inserção de dados na tabela de usuários
+  - Validação de dados únicos (email, nome_perfil)
+
+- **Interações com filmes**
+  - Registro de curtidas/descurtidas 
+  - Armazenamento do histórico de interações
+
+- **Busca e filtros**
+  - Busca de filmes por gênero
+  - Filtros por avaliação
+  - Controle de conteúdo adulto
+
+---
+
+## 2. Modelo de Dados
+
+### 2.1 Estrutura
+- Diagrama Entidade-Relacionamento (DER)
+- Modelo Relacional
+- Dicionário de dados das tabelas
+- Mapeamento dos relacionamentos
+
+### 2.2 Relacionamentos
+- Usuário → Interações (1:N)
+- Filme → Interações (1:N)
+
+---
+
+## 3. Requisitos Não Funcionais
+
+### 3.1 Performance
+- Tempo de resposta das consultas
+- Otimização de índices
+- Cache de consultas frequentes
+
+### 3.2 Segurança
+- Criptografia de dados sensíveis
+- Controle de acesso
+- Proteção contra injeção SQL
+
+### 3.3 Escalabilidade
+- Capacidade de crescimento
+- Particionamento de dados
+- Balanceamento de carga
+
+### 3.4 Backup e Recuperação
+- Políticas de backup
+- Procedimentos de recuperação
+- Retenção de dados
+
+---
+
+## 4. Regras de Negócio
+
+### 4.1 Interações
+- Um usuário não pode curtir e descurtir o mesmo filme simultaneamente
+- Todas as interações devem ser registradas com timestamp
+
+### 4.2 Conteúdo
+- Filmes adultos têm acesso restrito
+- Classificação etária deve ser respeitada
+
+---
+
+## 5. Requisitos de Integração
+
+### 5.1 APIs Externas
+- Integração com IMDb
+- Sincronização periódica
+- Tratamento de inconsistências
+
+### 5.2 Formato dos Dados
+- Padronização de dados importados
+- Mapeamento de campos externos
+- Validação de integridade
