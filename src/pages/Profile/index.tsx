@@ -13,7 +13,9 @@ export function Profile() {
       <div className={styles.page}>
         <div className={styles.wrapper}>
           <div className={styles.nav}>
-            <RouterLink href='/home/'>Home</RouterLink>
+            <RouterLink className={styles.navbar} href='/home/'>
+              Home
+            </RouterLink>
 
             <button
               className={styles.settingsButton}

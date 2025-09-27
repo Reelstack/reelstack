@@ -1,6 +1,6 @@
 .userSpace {
   display: flex;
-  height: 25rem;
+  height: 20rem;
   justify-content: space-between;
 }
 
@@ -34,9 +34,10 @@
 .historySpace {
   margin-top: 2rem;
   display: flex;
-  border-radius: 4rem;
+  border-radius: 2rem;
   background: var(--blue-light);
   justify-content: space-evenly;
+  box-shadow: inset 6px 0px 12px -3px rgba(0, 0, 0, 0.55);
 }
 
 .moviePoster {
@@ -48,11 +49,13 @@
   height: 20rem;
   flex-shrink: 0;
   margin: 4rem;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
 }
 
 .moviePoster img {
   max-width: 100%;
   max-height: 100%;
+  border-radius: 2rem;
   object-fit: contain;
 }
 
