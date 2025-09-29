@@ -1,5 +1,4 @@
 import styles from './styles.module.css';
-import dots from '../../assets/dots-horizontal-svgrepo-com.svg';
 import type { OMDBMovie } from '../../services/api/types';
 import { omdb } from '../../services/ombdClient';
 import { useEffect, useRef, useState } from 'react';
@@ -12,6 +11,7 @@ export function HistorySpace() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const historyRef = useRef<HTMLDivElement | null>(null);
+  const [isHover, setHover] = useState<string | null>(null);
 
   async function handleAddMovie() {
     const title = prompt('Movie name?');
@@ -67,7 +67,7 @@ export function HistorySpace() {
           disabled={loading}
         >
           {/* trocar svg no futuro */}
-          <img src={dots} style={{ width: '4rem' }} />
+          <h3 style={{ color: 'var(--contrast)' }}>Edit</h3>
         </button>
         {error && <p className={styles.error}>{error}</p>}
       </div>
@@ -76,8 +76,19 @@ export function HistorySpace() {
           <p className={styles.empty}>No movies yet. Click ... to add one!</p>
         )}
         {currentPageMovies.map(m => (
-          <div key={m.imdbID} className={styles.moviePoster}>
+          <div
+            key={m.imdbID}
+            className={styles.moviePoster}
+            onMouseEnter={() => setHover(m.imdbID)} // passa o id
+            onMouseLeave={() => setHover(null)} // reseta
+          >
             <img src={m.Poster} alt={m.Title} />
+            {isHover === m.imdbID && ( // checa o id
+              <div className={styles.movieName}>
+                <p>{m.Title}</p>
+                <p>({m.Year})</p>
+              </div>
+            )}
           </div>
         ))}
       </div>
