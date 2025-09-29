@@ -27,12 +27,24 @@
 }
 
 .history {
-  height: 50rem;
-  margin: 0rem 5rem;
+  height: auto;
+  margin: 0rem 5rem 4rem 5rem;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  margin: 0rem 2rem;
+}
+
+.edit {
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .historySpace {
-  margin-top: 2rem;
+  margin-top: 1rem;
   display: flex;
   border-radius: 2rem;
   background: var(--blue-light);

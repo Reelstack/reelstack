@@ -1,5 +1,7 @@
 import styles from './styles.module.css';
 
+import { HistorySpace } from '../historySpace';
+
 export function ProfileSpace() {
   return (
     <div className={styles.profileSpace}>
@@ -33,26 +35,7 @@ export function ProfileSpace() {
       </div>
       {/* componentizar no futuro*/}
 
-      <div className={styles.history}>
-        <h1 style={{ color: 'var(--success)' }}>Liked Movies</h1>
-        <div className={styles.historySpace}>
-          <div className={styles.moviePoster}>
-            <img src='/goncha.jpg' alt='placeholder' />
-          </div>
-          <div className={styles.moviePoster}>
-            <img src='/goncha.jpg' alt='placeholder' />
-          </div>
-          <div className={styles.moviePoster}>
-            <img src='/goncha.jpg' alt='placeholder' />
-          </div>
-          <div className={styles.moviePoster}>
-            <img src='/goncha.jpg' alt='placeholder' />
-          </div>
-          <div className={styles.moviePoster}>
-            <img src='/goncha.jpg' alt='placeholder' />
-          </div>
-        </div>
-      </div>
+      <HistorySpace />
       <div className={styles.history}>
         <h1 style={{ color: 'var(--error)' }}>Disliked Movies</h1>
         <div className={styles.historySpace}>
