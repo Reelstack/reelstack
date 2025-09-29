@@ -73,7 +73,9 @@ export function HistorySpace() {
       </div>
       <div className={styles.historySpace} ref={historyRef}>
         {currentPageMovies.length === 0 && (
-          <p className={styles.empty}>No movies yet. Click ... to add one!</p>
+          <div className={styles.empty}>
+            <p>No movies yet. Click edit and add some, will you?</p>
+          </div>
         )}
         {currentPageMovies.map(m => (
           <div

@@ -47,6 +47,20 @@
   border-radius: 1.2rem;
 }
 
+.empty {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+  text-align: center;
+  font-style: italic;
+  font-size: 1.8rem;
+  color: var(--muted);
+}
+
 .moviePoster img {
   width: 100%;
   height: 100%;
