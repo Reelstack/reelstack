@@ -2,15 +2,16 @@ import styles from './styles.module.css';
 import dots from '../../assets/dots-horizontal-svgrepo-com.svg';
 import type { OMDBMovie } from '../../services/api/types';
 import { omdb } from '../../services/ombdClient';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-const MOVIES_PER_PAGE = 15;
+const MOVIES_PER_PAGE = 18;
 
 export function HistorySpace() {
   const [likedMovies, setLikedMovies] = useState<OMDBMovie[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const historyRef = useRef<HTMLDivElement | null>(null);
 
   async function handleAddMovie() {
     const title = prompt('Movie name?');
@@ -51,10 +52,15 @@ export function HistorySpace() {
   const currentPageMovies = likedMovies.slice(start, end);
   const totalPages = Math.ceil(likedMovies.length / MOVIES_PER_PAGE);
 
+  // scrolla o usuario pra area de filmes(evitar irritação)
+  useEffect(() => {
+    historyRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [page]);
   return (
     <div className={styles.history}>
       <div className={styles.infoRow}>
         <h1 style={{ color: 'var(--success)' }}>Liked Movies</h1>
+
         <button
           className={styles.edit}
           onClick={handleAddMovie}
@@ -65,14 +71,13 @@ export function HistorySpace() {
         </button>
         {error && <p className={styles.error}>{error}</p>}
       </div>
-      <div className={styles.historySpace}>
+      <div className={styles.historySpace} ref={historyRef}>
         {currentPageMovies.length === 0 && (
           <p className={styles.empty}>No movies yet. Click ... to add one!</p>
         )}
         {currentPageMovies.map(m => (
           <div key={m.imdbID} className={styles.moviePoster}>
             <img src={m.Poster} alt={m.Title} />
-            <p>{m.Title}</p>
           </div>
         ))}
       </div>
