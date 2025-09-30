@@ -16,7 +16,7 @@ export default function TestAuth() {
   if (loading) return <p>Checking session...</p>;
 
   return (
-    <div>
+    <div style={{ position: 'absolute' }}>
       {user ? (
         <>
           <p>Logged in as {user.email}</p>
