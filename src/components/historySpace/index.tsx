@@ -5,23 +5,35 @@ import { useEffect, useRef, useState } from 'react';
 
 const MOVIES_PER_PAGE = 18;
 
-export function HistorySpace() {
-  const [likedMovies, setLikedMovies] = useState<OMDBMovie[]>([]);
+interface CollectionProps {
+  title: string;
+  movies: OMDBMovie[];
+  setMovies: React.Dispatch<React.SetStateAction<OMDBMovie[]>>;
+  color?: string;
+}
+
+export function Collection({
+  title,
+  movies,
+  setMovies,
+  color = 'var(--success)',
+}: CollectionProps) {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const historyRef = useRef<HTMLDivElement | null>(null);
+  const shouldScroll = useRef(false);
   const [isHover, setHover] = useState<string | null>(null);
 
   async function handleAddMovie() {
-    const title = prompt('Movie name?');
-    if (!title) return;
+    const titlePrompt = prompt('Movie name?');
+    if (!titlePrompt) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      const movie = await omdb.getMovieByTitle(title);
+      const movie = await omdb.getMovieByTitle(titlePrompt);
 
       // checa por posteres
       if (!movie.Poster || movie.Poster === 'N/A') {
@@ -30,9 +42,8 @@ export function HistorySpace() {
       }
 
       // checa duplicata
-      setLikedMovies(prev => {
-        const exists = prev.some(m => m.imdbID === movie.imdbID);
-        if (exists) {
+      setMovies(prev => {
+        if (prev.some(m => m.imdbID === movie.imdbID)) {
           setError('Movie already added.');
           return prev;
         }
@@ -48,18 +59,20 @@ export function HistorySpace() {
 
   // logica do indice das páginas, mudar movies per page caso mudança de design
   const start = page * MOVIES_PER_PAGE;
-  const end = start + MOVIES_PER_PAGE;
-  const currentPageMovies = likedMovies.slice(start, end);
-  const totalPages = Math.ceil(likedMovies.length / MOVIES_PER_PAGE);
+  const current = movies.slice(start, start + MOVIES_PER_PAGE);
+  const totalPages = Math.ceil(movies.length / MOVIES_PER_PAGE);
 
   // scrolla o usuario pra area de filmes(evitar irritação)
   useEffect(() => {
-    historyRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (shouldScroll.current) {
+      historyRef.current?.scrollIntoView({ behavior: 'smooth' });
+      shouldScroll.current = false; // liga o scroll
+    }
   }, [page]);
   return (
     <div className={styles.history}>
       <div className={styles.infoRow}>
-        <h1 style={{ color: 'var(--success)' }}>Liked Movies</h1>
+        <h1 style={{ color }}>{title}</h1>
 
         <button
           className={styles.edit}
@@ -72,12 +85,12 @@ export function HistorySpace() {
         {error && <p className={styles.error}>{error}</p>}
       </div>
       <div className={styles.historySpace} ref={historyRef}>
-        {currentPageMovies.length === 0 && (
+        {current.length === 0 && (
           <div className={styles.empty}>
             <p>No movies yet. Click edit and add some, will you?</p>
           </div>
         )}
-        {currentPageMovies.map(m => (
+        {current.map(m => (
           <div
             key={m.imdbID}
             className={styles.moviePoster}
@@ -99,7 +112,10 @@ export function HistorySpace() {
           <button
             className={styles.pageBtn}
             disabled={page === 0}
-            onClick={() => setPage(p => p - 1)}
+            onClick={() => {
+              setPage(p => p - 1);
+              shouldScroll.current = true;
+            }}
           >
             Prev
           </button>
@@ -108,7 +124,10 @@ export function HistorySpace() {
             <button
               key={i}
               className={`${styles.pageNumber} ${page === i ? styles.active : ''}`}
-              onClick={() => setPage(i)}
+              onClick={() => {
+                setPage(i);
+                shouldScroll.current = true;
+              }}
             >
               {i + 1}
             </button>
@@ -117,7 +136,10 @@ export function HistorySpace() {
           <button
             className={styles.pageBtn}
             disabled={page === totalPages - 1}
-            onClick={() => setPage(p => p + 1)}
+            onClick={() => {
+              setPage(p => p + 1);
+              shouldScroll.current = true;
+            }}
           >
             Next
           </button>

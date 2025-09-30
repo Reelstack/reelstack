@@ -26,7 +26,7 @@
   box-shadow: inset 6px 0px 12px -3px rgba(0, 0, 0, 0.55);
 
   /* row de placeholder */
-  min-height: 20rem;
+  min-height: 29rem;
   padding: 1rem;
   place-items: center;
 }

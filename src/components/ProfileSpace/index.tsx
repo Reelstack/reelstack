@@ -1,8 +1,11 @@
 import styles from './styles.module.css';
-
-import { HistorySpace } from '../historySpace';
+import { useState } from 'react';
+import type { OMDBMovie } from '../../services/api/types';
+import { Collection } from '../historySpace';
 
 export function ProfileSpace() {
+  const [likedMovies, setLikedMovies] = useState<OMDBMovie[]>([]);
+  const [dislikedMovies, setDislikedMovies] = useState<OMDBMovie[]>([]);
   return (
     <div className={styles.profileSpace}>
       <div className={styles.userSpace}>
@@ -33,29 +36,19 @@ export function ProfileSpace() {
           </div>
         </div>
       </div>
-      {/* componentizar no futuro*/}
 
-      <HistorySpace />
-      <div className={styles.history}>
-        <h1 style={{ color: 'var(--error)' }}>Disliked Movies</h1>
-        <div className={styles.historySpace}>
-          <div className={styles.moviePoster}>
-            <img src='/goncha.jpg' alt='placeholder' />
-          </div>
-          <div className={styles.moviePoster}>
-            <img src='/goncha.jpg' alt='placeholder' />
-          </div>
-          <div className={styles.moviePoster}>
-            <img src='/goncha.jpg' alt='placeholder' />
-          </div>
-          <div className={styles.moviePoster}>
-            <img src='/goncha.jpg' alt='placeholder' />
-          </div>
-          <div className={styles.moviePoster}>
-            <img src='/goncha.jpg' alt='placeholder' />
-          </div>
-        </div>
-      </div>
+      <Collection
+        title='Liked Movies'
+        movies={likedMovies}
+        setMovies={setLikedMovies}
+        color='var(--success)'
+      />
+      <Collection
+        title='Disliked Movies'
+        movies={dislikedMovies}
+        setMovies={setDislikedMovies}
+        color='var(--error)'
+      />
 
       <div className={styles.footer}>teste 4</div>
     </div>
