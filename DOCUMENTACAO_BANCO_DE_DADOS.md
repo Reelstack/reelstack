@@ -18,7 +18,7 @@
 | averageRating | Nota média atribuída pelos usuários do IMDb. | float | 0.0 a 10.0 | Sim |
 | numVotes | Quantidade total de votos recebidos para cálculo da nota média. | inteiro | número inteiro | Sim |
 
-### Tabela Usuarios
+### Tabela Usuários
 
 | Coluna | Descrição | Tipo de Dado | Formato | Pode ser Nulo? |
 |--------|-----------|--------------|---------|----------------|
