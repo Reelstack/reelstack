@@ -151,7 +151,12 @@ CREATE TABLE users_movies (
   CONSTRAINT users_movies_pkey PRIMARY KEY (id),
   CONSTRAINT users_profile_id_movie_fkey FOREIGN KEY (id_movie_liked) REFERENCES movies(tconst),
   CONSTRAINT users_movies_id_movie_disliked_fkey FOREIGN KEY (id_movie_disliked) REFERENCES movies(tconst),
-  CONSTRAINT users_movies_id_user_fkey FOREIGN KEY (id_user) REFERENCES users(id)
+  CONSTRAINT users_movies_id_user_fkey FOREIGN KEY (id_user) REFERENCES users(id),
+  CONSTRAINT users_movies_like_dislike_check CHECK (
+    (id_movie_liked IS NOT NULL AND id_movie_disliked IS NULL)
+    OR
+    (id_movie_liked IS NULL AND id_movie_disliked IS NOT NULL)
+  )
 );
 ```
 ---
