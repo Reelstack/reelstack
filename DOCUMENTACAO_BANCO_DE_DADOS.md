@@ -2,7 +2,7 @@
 
 ## Glossário Técnico das Tabelas
 
-### Tabela Titulos
+### Tabela Títulos
 
 | Coluna | Descrição | Tipo de Dado | Formato | Pode ser Nulo? |
 |--------|-----------|--------------|---------|----------------|
