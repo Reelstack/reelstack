@@ -1,5 +1,43 @@
 # Documentação do Banco de Dados
 
+## Glossário Técnico das Tabelas
+
+### Tabela Titulos
+
+| Coluna | Descrição | Tipo de Dado | Formato | Pode ser Nulo? |
+|--------|-----------|--------------|---------|----------------|
+| tconst | Identificador único do título no IMDb, usado para referência cruzada e integração com outras bases de dados. | string | tt1234567 | Não |
+| titleType | Categoria do conteúdo, como filme, curta-metragem, série de TV, documentário, etc. | string | texto | Não |
+| primaryTitle | Nome principal pelo qual o título é conhecido publicamente. | string | texto | Não |
+| originalTitle | Nome original do título, geralmente no idioma de produção. | string | texto | Não |
+| isAdult | Indicador binário (0 ou 1) que mostra se o conteúdo é voltado para o público adulto. | inteiro | 0 ou 1 | Não |
+| startYear | Ano de lançamento ou início da exibição do título. | inteiro | AAAA | Sim |
+| endYear | Ano de encerramento da exibição (aplicável principalmente para séries). | inteiro | AAAA | Sim |
+| runtimeMinutes | Duração total do título em minutos. | inteiro | número inteiro | Sim |
+| genres | Lista de gêneros associados ao título, como ação, comédia, drama, etc. | string | texto separado por vírgulas | Sim |
+| averageRating | Nota média atribuída pelos usuários do IMDb. | float | 0.0 a 10.0 | Sim |
+| numVotes | Quantidade total de votos recebidos para cálculo da nota média. | inteiro | número inteiro | Sim |
+
+### Tabela Usuarios
+
+| Coluna | Descrição | Tipo de Dado | Formato | Pode ser Nulo? |
+|--------|-----------|--------------|---------|----------------|
+| id | Identificador único do usuário no sistema. Usado para referência interna e operações de banco de dados. | inteiro | número inteiro | Não |
+| created_at | Data e hora em que o registro do usuário foi criado, incluindo o fuso horário. | timestamp | AAAA-MM-DD HH:MM:SS±TZ | Não |
+| email | Endereço de e-mail associado ao usuário, utilizado para autenticação e comunicação. | string | email | Não |
+| profile_name | Nome público do perfil do usuário, exibido em interfaces e interações sociais. | string | texto | Sim |
+
+### Tabela Interacoes
+
+| Coluna | Descrição | Tipo de Dado | Formato | Pode ser Nulo? |
+|--------|-----------|--------------|---------|----------------|
+| id_user | Identificador único do usuário que realizou a ação (curtir ou não curtir um filme). | inteiro | número inteiro | Não |
+| id_movie_liked | Identificador do filme que o usuário marcou como curtido. Pode estar ausente se a ação foi apenas de 'não curtir'. | string | tt1234567 | Sim |
+| created_at | Data e hora em que a interação foi registrada no sistema, incluindo o fuso horário. | timestamp | AAAA-MM-DD HH:MM:SS±TZ | Não |
+| id_movie_disliked | Identificador do filme que o usuário marcou como não curtido. Pode estar ausente se a ação foi apenas de 'curtir'. | string | tt1234567 | Sim |
+
+---
+
 ## 1. Modelo Conceitual (Diagrama Entidade-Relacionamento)
 
 ```mermaid
