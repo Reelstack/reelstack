@@ -27,7 +27,7 @@
 | email | Endereço de e-mail associado ao usuário, utilizado para autenticação e comunicação. | string | email | Não |
 | profile_name | Nome público do perfil do usuário, exibido em interfaces e interações sociais. | string | texto | Sim |
 
-### Tabela Interacoes
+### Tabela Interações
 
 | Coluna | Descrição | Tipo de Dado | Formato | Pode ser Nulo? |
 |--------|-----------|--------------|---------|----------------|
