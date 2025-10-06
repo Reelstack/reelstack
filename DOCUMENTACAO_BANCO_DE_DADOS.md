@@ -10,7 +10,7 @@
 | titleType | Categoria do conteúdo, como filme, curta-metragem, série de TV, documentário, etc. | string | texto | Não |
 | primaryTitle | Nome principal pelo qual o título é conhecido publicamente. | string | texto | Não |
 | originalTitle | Nome original do título, geralmente no idioma de produção. | string | texto | Não |
-| isAdult | Indicador binário (0 ou 1) que mostra se o conteúdo é voltado para o público adulto. | inteiro | 0 ou 1 | Não |
+| isAdult | Indicador booleano (true ou false) que mostra se o conteúdo é voltado para o público adulto. | booleano | true ou false | Não |
 | startYear | Ano de lançamento ou início da exibição do título. | inteiro | AAAA | Sim |
 | endYear | Ano de encerramento da exibição (aplicável principalmente para séries). | inteiro | AAAA | Sim |
 | runtimeMinutes | Duração total do título em minutos. | inteiro | número inteiro | Sim |
