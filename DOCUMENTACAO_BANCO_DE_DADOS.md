@@ -25,7 +25,7 @@
 | id | Identificador único do usuário no sistema. Usado para referência interna e operações de banco de dados. | inteiro | número inteiro | Não |
 | created_at | Data e hora em que o registro do usuário foi criado, incluindo o fuso horário. | timestamp | AAAA-MM-DD HH:MM:SS±TZ | Não |
 | email | Endereço de e-mail associado ao usuário, utilizado para autenticação e comunicação. | string | email | Não |
-| profile_name | Nome público do perfil do usuário, exibido em interfaces e interações sociais. | string | texto | Sim |
+| profile_name | Nome público do perfil do usuário, exibido em interfaces e interações sociais. | string | texto | Não |
 
 ### Tabela Interações
 
