@@ -1,9 +1,15 @@
+export interface User {
+  id: string;
+  email: string | null;
+  // adicionar campos necessários aqui
+}
+
 export interface State {
-  users: Users[];
+  users: User[];
 }
 
 export type Action =
-  | { type: 'SET_USERS'; payload: Users[] }
-  | { type: 'ADD_USER'; payload: Users }
-  | { type: 'UPDATE_USER'; payload: Users }
-  | { type: 'DELETE_USER'; payload: number };
+  | { type: 'SET_USERS'; payload: User[] }
+  | { type: 'ADD_USER'; payload: User }
+  | { type: 'UPDATE_USER'; payload: User }
+  | { type: 'DELETE_USER'; payload: User['id'] };
