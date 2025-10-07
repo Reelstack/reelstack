@@ -68,7 +68,7 @@ USING (auth.uid() = user_id);
 ```
 ## Controle por Papéis (Roles)
 
-Em casos onde existam papéis diferentes (ex: admin, user, service), serão criadas políticas complementares com base em **JWT claims** ou funções internas do Supabase:3
+Em casos onde existam papéis diferentes (ex: admin, user, service), serão criadas políticas complementares com base em **JWT claims** ou funções internas do Supabase:
 ```sql
 -- Administradores podem visualizar todos os dados
 CREATE POLICY "Admins podem visualizar todos os dados"
