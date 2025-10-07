@@ -48,7 +48,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     if (data.user) {
       // convert Supabase Auth user to your User type
-      return { id: data.user.id, email: data.user.email ?? null };
+      const newUser = { id: data.user.id, email: data.user.email ?? null };
+      dispatch({ type: 'ADD_USER', payload: newUser });
+      return newUser;
     }
 
     return null;
