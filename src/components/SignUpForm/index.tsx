@@ -66,7 +66,16 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
 
     if (authUser) {
       toast.success(
-        'Account created successfully!\n Please check your email notifications\n to authenticate your account.\n\n Welcome to ReelStack!',
+        <>
+          Account created successfully!
+          <br />
+          Please check your email notifications
+          <br />
+          to authenticate your account.
+          <br />
+          <br />
+          Welcome to ReelStack!
+        </>
       );
       setEmail('');
       setPassword('');
