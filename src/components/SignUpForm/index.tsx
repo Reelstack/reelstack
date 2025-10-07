@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import styles from './styles.module.css';
 import { useState } from 'react';
 import { useUsers } from '../../contexts/UserContext/userHook';
+import toast from 'react-hot-toast';
 
 type SignUpFormProps = {
   onSwitch: () => void;
@@ -59,17 +60,20 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
     setLoading(true);
 
     // call addUser
-    const newUser = await addUser({ email, password });
+    const authUser = await addUser({ email, password });
 
     setLoading(false);
 
-    if (newUser) {
+    if (authUser) {
+      toast.success(
+        'Account created successfully!\n Please check your email notifications\n to authenticate your account.\n\n Welcome to ReelStack!',
+      );
       setEmail('');
       setPassword('');
       setConfirm('');
-      console.log('User signed up:', newUser);
+      console.log('User signed up:', authUser);
     } else {
-      setError(['Failed to create user.']);
+      toast.error('Failed to create user. Please try again.');
     }
   };
 
