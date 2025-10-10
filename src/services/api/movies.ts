@@ -216,7 +216,7 @@ export class MoviesService {
     // metodos para selecionar colunas específicas
 
     /**
-     * pega os filmes com  o título
+     * pega os filmes com o título
      */
     static async getMoviesTitlesOnly(): Promise<MoviesResponse<{ tconst: string, primaryTitle: string | null, originalTitle: string | null }>> {
         try {
