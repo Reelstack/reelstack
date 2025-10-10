@@ -166,7 +166,7 @@ export class MoviesService {
     }
 
     /**
-     *  pega os filmes com filtros
+     *  Pega os filmes com filtros
      */
     static async getMoviesWithFilters(filters: {
         year?: number;
