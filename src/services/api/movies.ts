@@ -261,7 +261,7 @@ export class MoviesService {
     }
 
     /**
-     * pega os filmes com o runtime
+     * Pega os filmes com o runtime
      */
     static async getMoviesWithRuntime(): Promise<MoviesResponse<{ tconst: string, primaryTitle: string | null, runtimeMinutes: number | null, startYear: number | null, endYear: number | null }>> {
         try {
