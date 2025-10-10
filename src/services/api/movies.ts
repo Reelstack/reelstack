@@ -276,7 +276,7 @@ export class MoviesService {
     }
 
     /**
-     * pega os filmes com as colunas específicas
+     * Pega os filmes com as colunas específicas
      */
     static async getMoviesWithCustomColumns(columns: string[]): Promise<MoviesResponse<any>> {
         try {
