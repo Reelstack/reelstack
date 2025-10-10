@@ -246,7 +246,7 @@ export class MoviesService {
     }
 
     /**
-     * pega os filmes com o gênero
+     * Pega os filmes com o gênero
      */
     static async getMoviesWithGenres(): Promise<MoviesResponse<{ tconst: string, primaryTitle: string | null, genres: string | null, titleType: string | null }>> {
         try {
