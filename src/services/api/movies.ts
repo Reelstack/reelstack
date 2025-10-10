@@ -231,7 +231,7 @@ export class MoviesService {
     }
 
     /**
-     * pega os filmes com o rating
+     * Pega os filmes com o rating
      */
     static async getMoviesWithRatings(): Promise<MoviesResponse<{ tconst: string, primaryTitle: string | null, averageRating: number | null, numVotes: number | null }>> {
         try {
