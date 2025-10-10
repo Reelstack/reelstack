@@ -78,7 +78,7 @@ export class MoviesService {
     }
 
     /**
-     * pega os filmes com as colunas essenciais e páginados 
+     * Pega os filmes com as colunas essenciais e páginados 
      */
     static async getMoviesPaginatedBasic(
         from: number = 0,
