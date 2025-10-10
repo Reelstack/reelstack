@@ -31,11 +31,12 @@ export class MoviesService {
     /**
      * Pega todos os filmes com todas as colunas
      */
-    static async getAllMovies(): Promise<MoviesResponse<Movie>> {
+    static async getAllMovies(limit: number = 100): Promise<MoviesResponse<Movie>> {
         try {
             const { data, error } = await supabase
                 .from('movies')
-                .select('*');
+                .select('*')
+                .limit(limit);
 
             return { data, error };
         } catch (err) {
