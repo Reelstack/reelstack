@@ -279,10 +279,29 @@ export class MoviesService {
      * Pega os filmes com as colunas específicas
      */
     static async getMoviesWithCustomColumns(columns: string[]): Promise<MoviesResponse<any>> {
+        // Define a whitelist of allowed columns
+        const allowedColumns = [
+            'tconst',
+            'titleType',
+            'primaryTitle',
+            'originalTitle',
+            'isAdult',
+            'startYear',
+            'endYear',
+            'runtimeMinutes',
+            'genres',
+            'averageRating',
+            'numVotes'
+        ];
+        // Filter the requested columns to only those in the whitelist
+        const safeColumns = columns.filter(col => allowedColumns.includes(col));
+        if (safeColumns.length === 0) {
+            return { data: null, error: new Error('No valid columns requested.') };
+        }
         try {
             const { data, error } = await supabase
                 .from('movies')
-                .select(columns.join(', '));
+                .select(safeColumns.join(', '));
 
             return { data, error };
         } catch (err) {
