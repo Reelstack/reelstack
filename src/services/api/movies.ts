@@ -151,15 +151,15 @@ export class MoviesService {
     /**
      * Pega um filme específico pelo tconst
      */
-    static async getMovieById(tconst: string): Promise<MoviesResponse<Movie>> {
+    static async getMovieById(tconst: string): Promise<{ data: Movie | null; error: any }> {
         try {
             const { data, error } = await supabase
                 .from('movies')
                 .select('*')
                 .eq('tconst', tconst)
                 .single();
-
-            return { data: data ? [data] : null, error };
+    
+            return { data, error };
         } catch (err) {
             return { data: null, error: err };
         }
