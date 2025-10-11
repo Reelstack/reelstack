@@ -14,7 +14,11 @@ export type {
 export type {
     Movie,
     BasicMovie,
-    MoviesResponse
+    MoviesResponse,
+    MovieTitles,
+    MovieRatings,
+    MovieGenres,
+    MovieRuntime
 } from './api/movies';
 
 // Classes Base
