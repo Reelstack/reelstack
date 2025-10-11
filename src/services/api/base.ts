@@ -27,7 +27,7 @@ export abstract class BaseAPIClient {
 
       const response = await fetch(url.toString(), {
         signal: controller.signal,
-        // NÃO adicione 'Content-Type' para GET
+        // DO NOT add 'Content-Type' for GET requests
       });
 
       clearTimeout(timeoutId);
