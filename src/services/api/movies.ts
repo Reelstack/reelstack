@@ -237,7 +237,7 @@ export class MoviesService {
                 .select(columns.join(', '))
                 .range(offset, offset + limit - 1);
 
-            return { data: data as unknown as Record<string, unknown>[] | null, error };
+            return { data: data as Record<string, unknown>[] | null, error };
         } catch (err) {
             return { data: null, error: err };
         }
