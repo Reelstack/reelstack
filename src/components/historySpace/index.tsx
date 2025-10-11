@@ -66,7 +66,7 @@ export function Collection({
   useEffect(() => {
     if (shouldScroll.current) {
       historyRef.current?.scrollIntoView({ behavior: 'smooth' });
-      shouldScroll.current = false; // liga o scroll
+      shouldScroll.current = false; // desliga o scroll
     }
   }, [page]);
   return (
