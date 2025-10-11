@@ -21,7 +21,7 @@ export function Profile() {
               className={styles.settingsButton}
               onClick={() => setShowSettings(prev => !prev)}
             >
-              <img className={styles.configsvg} src={settings} />
+              <img className={styles.configsvg} src={settings} alt="Settings" />
             </button>
           </div>
           {showSettings ? <SettingSpace /> : <ProfileSpace />}
