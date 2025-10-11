@@ -207,8 +207,8 @@ export class MoviesService {
                 .eq('tconst', tconst)
                 .single();
 
-            // Consistent with other methods - return array or null
-            return { data: data ? [data] : null, error };
+            // Return a single movie object or null
+            return { data: data ?? null, error };
         } catch (err) {
             return { data: null, error: err };
         }
