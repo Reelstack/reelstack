@@ -10,7 +10,7 @@ export function ProfileSpace() {
     <div className={styles.profileSpace}>
       <div className={styles.userSpace}>
         <div className={styles.userInfo}>
-          <h1 style={{ textAlign: 'center' }}>nomem ipsum</h1>
+          <h1 style={{ textAlign: 'center' }}>nome ipsum</h1>
           <h3>email ipsum dolor si amet</h3>
           <h3>telefonen ipsum</h3>
         </div>
