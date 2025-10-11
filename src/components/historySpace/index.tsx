@@ -107,7 +107,7 @@ export function Collection({
           </div>
         ))}
       </div>
-      {totalPages >= 1 && (
+      {totalPages > 1 && (
         <div className={styles.pagination}>
           <button
             className={styles.pageBtn}
