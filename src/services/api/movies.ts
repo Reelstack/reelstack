@@ -15,7 +15,7 @@ export interface Movie {
     numVotes: number | null;
 }
 
-// Só o essencial
+// Essential fields only
 export interface BasicMovie {
     tconst: string;
     primaryTitle: string | null;
