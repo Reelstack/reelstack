@@ -1,4 +1,77 @@
-.header {
-  height: 100rem;
-  color: purple;
+.page {
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+  width: 70vw;
+  margin: auto;
+  background: var(--blue-standard);
+  box-shadow:
+    0 0 1rem var(--blue-standard),
+    0 0 3rem var(--blue-dark);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: auto;
+  scrollbar-color: var(--blue-light) var(--blue-standard);
+}
+
+/*webkits não testados, averiguar semelhança com o scroll em chromium*/
+.wrapper::-webkit-scrollbar {
+  width: 10px;
+}
+
+.wrapper::-webkit-scrollbar-track {
+  background: var(--blue-standard);
+  border-radius: 8px;
+}
+
+.wrapper::-webkit-scrollbar-thumb {
+  background: var(--blue-dark);
+  border-radius: 8px;
+  border: 2px solid var(--blue-standard);
+}
+
+.wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--blue-light);
+}
+
+.nav {
+  display: flex;
+  height: 10rem;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2rem 5rem;
+}
+
+.navbar {
+  display: flex;
+  margin-top: 1rem;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1.4rem;
+  background-color: var(--blue-light);
+  width: fit-content;
+  color: var(--text-default);
+  text-align: center;
+  font-size: 1.8rem;
+  border-radius: 1.4rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.settingsButton {
+  display: flex;
+  justify-content: center;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.configsvg {
+  max-width: 4.4rem;
+  margin: auto;
 }
