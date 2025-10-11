@@ -49,6 +49,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     if (data.user) {
       // convert Supabase Auth user to your User type
       const newUser = { id: data.user.id, email: data.user.email ?? null };
+      // Insert the new user into the 'users' table
+      const { error: insertError } = await supabase
+        .from('users')
+        .insert([{ id: newUser.id, email: newUser.email }]);
+      if (insertError) {
+        console.error('Error inserting user into users table:', insertError.message);
+        return null;
+      }
       dispatch({ type: 'ADD_USER', payload: newUser });
       return newUser;
     }
