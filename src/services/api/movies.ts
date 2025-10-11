@@ -1,6 +1,6 @@
 import { supabase } from '../../lib/supabaseClient';
 
-// todas as colunas
+// All columns
 export interface Movie {
     tconst: string;
     titleType: string | null;
