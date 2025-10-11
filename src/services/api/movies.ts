@@ -363,20 +363,35 @@ export class MoviesService {
         limit: number = 20,
         offset: number = 0
     ): Promise<MoviesResponse<Movie>> {
+        // Helper function to validate genre strings (letters, numbers, spaces, hyphens, underscores)
+        function isValidGenre(genre: string): boolean {
+            // Permite letras com acentos, números, espaços, hífens e underscores
+            return /^[\p{L}\p{N}\s-_]+$/u.test(genre);
+        }
+    
         try {
             if (!genres || genres.length === 0) {
                 return { data: null, error: new Error('Genres array cannot be empty') };
             }
-
+    
+            // Sanitize genres: normalize and only allow valid strings
+            const safeGenres = genres
+                .map(g => g.trim().toLowerCase())
+                .filter(isValidGenre);
+    
+            if (safeGenres.length === 0) {
+                return { data: null, error: new Error('No valid genres provided') };
+            }
+    
             // Criar filtro OR para múltiplos gêneros
-            const genreFilters = genres.map(genre => `genres.ilike.%${genre}%`).join(',');
-
+            const genreFilters = safeGenres.map(genre => `genres.ilike.%${genre}%`).join(',');
+    
             const { data, error } = await supabase
                 .from('movies')
                 .select('*')
                 .or(genreFilters)
                 .range(offset, offset + limit - 1);
-
+    
             return { data, error };
         } catch (err) {
             return { data: null, error: err };
