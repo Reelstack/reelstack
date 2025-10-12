@@ -365,7 +365,7 @@ export class MoviesService {
     // Helper function to validate genre strings (letters, numbers, spaces, hyphens, underscores)
     function isValidGenre(genre: string): boolean {
       // Permite letras com acentos, números, espaços, hífens e underscores
-      return /^[-\p{L}\p{N}\s_]+$/u.test(genre);
+      return /^[\p{L}\p{N}\s_-]+$/u.test(genre);
     }
 
     try {
