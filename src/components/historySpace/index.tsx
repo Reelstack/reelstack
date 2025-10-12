@@ -1,5 +1,5 @@
 import styles from './styles.module.css';
-import type { OMDBMovie } from '../../services/api/types';
+import type { OMDBMovie } from '../../services/api/omdb/types';
 import { omdb } from '../../services/ombdClient';
 import { useEffect, useRef, useState } from 'react';
 

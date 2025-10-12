@@ -1,6 +1,6 @@
 import styles from './styles.module.css';
 import { useState } from 'react';
-import type { OMDBMovie } from '../../services/api/types';
+import type { OMDBMovie } from '../../services/api/omdb/types';
 import { Collection } from '../historySpace';
 
 export function ProfileSpace() {
