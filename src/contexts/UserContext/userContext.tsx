@@ -55,7 +55,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         .insert([{ id: newUser.id, email: newUser.email }]);
       if (insertError) {
         console.error(
-          'Error inserting user into users table:',
+          'Error inserting user into profiles table:',
           insertError.message,
         );
         return null;
