@@ -1,40 +1,98 @@
-# Documentação do Banco de Dados
+# **Documentação do Banco de Dados**
 
-## Glossário Técnico das Tabelas
+## **Glossário Técnico das Tabelas**
 
-### Tabela Títulos
+### **Tabela Perfis (profiles)**
 
-| Coluna | Descrição | Tipo de Dado | Formato | Pode ser Nulo? |
-|--------|-----------|--------------|---------|----------------|
-| tconst | Identificador único do título no IMDb, usado para referência cruzada e integração com outras bases de dados. | string | tt1234567 | Não |
-| titleType | Categoria do conteúdo, como filme, curta-metragem, série de TV, documentário, etc. | string | texto | Não |
-| primaryTitle | Nome principal pelo qual o título é conhecido publicamente. | string | texto | Não |
-| originalTitle | Nome original do título, geralmente no idioma de produção. | string | texto | Não |
-| isAdult | Indicador booleano (true ou false) que mostra se o conteúdo é voltado para o público adulto. | booleano | true ou false | Não |
-| startYear | Ano de lançamento ou início da exibição do título. | inteiro | AAAA | Sim |
-| endYear | Ano de encerramento da exibição (aplicável principalmente para séries). | inteiro | AAAA | Sim |
-| runtimeMinutes | Duração total do título em minutos. | inteiro | número inteiro | Sim |
-| genres | Lista de gêneros associados ao título, como ação, comédia, drama, etc. | string | texto separado por vírgulas | Sim |
-| averageRating | Nota média atribuída pelos usuários do IMDb. | float | 0.0 a 10.0 | Sim |
-| numVotes | Quantidade total de votos recebidos para cálculo da nota média. | inteiro | número inteiro | Sim |
+| Coluna       | Descrição                                                          | Tipo de Dado | Formato                | Pode ser Nulo? |
+| ------------ | ------------------------------------------------------------------ | ------------ | ---------------------- | -------------- |
+| id           | Identificador único do perfil, vinculado ao usuário autenticado.   | uuid         | UUID v4                | Não            |
+| created_at   | Data e hora de criação do perfil, considerando o fuso horário UTC. | timestamp    | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+| bio          | Texto opcional com a biografia do usuário.                         | string       | texto livre            | Sim            |
+| updated_at   | Data e hora da última atualização do perfil.                       | timestamp    | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+| avatar_url   | Endereço de imagem utilizado como avatar do perfil.                | string       | URL                    | Sim            |
+| profile_name | Nome público do perfil, exibido nas interações sociais e coleções. | string       | texto                  | Não            |
 
-### Tabela Usuários
+---
 
-| Coluna | Descrição | Tipo de Dado | Formato | Pode ser Nulo? |
-|--------|-----------|--------------|---------|----------------|
-| id | Identificador único do usuário no sistema. Usado para referência interna e operações de banco de dados. | inteiro | número inteiro | Não |
-| created_at | Data e hora em que o registro do usuário foi criado, incluindo o fuso horário. | timestamp | AAAA-MM-DD HH:MM:SS±TZ | Não |
-| email | Endereço de e-mail associado ao usuário, utilizado para autenticação e comunicação. | string | email | Não |
-| profile_name | Nome público do perfil do usuário, exibido em interfaces e interações sociais. | string | texto | Não |
+### **Tabela Títulos (movies)**
 
-### Tabela Interações
+| Coluna         | Descrição                                                      | Tipo de Dado | Formato        | Pode ser Nulo? |
+| -------------- | -------------------------------------------------------------- | ------------ | -------------- | -------------- |
+| tconst         | Identificador único do título, proveniente do IMDb.            | string       | tt1234567      | Não            |
+| titleType      | Categoria do conteúdo (ex: movie, short, series, documentary). | string       | texto          | Sim            |
+| primaryTitle   | Nome principal pelo qual o título é conhecido.                 | string       | texto          | Sim            |
+| originalTitle  | Nome original no idioma de produção.                           | string       | texto          | Sim            |
+| isAdult        | Indica se o conteúdo é voltado para o público adulto.          | booleano     | true ou false  | Sim            |
+| startYear      | Ano de lançamento ou início de exibição.                       | inteiro      | AAAA           | Sim            |
+| endYear        | Ano de encerramento da exibição (para séries).                 | inteiro      | AAAA           | Sim            |
+| runtimeMinutes | Duração total do conteúdo em minutos.                          | inteiro      | número inteiro | Sim            |
+| genres         | Lista de gêneros associados, separados por vírgula.            | string       | texto          | Sim            |
+| averageRating  | Nota média dos usuários no IMDb.                               | float        | 0.0 a 10.0     | Sim            |
+| numVotes       | Quantidade total de votos recebidos.                           | inteiro      | número inteiro | Sim            |
 
-| Coluna | Descrição | Tipo de Dado | Formato | Pode ser Nulo? |
-|--------|-----------|--------------|---------|----------------|
-| id_user | Identificador único do usuário que realizou a ação (curtir ou não curtir um filme). | inteiro | número inteiro | Não |
-| id_movie_liked | Identificador do filme que o usuário marcou como curtido. Pode estar ausente se a ação foi apenas de 'não curtir'. | string | tt1234567 | Sim |
-| created_at | Data e hora em que a interação foi registrada no sistema, incluindo o fuso horário. | timestamp | AAAA-MM-DD HH:MM:SS±TZ | Não |
-| id_movie_disliked | Identificador do filme que o usuário marcou como não curtido. Pode estar ausente se a ação foi apenas de 'curtir'. | string | tt1234567 | Sim |
+---
+
+### **Tabela Coleções (collections)**
+
+| Coluna          | Descrição                                                              | Tipo de Dado | Formato                | Pode ser Nulo? |
+| --------------- | ---------------------------------------------------------------------- | ------------ | ---------------------- | -------------- |
+| id              | Identificador único da coleção.                                        | inteiro      | número inteiro         | Não            |
+| profile_id      | Identificador do perfil proprietário da coleção.                       | uuid         | UUID v4                | Não            |
+| name            | Nome da coleção (ex: “Favoritos”, “Assistir mais tarde”).              | string       | texto                  | Não            |
+| description     | Texto descritivo da coleção.                                           | string       | texto                  | Sim            |
+| created_at      | Data e hora da criação da coleção.                                     | timestamp    | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+| updated_at      | Data e hora da última atualização.                                     | timestamp    | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+| visibility      | Define o nível de visibilidade da coleção (public, private, unlisted). | string       | texto                  | Sim            |
+| cover_image_url | Endereço da imagem de capa da coleção.                                 | string       | URL                    | Sim            |
+
+---
+
+### **Tabela Filmes em Coleção (collection_movies)**
+
+| Coluna        | Descrição                                            | Tipo de Dado | Formato                | Pode ser Nulo? |
+| ------------- | ---------------------------------------------------- | ------------ | ---------------------- | -------------- |
+| collection_id | Identificador da coleção que contém o filme.         | inteiro      | número inteiro         | Não            |
+| movie_id      | Identificador do filme associado à coleção.          | string       | tt1234567              | Não            |
+| added_at      | Data e hora em que o filme foi adicionado à coleção. | timestamp    | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+
+---
+
+### **Tabela Interações de Usuário com Filmes (user_movie_interactions)**
+
+| Coluna           | Descrição                                                  | Tipo de Dado | Formato                | Pode ser Nulo? |
+| ---------------- | ---------------------------------------------------------- | ------------ | ---------------------- | -------------- |
+| id               | Identificador único da interação.                          | inteiro      | número inteiro         | Não            |
+| profile_id       | Identificador do perfil que realizou a interação.          | uuid         | UUID v4                | Não            |
+| movie_id         | Identificador do filme com o qual o usuário interagiu.     | string       | tt1234567              | Não            |
+| interaction_type | Tipo de interação realizada: 'like' ou 'dislike'.          | string       | texto                  | Não            |
+| created_at       | Data e hora da interação, considerando o fuso horário UTC. | timestamp    | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+
+---
+
+### **Tabela Preferências de Usuário (user_preferences)**
+
+| Coluna           | Descrição                                                       | Tipo de Dado | Formato        | Pode ser Nulo? |
+| ---------------- | --------------------------------------------------------------- | ------------ | -------------- | -------------- |
+| id               | Identificador único da preferência.                             | inteiro      | número inteiro | Não            |
+| profile_id       | Identificador do perfil associado à preferência.                | uuid         | UUID v4        | Não            |
+| preference_type  | Categoria da preferência (genre, actor, director, decade).      | string       | texto          | Não            |
+| preference_value | Valor correspondente à preferência (ex: “Action”, “Brad Pitt”). | string       | texto          | Não            |
+
+---
+
+### **Resumo das Relações entre Tabelas**
+
+| Relação                                        | Tipo                                               | Descrição |
+| ---------------------------------------------- | -------------------------------------------------- | --------- |
+| **profiles** 1 → N **collections**             | Um perfil pode ter várias coleções.                |           |
+| **collections** 1 → N **collection_movies**    | Cada coleção contém vários filmes.                 |           |
+| **movies** 1 → N **collection_movies**         | Um filme pode estar em várias coleções.            |           |
+| **profiles** 1 → N **user_movie_interactions** | Um perfil pode curtir ou não curtir vários filmes. |           |
+| **movies** 1 → N **user_movie_interactions**   | Um filme pode receber interações de vários perfis. |           |
+| **profiles** 1 → N **user_preferences**        | Um perfil pode ter várias preferências.            |           |
+
+---
 
 ---
 
@@ -79,36 +137,39 @@ erDiagram
 ## 2. Modelo Lógico
 
 ### USUÁRIO
-| Campo | Tipo | Restrição |
-|-------|------|-----------|
-| id | BIGINT | PK, IDENTITY |
-| email | VARCHAR | UNIQUE, NOT NULL |
-| nome_perfil | TEXT | UNIQUE, NOT NULL |
-| data_criacao | TIMESTAMP | NOT NULL |
+
+| Campo        | Tipo      | Restrição        |
+| ------------ | --------- | ---------------- |
+| id           | BIGINT    | PK, IDENTITY     |
+| email        | VARCHAR   | UNIQUE, NOT NULL |
+| nome_perfil  | TEXT      | UNIQUE, NOT NULL |
+| data_criacao | TIMESTAMP | NOT NULL         |
 
 ### FILME
-| Campo | Tipo | Restrição |
-|-------|------|-----------|
-| tconst | TEXT | PK |
-| tipo_titulo | TEXT | |
-| titulo_principal | TEXT | |
-| titulo_original | TEXT | |
-| conteudo_adulto | BOOLEAN | |
-| ano_inicio | BIGINT | |
-| ano_fim | BIGINT | |
-| duracao_minutos | BIGINT | |
-| generos | TEXT | |
-| nota_media | DOUBLE PRECISION | |
-| numero_votos | BIGINT | |
+
+| Campo            | Tipo             | Restrição |
+| ---------------- | ---------------- | --------- |
+| tconst           | TEXT             | PK        |
+| tipo_titulo      | TEXT             |           |
+| titulo_principal | TEXT             |           |
+| titulo_original  | TEXT             |           |
+| conteudo_adulto  | BOOLEAN          |           |
+| ano_inicio       | BIGINT           |           |
+| ano_fim          | BIGINT           |           |
+| duracao_minutos  | BIGINT           |           |
+| generos          | TEXT             |           |
+| nota_media       | DOUBLE PRECISION |           |
+| numero_votos     | BIGINT           |           |
 
 ### INTERAÇÃO_FILME
-| Campo | Tipo | Restrição |
-|-------|------|-----------|
-| id | BIGINT | PK, IDENTITY |
-| id_usuario | BIGINT | FK |
-| id_filme_curtido | TEXT | FK |
-| id_filme_rejeitado | TEXT | FK |
-| data_criacao | TIMESTAMP | NOT NULL |
+
+| Campo              | Tipo      | Restrição    |
+| ------------------ | --------- | ------------ |
+| id                 | BIGINT    | PK, IDENTITY |
+| id_usuario         | BIGINT    | FK           |
+| id_filme_curtido   | TEXT      | FK           |
+| id_filme_rejeitado | TEXT      | FK           |
+| data_criacao       | TIMESTAMP | NOT NULL     |
 
 ---
 
@@ -159,16 +220,20 @@ CREATE TABLE users_movies (
   )
 );
 ```
+
 ---
+
 ## 1. Requisitos Funcionais
-Os requisitos abaixo descrevem as principais funcionalidades do sistema que envolvem operações com o banco de dados:
+
+Os requisitos abaixo descrevem as principais funcionalidades do sistema que
+envolvem operações com o banco de dados:
 
 - **Cadastro de usuários**
   - Inserção de dados na tabela de usuários
   - Validação de dados únicos (email, nome_perfil)
 
 - **Interações com filmes**
-  - Registro de curtidas/descurtidas 
+  - Registro de curtidas/descurtidas
   - Armazenamento do histórico de interações
 
 - **Busca e filtros**
@@ -181,12 +246,14 @@ Os requisitos abaixo descrevem as principais funcionalidades do sistema que envo
 ## 2. Modelo de Dados
 
 ### 2.1 Estrutura
+
 - Diagrama Entidade-Relacionamento (DER)
 - Modelo Relacional
 - Dicionário de dados das tabelas
 - Mapeamento dos relacionamentos
 
 ### 2.2 Relacionamentos
+
 - Usuário → Interações (1:N)
 - Filme → Interações (1:N)
 
@@ -195,21 +262,25 @@ Os requisitos abaixo descrevem as principais funcionalidades do sistema que envo
 ## 3. Requisitos Não Funcionais
 
 ### 3.1 Performance
+
 - Tempo de resposta das consultas
 - Otimização de índices
 - Cache de consultas frequentes
 
 ### 3.2 Segurança
+
 - Criptografia de dados sensíveis
 - Controle de acesso
 - Proteção contra injeção SQL
 
 ### 3.3 Escalabilidade
+
 - Capacidade de crescimento
 - Particionamento de dados
 - Balanceamento de carga
 
 ### 3.4 Backup e Recuperação
+
 - Políticas de backup
 - Procedimentos de recuperação
 - Retenção de dados
@@ -219,10 +290,12 @@ Os requisitos abaixo descrevem as principais funcionalidades do sistema que envo
 ## 4. Regras de Negócio
 
 ### 4.1 Interações
+
 - Um usuário não pode curtir e descurtir o mesmo filme simultaneamente
 - Todas as interações devem ser registradas com timestamp
 
 ### 4.2 Conteúdo
+
 - Filmes adultos têm acesso restrito
 - Classificação etária deve ser respeitada
 
@@ -231,11 +304,13 @@ Os requisitos abaixo descrevem as principais funcionalidades do sistema que envo
 ## 5. Requisitos de Integração
 
 ### 5.1 APIs Externas
+
 - Integração com IMDb
 - Sincronização periódica
 - Tratamento de inconsistências
 
 ### 5.2 Formato dos Dados
+
 - Padronização de dados importados
 - Mapeamento de campos externos
 - Validação de integridade
