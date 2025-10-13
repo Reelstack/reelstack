@@ -83,14 +83,14 @@
 
 ### **Resumo das Relações entre Tabelas**
 
-| Relação                                        | Tipo                                               | Descrição |
-| ---------------------------------------------- | -------------------------------------------------- | --------- |
-| **profiles** 1 → N **collections**             | Um perfil pode ter várias coleções.                |           |
-| **collections** 1 → N **collection_movies**    | Cada coleção contém vários filmes.                 |           |
-| **movies** 1 → N **collection_movies**         | Um filme pode estar em várias coleções.            |           |
-| **profiles** 1 → N **user_movie_interactions** | Um perfil pode curtir ou não curtir vários filmes. |           |
-| **movies** 1 → N **user_movie_interactions**   | Um filme pode receber interações de vários perfis. |           |
-| **profiles** 1 → N **user_preferences**        | Um perfil pode ter várias preferências.            |           |
+| Relação                                        | Tipo                                               |
+| ---------------------------------------------- | -------------------------------------------------- |
+| **profiles** 1 → N **collections**             | Um perfil pode ter várias coleções.                |
+| **collections** 1 → N **collection_movies**    | Cada coleção contém vários filmes.                 |
+| **movies** 1 → N **collection_movies**         | Um filme pode estar em várias coleções.            |
+| **profiles** 1 → N **user_movie_interactions** | Um perfil pode curtir ou não curtir vários filmes. |
+| **movies** 1 → N **user_movie_interactions**   | Um filme pode receber interações de vários perfis. |
+| **profiles** 1 → N **user_preferences**        | Um perfil pode ter várias preferências.            |
 
 ---
 
