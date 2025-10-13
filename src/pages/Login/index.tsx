@@ -16,7 +16,7 @@ export function Login() {
   }, []);
 
   async function getUsers() {
-    const { data } = await supabase.from('users').select();
+    const { data } = await supabase.from('profiles').select();
     setUsers((data ?? []) as User[]);
   }
 

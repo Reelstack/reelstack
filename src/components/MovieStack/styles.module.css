@@ -131,3 +131,13 @@
 .collections {
   height: auto;
 }
+
+.loading {
+  text-align: center;
+  padding: 1rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  margin: 1rem 0;
+}

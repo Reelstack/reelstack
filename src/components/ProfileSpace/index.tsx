@@ -1,11 +1,11 @@
 import styles from './styles.module.css';
 import { useState } from 'react';
-import type { OMDBMovie } from '../../services/api/omdb/types';
-import { Collection } from '../historySpace';
+import { MovieStack } from '../MovieStack';
+import type { Movie } from '../../services/api/supa-api/movies';
 
 export function ProfileSpace() {
-  const [likedMovies, setLikedMovies] = useState<OMDBMovie[]>([]);
-  const [dislikedMovies, setDislikedMovies] = useState<OMDBMovie[]>([]);
+  const [likedMovies, setLikedMovies] = useState<Movie[]>([]);
+  const [dislikedMovies, setDislikedMovies] = useState<Movie[]>([]);
   return (
     <div className={styles.profileSpace}>
       <div className={styles.userSpace}>
@@ -37,13 +37,13 @@ export function ProfileSpace() {
         </div>
       </div>
 
-      <Collection
+      <MovieStack
         title='Liked Movies'
         movies={likedMovies}
         setMovies={setLikedMovies}
         color='var(--success)'
       />
-      <Collection
+      <MovieStack
         title='Disliked Movies'
         movies={dislikedMovies}
         setMovies={setDislikedMovies}

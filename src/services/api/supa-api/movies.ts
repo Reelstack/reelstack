@@ -1,4 +1,4 @@
-import { supabase } from '@lib/supabaseClient';
+import { supabase } from '../../../lib/supabaseClient';
 
 // All columns
 export interface Movie {
@@ -491,5 +491,3 @@ export class MoviesService {
     }
   }
 }
-
-export default MoviesService;

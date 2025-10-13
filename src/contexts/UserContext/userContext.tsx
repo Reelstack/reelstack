@@ -17,13 +17,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(userReducer, { users: [] as User[] });
 
   async function getUsers() {
-    const { data } = await supabase.from('users').select();
+    const { data } = await supabase.from('profiles').select();
     if (data) dispatch({ type: 'SET_USERS', payload: data });
   }
 
   async function updateUser(id: string, email: string) {
     const { data } = await supabase
-      .from('users')
+      .from('profiles')
       .update({ email })
       .eq('id', id)
       .select()
@@ -51,10 +51,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       const newUser = { id: data.user.id, email: data.user.email ?? null };
       // Insert the new user into the 'users' table
       const { error: insertError } = await supabase
-        .from('users')
+        .from('profiles')
         .insert([{ id: newUser.id, email: newUser.email }]);
       if (insertError) {
-        console.error('Error inserting user into users table:', insertError.message);
+        console.error(
+          'Error inserting user into profiles table:',
+          insertError.message,
+        );
         return null;
       }
       dispatch({ type: 'ADD_USER', payload: newUser });
@@ -65,7 +68,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function deleteUser(id: string) {
-    await supabase.from('users').delete().eq('id', id);
+    await supabase.from('profiles').delete().eq('id', id);
     dispatch({ type: 'DELETE_USER', payload: id });
   }
 
