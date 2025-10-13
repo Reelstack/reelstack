@@ -100,14 +100,31 @@
 
 ```mermaid
 erDiagram
-    USUÁRIO ||--o{ INTERAÇÃO_FILME : realiza
-    FILME ||--o{ INTERAÇÃO_FILME : recebe
+    PERFIL ||--o{ COLECAO : possui
+    COLECAO ||--o{ FILME_COLECAO : contem
+    FILME ||--o{ FILME_COLECAO : pertence
+    PERFIL ||--o{ INTERACAO_FILME : realiza
+    FILME ||--o{ INTERACAO_FILME : recebe
+    PERFIL ||--o{ PREFERENCIA_USUARIO : define
 
-    USUÁRIO {
-        id ID_PK
-        email EMAIL
+    PERFIL {
+        id UUID_PK
         nome_perfil TEXTO
+        bio TEXTO
+        avatar_url TEXTO
         data_criacao TIMESTAMP
+        data_atualizacao TIMESTAMP
+    }
+
+    COLECAO {
+        id ID_PK
+        id_perfil UUID_FK
+        nome TEXTO
+        descricao TEXTO
+        visibilidade TEXTO
+        imagem_capa URL
+        data_criacao TIMESTAMP
+        data_atualizacao TIMESTAMP
     }
 
     FILME {
@@ -124,28 +141,63 @@ erDiagram
         numero_votos BIGINT
     }
 
-    INTERAÇÃO_FILME {
-        id_usuario ID_FK
-        id_filme_curtido ID_FILME_FK
-        id_filme_rejeitado ID_FILME_FK
+    FILME_COLECAO {
+        id_colecao ID_FK
+        id_filme ID_FILME_FK
+        data_adicao TIMESTAMP
+    }
+
+    INTERACAO_FILME {
+        id ID_PK
+        id_perfil UUID_FK
+        id_filme ID_FILME_FK
+        tipo_interacao TEXTO
         data_criacao TIMESTAMP
     }
+
+    PREFERENCIA_USUARIO {
+        id ID_PK
+        id_perfil UUID_FK
+        tipo_preferencia TEXTO
+        valor_preferencia TEXTO
+    }
+
 ```
 
 ---
 
-## 2. Modelo Lógico
+## **2. Modelo Lógico**
 
-### USUÁRIO
+### **PERFIL**
 
-| Campo        | Tipo      | Restrição        |
-| ------------ | --------- | ---------------- |
-| id           | BIGINT    | PK, IDENTITY     |
-| email        | VARCHAR   | UNIQUE, NOT NULL |
-| nome_perfil  | TEXT      | UNIQUE, NOT NULL |
-| data_criacao | TIMESTAMP | NOT NULL         |
+| Campo            | Tipo      | Restrição                          |
+| ---------------- | --------- | ---------------------------------- |
+| id               | UUID      | PK, DEFAULT `auth.uid()`           |
+| nome_perfil      | TEXT      | UNIQUE, NOT NULL                   |
+| bio              | TEXT      |                                    |
+| avatar_url       | TEXT      |                                    |
+| data_criacao     | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'` |
+| data_atualizacao | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'` |
+| fk_auth_user     | UUID      | FK → `auth.users(id)`              |
 
-### FILME
+---
+
+### **COLEÇÃO**
+
+| Campo            | Tipo      | Restrição                                                         |
+| ---------------- | --------- | ----------------------------------------------------------------- |
+| id               | BIGINT    | PK, IDENTITY                                                      |
+| id_perfil        | UUID      | FK → `profiles(id)`                                               |
+| nome             | TEXT      | NOT NULL                                                          |
+| descricao        | TEXT      |                                                                   |
+| visibilidade     | TEXT      | CHECK (`'public'`, `'private'`, `'unlisted'`), DEFAULT `'public'` |
+| imagem_capa      | TEXT      |                                                                   |
+| data_criacao     | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'`                                |
+| data_atualizacao | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'`                                |
+
+---
+
+### **FILME**
 
 | Campo            | Tipo             | Restrição |
 | ---------------- | ---------------- | --------- |
@@ -161,15 +213,38 @@ erDiagram
 | nota_media       | DOUBLE PRECISION |           |
 | numero_votos     | BIGINT           |           |
 
-### INTERAÇÃO_FILME
+---
 
-| Campo              | Tipo      | Restrição    |
-| ------------------ | --------- | ------------ |
-| id                 | BIGINT    | PK, IDENTITY |
-| id_usuario         | BIGINT    | FK           |
-| id_filme_curtido   | TEXT      | FK           |
-| id_filme_rejeitado | TEXT      | FK           |
-| data_criacao       | TIMESTAMP | NOT NULL     |
+### **FILME_COLEÇÃO**
+
+| Campo       | Tipo      | Restrição                          |
+| ----------- | --------- | ---------------------------------- |
+| id_colecao  | BIGINT    | PK, FK → `collections(id)`         |
+| id_filme    | TEXT      | PK, FK → `movies(tconst)`          |
+| data_adicao | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'` |
+
+---
+
+### **INTERAÇÃO_FILME**
+
+| Campo          | Tipo      | Restrição                                    |
+| -------------- | --------- | -------------------------------------------- |
+| id             | BIGINT    | PK, IDENTITY                                 |
+| id_perfil      | UUID      | FK → `profiles(id)`                          |
+| id_filme       | TEXT      | FK → `movies(tconst)`                        |
+| tipo_interacao | TEXT      | CHECK (`'like'`, `'dislike'`)                |
+| data_criacao   | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'`, NOT NULL |
+
+---
+
+### **PREFERÊNCIA_USUÁRIO**
+
+| Campo             | Tipo   | Restrição                                              |
+| ----------------- | ------ | ------------------------------------------------------ |
+| id                | BIGINT | PK, IDENTITY                                           |
+| id_perfil         | UUID   | FK → `profiles(id)`                                    |
+| tipo_preferencia  | TEXT   | CHECK (`'genre'`, `'actor'`, `'director'`, `'decade'`) |
+| valor_preferencia | TEXT   | NOT NULL                                               |
 
 ---
 
@@ -180,7 +255,27 @@ erDiagram
 -- WARNING: This schema is for context only and is not meant to be run.
 -- Table order and constraints may not be valid for execution.
 
-CREATE TABLE movies (
+CREATE TABLE public.collection_movies (
+  collection_id bigint NOT NULL,
+  movie_id text NOT NULL,
+  added_at timestamp with time zone DEFAULT (now() AT TIME ZONE 'utc'::text),
+  CONSTRAINT collection_movies_pkey PRIMARY KEY (collection_id, movie_id),
+  CONSTRAINT collection_movies_collection_id_fkey FOREIGN KEY (collection_id) REFERENCES public.collections(id),
+  CONSTRAINT collection_movies_movie_id_fkey FOREIGN KEY (movie_id) REFERENCES public.movies(tconst)
+);
+CREATE TABLE public.collections (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  profile_id uuid NOT NULL,
+  name text NOT NULL,
+  description text,
+  created_at timestamp with time zone DEFAULT (now() AT TIME ZONE 'utc'::text),
+  updated_at timestamp with time zone DEFAULT (now() AT TIME ZONE 'utc'::text),
+  visibility text DEFAULT 'public'::text CHECK (visibility = ANY (ARRAY['public'::text, 'private'::text, 'unlisted'::text])),
+  cover_image_url text,
+  CONSTRAINT collections_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_collections_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.movies (
   tconst text NOT NULL,
   titleType text,
   primaryTitle text,
@@ -194,30 +289,33 @@ CREATE TABLE movies (
   numVotes bigint,
   CONSTRAINT movies_pkey PRIMARY KEY (tconst)
 );
-
-CREATE TABLE users (
-  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  email character varying NOT NULL UNIQUE,
-  profile_name text NOT NULL DEFAULT ''::text UNIQUE,
-  CONSTRAINT users_pkey PRIMARY KEY (id)
+CREATE TABLE public.profiles (
+  id uuid NOT NULL DEFAULT auth.uid(),
+  created_at timestamp with time zone DEFAULT (now() AT TIME ZONE 'utc'::text),
+  bio text,
+  updated_at timestamp with time zone DEFAULT (now() AT TIME ZONE 'utc'::text),
+  avatar_url text,
+  profile_name text NOT NULL UNIQUE,
+  CONSTRAINT profiles_pkey PRIMARY KEY (id),
+  CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
-
-CREATE TABLE users_movies (
+CREATE TABLE public.user_movie_interactions (
+  created_at timestamp with time zone NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
+  interaction_type text CHECK (interaction_type = ANY (ARRAY['like'::text, 'dislike'::text])),
   id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
-  id_movie_liked text,
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  id_movie_disliked text,
-  id_user bigint NOT NULL,
-  CONSTRAINT users_movies_pkey PRIMARY KEY (id),
-  CONSTRAINT users_profile_id_movie_fkey FOREIGN KEY (id_movie_liked) REFERENCES movies(tconst),
-  CONSTRAINT users_movies_id_movie_disliked_fkey FOREIGN KEY (id_movie_disliked) REFERENCES movies(tconst),
-  CONSTRAINT users_movies_id_user_fkey FOREIGN KEY (id_user) REFERENCES users(id),
-  CONSTRAINT users_movies_like_dislike_check CHECK (
-    (id_movie_liked IS NOT NULL AND id_movie_disliked IS NULL)
-    OR
-    (id_movie_liked IS NULL AND id_movie_disliked IS NOT NULL)
-  )
+  profile_id uuid,
+  movie_id text,
+  CONSTRAINT user_movie_interactions_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_user_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id),
+  CONSTRAINT fk_user_movie FOREIGN KEY (movie_id) REFERENCES public.movies(tconst)
+);
+CREATE TABLE public.user_preferences (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  profile_id uuid,
+  preference_type text CHECK (preference_type = ANY (ARRAY['genre'::text, 'actor'::text, 'director'::text, 'decade'::text])),
+  preference_value text NOT NULL,
+  CONSTRAINT user_preferences_pkey PRIMARY KEY (id),
+  CONSTRAINT user_preferences_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
 );
 ```
 
