@@ -40,9 +40,11 @@ export function MovieStack({
         1,
       ); // limita a 1 resultado
 
-      // checa por posters (COMENTADO POIS NÃO TEM POSTER AINDA)
-      // if (!movie.Poster || movie.Poster === 'N/A') {
+      // TODO: Implement poster validation when available
+      // if (!movie.posterUrl || movie.posterUrl === 'N/A') {
       //   setError('Poster not available.');
+      //   return;
+      // }
       if (error) throw error;
       if (!data || data.length === 0) {
         setError('Movie not found.');
@@ -88,15 +90,22 @@ export function MovieStack({
         <button
           className={styles.edit}
           onClick={handleAddMovie}
-          disabled={loading}
+          disabled={loading}  
         >
           {/* trocar svg no futuro */}
           <h3 style={{ color: 'var(--contrast)' }}>Edit</h3>
         </button>
         {error && <p className={styles.error}>{error}</p>}
       </div>
+
+      {loading && (
+        <div className={styles.loading}>
+          <p>Searching for movies...</p>
+        </div>
+      )}
+
       <div className={styles.historySpace} ref={historyRef}>
-        {current.length === 0 && (
+        {current.length === 0 && !loading && (
           <div className={styles.empty}>
             <p>No movies yet. Click edit and add some, will you?</p>
           </div>
@@ -108,11 +117,18 @@ export function MovieStack({
             onMouseEnter={() => setHover(m.tconst)} // passa o id
             onMouseLeave={() => setHover(null)} // reseta
           >
-            <img src={'/goncha.jpg'} alt={m.primaryTitle ?? 'Movie poster'} />
+            <img 
+              /* src={m.posterUrl || '/placeholder-poster.jpg'} */
+              src={'/goncha.jpg'}
+              alt={m.primaryTitle ?? 'Movie poster'} 
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/placeholder-poster.jpg';
+              }}
+            />
             {isHover === m.tconst && ( // checa o id
               <div className={styles.movieName}>
-                <p>{m.primaryTitle}</p>
-                <p>({m.startYear})</p>
+                <p>{m.primaryTitle ?? 'Unknown Title'}</p>
+                <p>({m.startYear ?? 'Unknown Year'})</p>
               </div>
             )}
           </div>
