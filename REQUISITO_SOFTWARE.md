@@ -433,13 +433,7 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **Fonte/autoridade:** Boas práticas de UX e validação de entrada.  
 - **Impacto:** Requisitos US02 – Cadastrar novo usuário; US03 – Fazer login.  
 ---
-### RN-007 – Mensagem de erro obrigatória  
-- **Descrição:** Toda operação que falhar (login inválido, erro de carregamento, tentativa duplicada) deve gerar mensagem clara e específica ao usuário.  
-- **Objetivo:** Garantir feedback adequado para que o usuário compreenda a falha e saiba como agir.  
-- **Fonte/autoridade:** Diretriz de usabilidade e feedback visual do sistema.  
-- **Impacto:** Requisitos US01, US02, US03, US09.
----
-### RN-008 – Mensagem de erro obrigatória
+### RN-007 – Mensagem de erro obrigatória
 - **Descrição:** Toda operação que falhar (login inválido, erro de carregamento, tentativa duplicada) deve gerar mensagem clara e específica ao usuário. As mensagens devem ser visíveis, objetivas e evitar termos técnicos confusos.
 - **Objetivo:** Garantir feedback adequado para que o usuário compreenda a falha e saiba como agir.
 - **Fonte/autoridade:** Diretriz de usabilidade e feedback visual do sistema.
