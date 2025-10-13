@@ -40,7 +40,7 @@ export function MovieStack({
         1,
       ); // limita a 1 resultado
 
-      // checa por posteres(COMENTADO POIS NÃO TEM POSTER AINDA)
+      // checa por posters (COMENTADO POIS NÃO TEM POSTER AINDA)
       // if (!movie.Poster || movie.Poster === 'N/A') {
       //   setError('Poster not available.');
       if (error) throw error;
