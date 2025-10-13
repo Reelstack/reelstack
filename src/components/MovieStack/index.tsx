@@ -1,23 +1,22 @@
 import styles from './styles.module.css';
-import type { OMDBMovie } from '../../services/api/omdb/types';
-import { omdb } from '../../services/ombdClient';
+import { MoviesService, type Movie } from '../../services/api/supa-api/movies';
 import { useEffect, useRef, useState } from 'react';
 
 const MOVIES_PER_PAGE = 18;
 
-interface CollectionProps {
+interface MovieStackProps {
   title: string;
-  movies: OMDBMovie[];
-  setMovies: React.Dispatch<React.SetStateAction<OMDBMovie[]>>;
+  movies: Movie[];
+  setMovies: React.Dispatch<React.SetStateAction<Movie[]>>;
   color?: string;
 }
 
-export function Collection({
+export function MovieStack({
   title,
   movies,
   setMovies,
   color = 'var(--success)',
-}: CollectionProps) {
+}: MovieStackProps) {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,23 +32,35 @@ export function Collection({
     setError(null);
 
     try {
-      const movie = await omdb.getMovieByTitle(titlePrompt);
+      // Busca filmes com o título digitado
+      const { data, error } = await MoviesService.searchMovies(
+        {
+          title: titlePrompt,
+        },
+        1,
+      ); // limita a 1 resultado
 
-      // checa por posteres
-      if (!movie.Poster || movie.Poster === 'N/A') {
-        setError('Poster not available.');
+      // checa por posteres(COMENTADO POIS NÃO TEM POSTER AINDA)
+      // if (!movie.Poster || movie.Poster === 'N/A') {
+      //   setError('Poster not available.');
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        setError('Movie not found.');
         return;
       }
 
-      // checa duplicata
+      const movie = data[0];
+
+      // Checa duplicata
       setMovies(prev => {
-        if (prev.some(m => m.imdbID === movie.imdbID)) {
+        if (prev.some(m => m.tconst === movie.tconst)) {
           setError('Movie already added.');
           return prev;
         }
-        setPage(0);
         return [movie, ...prev];
       });
+      // atualiza a pagina
+      setPage(0);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -92,16 +103,16 @@ export function Collection({
         )}
         {current.map(m => (
           <div
-            key={m.imdbID}
+            key={m.tconst}
             className={styles.moviePoster}
-            onMouseEnter={() => setHover(m.imdbID)} // passa o id
+            onMouseEnter={() => setHover(m.tconst)} // passa o id
             onMouseLeave={() => setHover(null)} // reseta
           >
-            <img src={m.Poster} alt={m.Title} />
-            {isHover === m.imdbID && ( // checa o id
+            <img src={'/goncha.jpg'} alt={m.primaryTitle ?? 'Movie poster'} />
+            {isHover === m.tconst && ( // checa o id
               <div className={styles.movieName}>
-                <p>{m.Title}</p>
-                <p>({m.Year})</p>
+                <p>{m.primaryTitle}</p>
+                <p>({m.startYear})</p>
               </div>
             )}
           </div>
