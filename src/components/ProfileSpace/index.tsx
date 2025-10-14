@@ -42,12 +42,14 @@ export function ProfileSpace() {
         movies={likedMovies}
         setMovies={setLikedMovies}
         color='var(--success)'
+        interactionType='like'
       />
       <MovieStack
         title='Disliked Movies'
         movies={dislikedMovies}
         setMovies={setDislikedMovies}
         color='var(--error)'
+        interactionType='dislike'
       />
 
       <div className={styles.footer}>teste 4</div>

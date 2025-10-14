@@ -51,6 +51,14 @@ export interface MovieRuntime {
   endYear: number | null;
 }
 
+export interface UserMovieInteraction {
+  id?: number;
+  profile_id: string;
+  movie_id: string;
+  interaction_type: 'like' | 'dislike';
+  created_at?: string;
+}
+
 export interface MoviesResponse<T = Movie> {
   data: T[] | null;
   error: unknown;
@@ -489,5 +497,33 @@ export class MoviesService {
     } catch (err) {
       return { data: null, error: err };
     }
+  }
+
+  static async addUserMovieInteraction({
+    profileId,
+    movieId,
+    interactionType,
+  }: {
+    profileId: string;
+    movieId: string;
+    interactionType: 'like' | 'dislike';
+  }) {
+    const { data, error } = await supabase
+      .from('user_movie_interactions')
+      .upsert(
+        [
+          {
+            profile_id: profileId,
+            movie_id: movieId,
+            interaction_type: interactionType,
+          },
+        ],
+        {
+          onConflict: 'profile_id,movie_id',
+        },
+      );
+
+    if (error) throw error;
+    return data;
   }
 }

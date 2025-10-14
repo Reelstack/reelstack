@@ -1,6 +1,7 @@
 import styles from './styles.module.css';
 import { MoviesService, type Movie } from '../../services/api/supa-api/movies';
 import { useEffect, useRef, useState } from 'react';
+import { supabase } from '../../lib/supabaseClient';
 
 const MOVIES_PER_PAGE = 18;
 
@@ -9,6 +10,7 @@ interface MovieStackProps {
   movies: Movie[];
   setMovies: React.Dispatch<React.SetStateAction<Movie[]>>;
   color?: string;
+  interactionType?: 'like' | 'dislike';
 }
 
 export function MovieStack({
@@ -16,6 +18,7 @@ export function MovieStack({
   movies,
   setMovies,
   color = 'var(--success)',
+  interactionType = 'like',
 }: MovieStackProps) {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -32,6 +35,13 @@ export function MovieStack({
     setError(null);
 
     try {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+      if (sessionError || !session) throw new Error('User not logged in');
+
+      const profileId = session.user.id; // Supabase ID
       // Busca filmes com o título digitado
       const { data, error } = await MoviesService.searchMovies(
         {
@@ -63,6 +73,12 @@ export function MovieStack({
       });
       // atualiza a pagina
       setPage(0);
+      //salva os filmes interagidos do usuario
+      await MoviesService.addUserMovieInteraction({
+        profileId,
+        movieId: movie.tconst,
+        interactionType, // or 'dislike', depending on your UI
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -90,7 +106,7 @@ export function MovieStack({
         <button
           className={styles.edit}
           onClick={handleAddMovie}
-          disabled={loading}  
+          disabled={loading}
         >
           {/* trocar svg no futuro */}
           <h3 style={{ color: 'var(--contrast)' }}>Edit</h3>
@@ -117,11 +133,11 @@ export function MovieStack({
             onMouseEnter={() => setHover(m.tconst)} // passa o id
             onMouseLeave={() => setHover(null)} // reseta
           >
-            <img 
+            <img
               /* src={m.posterUrl || '/placeholder-poster.jpg'} */
               src={'/goncha.jpg'}
-              alt={m.primaryTitle ?? 'Movie poster'} 
-              onError={(e) => {
+              alt={m.primaryTitle ?? 'Movie poster'}
+              onError={e => {
                 (e.target as HTMLImageElement).src = '/placeholder-poster.jpg';
               }}
             />
