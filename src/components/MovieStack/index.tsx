@@ -77,7 +77,7 @@ export function MovieStack({
       await MoviesService.addUserMovieInteraction({
         profileId,
         movieId: movie.tconst,
-        interactionType, // or 'dislike', depending on your UI
+        interactionType,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');

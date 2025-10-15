@@ -1,6 +1,6 @@
 // Serviços da API
 export { default as OMDBService } from './api/omdb/omdb';
-export { default as MoviesService } from './api/supa-api/movies';
+export * as MoviesService from './api/supa-api/movies';
 
 // Tipos
 export type {
