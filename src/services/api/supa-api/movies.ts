@@ -508,22 +508,39 @@ export class MoviesService {
     movieId: string;
     interactionType: 'like' | 'dislike';
   }) {
-    const { data, error } = await supabase
+    // checa se ja existe interações
+    const { data: existing, error: selectError } = await supabase
       .from('user_movie_interactions')
-      .upsert(
-        [
-          {
-            profile_id: profileId,
-            movie_id: movieId,
-            interaction_type: interactionType,
-          },
-        ],
-        {
-          onConflict: 'profile_id,movie_id',
-        },
-      );
+      .select('id')
+      .eq('profile_id', profileId)
+      .eq('movie_id', movieId)
+      .maybeSingle();
 
-    if (error) throw error;
-    return data;
+    if (selectError) throw selectError;
+
+    if (existing) {
+      // atualiza as interações caso exista
+      const { data, error } = await supabase
+        .from('user_movie_interactions')
+        .update({ interaction_type: interactionType })
+        .eq('id', existing.id)
+        .select();
+
+      if (error) throw error;
+      return data;
+    } else {
+      // caso não exista, insere uma interação
+      const { data, error } = await supabase
+        .from('user_movie_interactions')
+        .insert({
+          profile_id: profileId,
+          movie_id: movieId,
+          interaction_type: interactionType,
+        })
+        .select();
+
+      if (error) throw error;
+      return data;
+    }
   }
 }
