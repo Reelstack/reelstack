@@ -1,12 +1,12 @@
 import { createContext, useReducer, useEffect } from 'react';
 import { userReducer } from './userReducer';
-import type { State, User } from './userTypes';
+import type { State, UserProfile } from './userTypes';
 import { supabase } from '../../lib/supabaseClient';
 
 interface ContextProps {
   state: State;
   getUsers: () => Promise<void>;
-  addUser: (user: { email: string; password: string }) => Promise<User | null>;
+  addUser: (user: { email: string; password: string }) => Promise<UserProfile | null>;
   updateUser: (id: string, email: string) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
 }
@@ -14,7 +14,11 @@ interface ContextProps {
 export const UserContext = createContext<ContextProps | null>(null);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(userReducer, { users: [] as User[] });
+  const [state, dispatch] = useReducer(userReducer, {
+    users: [] as UserProfile[],
+    loading: false,
+    error: null
+  });
 
   async function getUsers() {
     const { data } = await supabase.from('profiles').select();
@@ -38,7 +42,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }: {
     email: string;
     password: string;
-  }): Promise<User | null> {
+  }): Promise<UserProfile | null> {
     const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) {
@@ -47,12 +51,20 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
 
     if (data.user) {
-      // convert Supabase Auth user to your User type
-      const newUser = { id: data.user.id, email: data.user.email ?? null };
-      // Insert the new user into the 'users' table
+      // Gera um identificador único e não sensível para profile_name
+      const uniqueProfileName = `user_${Math.random().toString(36).substring(2, 10)}`;
+      const newUser: UserProfile = {
+        id: data.user.id,
+        profile_name: uniqueProfileName, // valor único e não sensível
+        avatar_url: '',   // valor padrão string
+        bio: '',         // valor padrão string
+        created_at: new Date().toISOString(), // ou deixe o banco preencher
+        updated_at: new Date().toISOString(), // ou deixe o banco preencher
+      };
+      // Insert the new user into the 'profiles' table
       const { error: insertError } = await supabase
         .from('profiles')
-        .insert([{ id: newUser.id, email: newUser.email }]);
+        .insert([newUser]);
       if (insertError) {
         console.error(
           'Error inserting user into profiles table:',

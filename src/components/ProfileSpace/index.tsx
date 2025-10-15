@@ -1,18 +1,36 @@
 import styles from './styles.module.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MovieStack } from '../MovieStack';
 import type { Movie } from '../../services/api/supa-api/movies';
+import { supabase } from '../../lib/supabaseClient';
 
 export function ProfileSpace() {
   const [likedMovies, setLikedMovies] = useState<Movie[]>([]);
   const [dislikedMovies, setDislikedMovies] = useState<Movie[]>([]);
+  const [displayName, setDisplayName] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data: authData } = await supabase.auth.getUser();
+      const user = authData?.user;
+      if (!user) return;
+      setEmail(user.email ?? null);
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('profile_name')
+        .eq('id', user.id)
+        .single();
+      if (profile?.profile_name) setDisplayName(profile.profile_name);
+    })();
+  }, []);
+
   return (
     <div className={styles.profileSpace}>
       <div className={styles.userSpace}>
         <div className={styles.userInfo}>
-          <h1 style={{ textAlign: 'center' }}>nome ipsum</h1>
-          <h3>email ipsum dolor si amet</h3>
-          <h3>telefonen ipsum</h3>
+          <h1 style={{ textAlign: 'center' }}>{displayName || 'nome ipsum'}</h1>
+          <h3>{email || 'email ipsum dolor si amet'}</h3>
         </div>
         {/* componentizar no futuro*/}
         <div className={styles.userStats}>
