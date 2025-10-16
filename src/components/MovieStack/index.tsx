@@ -27,6 +27,37 @@ export function MovieStack({
   const shouldScroll = useRef(false);
   const [isHover, setHover] = useState<string | null>(null);
 
+  useEffect(() => {
+    async function loadUserMovies() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+        if (sessionError || !session) throw new Error('User not logged in');
+
+        const profileId = session.user.id;
+
+        const userMovies = await MoviesService.getUserMovies(
+          profileId,
+          interactionType,
+        );
+        if (userMovies && userMovies.length > 0) {
+          setMovies(userMovies);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load movies.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadUserMovies();
+  }, [interactionType, setMovies]);
+
   async function handleAddMovie() {
     const titlePrompt = prompt('Movie name?');
     if (!titlePrompt) return;

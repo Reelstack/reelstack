@@ -543,4 +543,22 @@ export class MoviesService {
       return data;
     }
   }
+  static async getUserMovies(
+    profileId: string,
+    interactionType: 'like' | 'dislike',
+  ) {
+    const { data, error } = await supabase
+      .from('user_movie_interactions')
+      .select('movies(*)') // metodo relacional
+      .eq('profile_id', profileId)
+      .eq('interaction_type', interactionType)
+      .order('created_at', { ascending: false }); // organiza em ordem do mais recente
+
+    if (error) throw error;
+
+    const movies = data // muda o array de arrays em um array simples
+      .map((d: any) => d.movies)
+      .filter((m: any): m is Movie => !!m); // filtro para evitar problemas
+    return movies;
+  }
 }
