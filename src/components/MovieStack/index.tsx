@@ -2,6 +2,7 @@ import styles from './styles.module.css';
 import { MoviesService, type Movie } from '../../services/api/supa-api/movies';
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import toast from 'react-hot-toast';
 
 const MOVIES_PER_PAGE = 18;
 
@@ -22,7 +23,7 @@ export function MovieStack({
 }: MovieStackProps) {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
   const historyRef = useRef<HTMLDivElement | null>(null);
   const shouldScroll = useRef(false);
   const [isHover, setHover] = useState<string | null>(null);
@@ -30,14 +31,13 @@ export function MovieStack({
   useEffect(() => {
     async function loadUserMovies() {
       setLoading(true);
-      setError(null);
 
       try {
         const {
           data: { session },
           error: sessionError,
         } = await supabase.auth.getSession();
-        if (sessionError || !session) throw new Error('User not logged in');
+        if (sessionError || !session) throw toast.error('User not logged in');
 
         const profileId = session.user.id;
 
@@ -49,7 +49,9 @@ export function MovieStack({
           setMovies(userMovies);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load movies.');
+        toast.error(
+          err instanceof Error ? err.message : 'Failed to load movies.',
+        );
       } finally {
         setLoading(false);
       }
@@ -63,14 +65,13 @@ export function MovieStack({
     if (!titlePrompt) return;
 
     setLoading(true);
-    setError(null);
 
     try {
       const {
         data: { session },
         error: sessionError,
       } = await supabase.auth.getSession();
-      if (sessionError || !session) throw new Error('User not logged in');
+      if (sessionError || !session) throw toast.error('User not logged in');
 
       const profileId = session.user.id; // Supabase ID
       // Busca filmes com o título digitado
@@ -88,7 +89,7 @@ export function MovieStack({
       // }
       if (error) throw error;
       if (!data || data.length === 0) {
-        setError('Movie not found.');
+        toast.error('Movie not found.');
         return;
       }
 
@@ -97,7 +98,7 @@ export function MovieStack({
       // Checa duplicata
       setMovies(prev => {
         if (prev.some(m => m.tconst === movie.tconst)) {
-          setError('Movie already added.');
+          toast.error('Movie already added.');
           return prev;
         }
         return [movie, ...prev];
@@ -111,7 +112,7 @@ export function MovieStack({
         interactionType,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      toast.error(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
@@ -142,7 +143,6 @@ export function MovieStack({
           {/* trocar svg no futuro */}
           <h3 style={{ color: 'var(--contrast)' }}>Edit</h3>
         </button>
-        {error && <p className={styles.error}>{error}</p>}
       </div>
 
       {loading && (
