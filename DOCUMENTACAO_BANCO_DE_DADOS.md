@@ -1,98 +1,96 @@
 # **Documentação do Banco de Dados**
 
-## **Glossário Técnico das Tabelas**
-
-### **Tabela Perfis (profiles)**
-
-| Coluna       | Descrição                                                          | Tipo de Dado | Formato                | Pode ser Nulo? |
-| ------------ | ------------------------------------------------------------------ | ------------ | ---------------------- | -------------- |
-| id           | Identificador único do perfil, vinculado ao usuário autenticado.   | uuid         | UUID v4                | Não            |
-| created_at   | Data e hora de criação do perfil, considerando o fuso horário UTC. | timestamp    | AAAA-MM-DD HH:MM:SS±TZ | Não            |
-| bio          | Texto opcional com a biografia do usuário.                         | string       | texto livre            | Sim            |
-| updated_at   | Data e hora da última atualização do perfil.                       | timestamp    | AAAA-MM-DD HH:MM:SS±TZ | Não            |
-| avatar_url   | Endereço de imagem utilizado como avatar do perfil.                | string       | URL                    | Sim            |
-| profile_name | Nome público do perfil, exibido nas interações sociais e coleções. | string       | texto                  | Não            |
-
+#  Glossário Técnico das Tabelas
 ---
-
-### **Tabela Títulos (movies)**
-
-| Coluna         | Descrição                                                      | Tipo de Dado | Formato        | Pode ser Nulo? |
-| -------------- | -------------------------------------------------------------- | ------------ | -------------- | -------------- |
-| tconst         | Identificador único do título, proveniente do IMDb.            | string       | tt1234567      | Não            |
-| titleType      | Categoria do conteúdo (ex: movie, short, series, documentary). | string       | texto          | Sim            |
-| primaryTitle   | Nome principal pelo qual o título é conhecido.                 | string       | texto          | Sim            |
-| originalTitle  | Nome original no idioma de produção.                           | string       | texto          | Sim            |
-| isAdult        | Indica se o conteúdo é voltado para o público adulto.          | booleano     | true ou false  | Sim            |
-| startYear      | Ano de lançamento ou início de exibição.                       | inteiro      | AAAA           | Sim            |
-| endYear        | Ano de encerramento da exibição (para séries).                 | inteiro      | AAAA           | Sim            |
-| runtimeMinutes | Duração total do conteúdo em minutos.                          | inteiro      | número inteiro | Sim            |
-| genres         | Lista de gêneros associados, separados por vírgula.            | string       | texto          | Sim            |
-| averageRating  | Nota média dos usuários no IMDb.                               | float        | 0.0 a 10.0     | Sim            |
-| numVotes       | Quantidade total de votos recebidos.                           | inteiro      | número inteiro | Sim            |
-
+###  **Tabela Perfis (`profiles`)**
+| Coluna        | Descrição                                                                 | Tipo de Dado | Formato                | Pode ser Nulo? |
+| -------------- | ------------------------------------------------------------------------- | ------------- | ---------------------- | -------------- |
+| id             | Identificador único do perfil, vinculado ao usuário autenticado.          | uuid          | UUID v4                | Não            |
+| created_at     | Data e hora de criação do perfil, considerando o fuso horário UTC.        | timestamp     | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+| bio            | Texto opcional com a biografia do usuário.                                | string        | texto livre            | Sim            |
+| updated_at     | Data e hora da última atualização do perfil.                              | timestamp     | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+| avatar_url     | Endereço de imagem utilizado como avatar do perfil.                       | string        | URL                    | Sim            |
+| profile_name   | Nome público do perfil, exibido nas interações sociais e coleções.        | string        | texto                  | Não            |
 ---
-
-### **Tabela Coleções (collections)**
-
-| Coluna          | Descrição                                                              | Tipo de Dado | Formato                | Pode ser Nulo? |
-| --------------- | ---------------------------------------------------------------------- | ------------ | ---------------------- | -------------- |
-| id              | Identificador único da coleção.                                        | inteiro      | número inteiro         | Não            |
-| profile_id      | Identificador do perfil proprietário da coleção.                       | uuid         | UUID v4                | Não            |
-| name            | Nome da coleção (ex: “Favoritos”, “Assistir mais tarde”).              | string       | texto                  | Não            |
-| description     | Texto descritivo da coleção.                                           | string       | texto                  | Sim            |
-| created_at      | Data e hora da criação da coleção.                                     | timestamp    | AAAA-MM-DD HH:MM:SS±TZ | Não            |
-| updated_at      | Data e hora da última atualização.                                     | timestamp    | AAAA-MM-DD HH:MM:SS±TZ | Não            |
-| visibility      | Define o nível de visibilidade da coleção (public, private, unlisted). | string       | texto                  | Sim            |
-| cover_image_url | Endereço da imagem de capa da coleção.                                 | string       | URL                    | Sim            |
-
+###  **Tabela Tipos de Título (`title_types`)**
+| Coluna    | Descrição                                                 | Tipo de Dado | Formato | Pode ser Nulo? |
+| ---------- | --------------------------------------------------------- | ------------- | ------- | -------------- |
+| id         | Identificador único do tipo de título.                   | inteiro       | número inteiro | Não |
+| type_name  | Nome do tipo de título (ex: movie, short, tvSeries).     | string        | texto   | Não |
 ---
-
-### **Tabela Filmes em Coleção (collection_movies)**
-
-| Coluna        | Descrição                                            | Tipo de Dado | Formato                | Pode ser Nulo? |
-| ------------- | ---------------------------------------------------- | ------------ | ---------------------- | -------------- |
-| collection_id | Identificador da coleção que contém o filme.         | inteiro      | número inteiro         | Não            |
-| movie_id      | Identificador do filme associado à coleção.          | string       | tt1234567              | Não            |
-| added_at      | Data e hora em que o filme foi adicionado à coleção. | timestamp    | AAAA-MM-DD HH:MM:SS±TZ | Não            |
-
+###  **Tabela Gêneros (`genres`)**
+| Coluna | Descrição                            | Tipo de Dado | Formato | Pode ser Nulo? |
+| ------- | ------------------------------------ | ------------- | ------- | -------------- |
+| id      | Identificador único do gênero.       | inteiro       | número inteiro | Não |
+| name    | Nome do gênero (ex: Action, Drama).  | string        | texto   | Não |
 ---
-
-### **Tabela Interações de Usuário com Filmes (user_movie_interactions)**
-
-| Coluna           | Descrição                                                  | Tipo de Dado | Formato                | Pode ser Nulo? |
-| ---------------- | ---------------------------------------------------------- | ------------ | ---------------------- | -------------- |
-| id               | Identificador único da interação.                          | inteiro      | número inteiro         | Não            |
-| profile_id       | Identificador do perfil que realizou a interação.          | uuid         | UUID v4                | Não            |
-| movie_id         | Identificador do filme com o qual o usuário interagiu.     | string       | tt1234567              | Não            |
-| interaction_type | Tipo de interação realizada: 'like' ou 'dislike'.          | string       | texto                  | Não            |
-| created_at       | Data e hora da interação, considerando o fuso horário UTC. | timestamp    | AAAA-MM-DD HH:MM:SS±TZ | Não            |
-
+###  **Tabela Filmes (`movies`)**
+| Coluna          | Descrição                                                        | Tipo de Dado | Formato        | Pode ser Nulo? |
+| ---------------- | ---------------------------------------------------------------- | ------------- | --------------- | -------------- |
+| tconst           | Identificador único do título, proveniente do IMDb.              | string        | tt1234567       | Não            |
+| title_type_id    | Chave estrangeira para o tipo de título.                         | inteiro       | número inteiro  | Sim            |
+| primary_title    | Nome principal pelo qual o título é conhecido.                   | string        | texto           | Sim            |
+| original_title   | Nome original no idioma de produção.                             | string        | texto           | Sim            |
+| is_adult         | Indica se o conteúdo é voltado para o público adulto.            | booleano      | true/false      | Sim            |
+| start_year       | Ano de lançamento ou início de exibição.                         | inteiro       | AAAA            | Sim            |
+| end_year         | Ano de encerramento da exibição (para séries).                   | inteiro       | AAAA            | Sim            |
+| runtime_minutes  | Duração total do conteúdo em minutos.                            | inteiro       | número inteiro  | Sim            |
+| average_rating   | Nota média dos usuários no IMDb.                                 | float         | 0.0 a 10.0      | Sim            |
+| num_votes        | Quantidade total de votos recebidos.                             | inteiro       | número inteiro  | Sim            |
 ---
-
-### **Tabela Preferências de Usuário (user_preferences)**
-
-| Coluna           | Descrição                                                       | Tipo de Dado | Formato        | Pode ser Nulo? |
-| ---------------- | --------------------------------------------------------------- | ------------ | -------------- | -------------- |
-| id               | Identificador único da preferência.                             | inteiro      | número inteiro | Não            |
-| profile_id       | Identificador do perfil associado à preferência.                | uuid         | UUID v4        | Não            |
-| preference_type  | Categoria da preferência (genre, actor, director, decade).      | string       | texto          | Não            |
-| preference_value | Valor correspondente à preferência (ex: “Action”, “Brad Pitt”). | string       | texto          | Não            |
-
+###  **Tabela Gêneros por Filme (`movie_genres`)**
+| Coluna    | Descrição                                         | Tipo de Dado | Formato       | Pode ser Nulo? |
+| ---------- | ------------------------------------------------- | ------------- | -------------- | -------------- |
+| movie_id   | Identificador do filme associado (FK → movies).  | string        | tt1234567      | Não            |
+| genre_id   | Identificador do gênero associado (FK → genres). | inteiro       | número inteiro | Não            |
 ---
-
-### **Resumo das Relações entre Tabelas**
-
-| Relação                                        | Tipo                                               |
-| ---------------------------------------------- | -------------------------------------------------- |
-| **profiles** 1 → N **collections**             | Um perfil pode ter várias coleções.                |
-| **collections** 1 → N **collection_movies**    | Cada coleção contém vários filmes.                 |
-| **movies** 1 → N **collection_movies**         | Um filme pode estar em várias coleções.            |
-| **profiles** 1 → N **user_movie_interactions** | Um perfil pode curtir ou não curtir vários filmes. |
-| **movies** 1 → N **user_movie_interactions**   | Um filme pode receber interações de vários perfis. |
-| **profiles** 1 → N **user_preferences**        | Um perfil pode ter várias preferências.            |
-
+###  **Tabela Coleções (`collections`)**
+| Coluna          | Descrição                                                      | Tipo de Dado | Formato                | Pode ser Nulo? |
+| ---------------- | -------------------------------------------------------------- | ------------- | ---------------------- | -------------- |
+| id               | Identificador único da coleção.                                | inteiro       | número inteiro         | Não            |
+| profile_id       | Identificador do perfil proprietário da coleção.               | uuid          | UUID v4                | Não            |
+| name             | Nome da coleção (ex: “Favoritos”, “Assistir mais tarde”).      | string        | texto                  | Não            |
+| description      | Texto descritivo da coleção.                                   | string        | texto                  | Sim            |
+| created_at       | Data e hora da criação da coleção.                             | timestamp     | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+| updated_at       | Data e hora da última atualização.                             | timestamp     | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+| visibility       | Define o nível de visibilidade (public, private, unlisted).    | string        | texto                  | Sim            |
+| cover_image_url  | Endereço da imagem de capa da coleção.                         | string        | URL                    | Sim            |
 ---
+###  **Tabela Filmes em Coleções (`collection_movies`)**
+| Coluna        | Descrição                                                 | Tipo de Dado | Formato                | Pode ser Nulo? |
+| -------------- | --------------------------------------------------------- | ------------- | ---------------------- | -------------- |
+| collection_id  | Identificador da coleção que contém o filme.              | inteiro       | número inteiro         | Não            |
+| movie_id       | Identificador do filme associado à coleção.               | string        | tt1234567              | Não            |
+| added_at       | Data e hora em que o filme foi adicionado à coleção.      | timestamp     | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+---
+###  **Tabela Interações de Usuário com Filmes (`user_movie_interactions`)**
+| Coluna           | Descrição                                         | Tipo de Dado | Formato                | Pode ser Nulo? |
+| ---------------- | ------------------------------------------------- | ------------- | ---------------------- | -------------- |
+| id               | Identificador único da interação.                 | inteiro       | número inteiro         | Não            |
+| profile_id       | Identificador do perfil que realizou a interação. | uuid          | UUID v4                | Não            |
+| movie_id         | Identificador do filme com o qual interagiu.      | string        | tt1234567              | Não            |
+| interaction_type | Tipo de interação: 'like' ou 'dislike'.           | string        | texto                  | Não            |
+| created_at       | Data e hora da interação (UTC).                   | timestamp     | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+---
+###  **Tabela Preferências de Usuário (`user_preferences`)**
+| Coluna           | Descrição                                             | Tipo de Dado | Formato       | Pode ser Nulo? |
+| ---------------- | ----------------------------------------------------- | ------------- | -------------- | -------------- |
+| id               | Identificador único da preferência.                   | inteiro       | número inteiro | Não            |
+| profile_id       | Identificador do perfil associado à preferência.      | uuid          | UUID v4        | Não            |
+| preference_type  | Tipo da preferência (genre, actor, director, decade). | string        | texto          | Não            |
+| preference_value | Valor da preferência (ex: “Action”, “Brad Pitt”).    | string        | texto          | Não            |
+---
+###  **Resumo das Relações entre Tabelas**
+| Relação                                         | Tipo                                            |
+| ----------------------------------------------- | ----------------------------------------------- |
+| **profiles** 1 → N **collections**              | Um perfil pode ter várias coleções.             |
+| **collections** 1 → N **collection_movies**      | Cada coleção contém vários filmes.              |
+| **movies** 1 → N **collection_movies**           | Um filme pode estar em várias coleções.         |
+| **profiles** 1 → N **user_movie_interactions**   | Um perfil pode interagir com vários filmes.     |
+| **movies** 1 → N **user_movie_interactions**     | Um filme pode receber várias interações.        |
+| **profiles** 1 → N **user_preferences**          | Um perfil pode ter várias preferências.         |
+| **title_types** 1 → N **movies**                 | Cada tipo de título pode estar associado a vários filmes. |
+| **genres** N → N **movies**                     | Relacionamento feito via `movie_genres`.        |
 
 ---
 
@@ -607,3 +605,4 @@ O modelo proposto garante:
 O esquema atual já contempla os principais fluxos do produto, e as **extensões futuras** permitem evoluir gradualmente até um **ecossistema completo de experiência cinematográfica personalizada**  
 
 ---
+
