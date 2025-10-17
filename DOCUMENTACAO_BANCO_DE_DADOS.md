@@ -2,21 +2,20 @@
 
 Este documento descreve detalhadamente o modelo de dados, regras de negócio, requisitos e extensões futuras do sistema de gerenciamento de filmes, coleções e interações de usuários.
 ## Sumário
-1. [Glossário Técnico das Tabelas](#glossário-técnico-das-tabelas)  
-2. [Modelo Conceitual (DER)](#modelo-conceitual-der)  
-3. [Modelo Lógico](#modelo-lógico)  
-4. [Modelo Físico](#modelo-físico)  
-5. [Requisitos Funcionais](#requisitos-funcionais)  
-6. [Requisitos Não Funcionais](#requisitos-não-funcionais)  
-7. [Regras de Negócio](#regras-de-negócio)  
-8. [Requisitos de Integração](#requisitos-de-integração)  
-9. [Extensões Futuras](#extensões-futuras)  
-10. [Considerações Finais](#considerações-finais)  
-11. [Referências e Links](#referências-e-links)  
-12. [Changelog / Histórico de Alterações](#changelog--histórico-de-alterações)  
-13. [Exemplos de Queries](#exemplos-de-queries)  
-14. [Métricas e KPIs](#métricas-e-kpis)  
-15. [Políticas de Segurança e RLS](#políticas-de-segurança-e-rls)
+
+1. [Glossário de Termos e Siglas](#2-glossário-de-termos-e-siglas)
+2. [Glossário Técnico das Tabelas](#glossário-técnico-das-tabelas)
+3. [Modelo Conceitual (DER)](#1-modelo-conceitual-diagrama-entidade-relacionamento)
+4. [Modelo Lógico](#modelo-lógico)
+5. [Modelo Físico (Script SQL)](#3-modelo-físico-script-sql)
+6. [Requisitos Funcionais](#1-requisitos-funcionais)
+7. [Requisitos Não Funcionais](#3-requisitos-não-funcionais)
+8. [Regras de Negócio](#4-regras-de-negócio)
+9. [Requisitos de Integração](#5-requisitos-de-integração)
+10. [Considerações Finais](#6-considerações-finais)
+11. [Extensões Futuras](#7-extensões-futuras)
+12. [Referências e Links](#referências-e-links)
+13. [Histórico de Alterações](#changelog--histórico-de-alterações)
 
 ---
 
