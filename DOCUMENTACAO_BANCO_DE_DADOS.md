@@ -422,289 +422,111 @@ CREATE TABLE public.user_preferences (
 
 ---
 
-## **1. Requisitos Funcionais**
-
-Os requisitos abaixo descrevem as principais funcionalidades do sistema que envolvem operações com o banco de dados:
-
-* **Cadastro de usuários**
-
-  * Inserção de dados na tabela de usuários
-  * Validação de dados únicos (email, nome_perfil)
-
+## 1. Requisitos Funcionais
+Os requisitos abaixo descrevem as principais funcionalidades do sistema, considerando a nova estrutura do banco de dados:
+* **Cadastro e gerenciamento de usuários**
+ * Inserção de dados na tabela `profiles`
+ * Validação de dados únicos (`profile_name`, email do usuário)
+ * Atualização de perfil e avatar
 * **Interações com filmes**
-
-  * Registro de curtidas/descurtidas
-  * Armazenamento do histórico de interações
-
+ * Registro de curtidas e descurtidas (`user_movie_interactions`)
+ * Registro de avaliações pessoais (`user_ratings`)
+ * Armazenamento do histórico de visualizações (`watch_history`)
+* **Coleções de filmes**
+ * Criação e gerenciamento de coleções (`collections`)
+ * Adição e remoção de filmes em coleções (`collection_movies`)
+ * Coleções colaborativas com diferentes níveis de permissão (`collection_members`)
 * **Busca e filtros**
-
-  * Busca de filmes por gênero
-  * Filtros por avaliação
-  * Controle de conteúdo adulto
-
+ * Busca de filmes por título, gênero (`movie_genres`) ou tipo de título (`title_types`)
+ * Filtros por avaliação média (`averageRating`) e número de votos
+ * Controle de conteúdo adulto (`isAdult`)
+* **Integração com fontes externas**
+ * Importação e atualização de dados via API IMDb
+ * Integração com provedores de streaming (`movie_providers`)
 ---
-
-## **2. Modelo de Dados**
-
-### **2.1 Estrutura**
-
-O modelo de dados foi estruturado com base nas entidades principais do sistema (usuários, filmes e interações), contemplando:
-
-* Diagrama Entidade-Relacionamento (DER)
-* Modelo Relacional
-* Dicionário de Dados das Tabelas
-* Mapeamento dos Relacionamentos
-
-### **2.2 Relacionamentos**
-
-| Entidade Origem       | Entidade Destino                      | Tipo de Relacionamento | Descrição                                                       |
-| --------------------- | ------------------------------------- | ---------------------- | --------------------------------------------------------------- |
-| Usuário (profiles)    | Interações (user_movie_interactions)  | 1:N                    | Um usuário pode interagir com vários filmes.                    |
-| Filme (movies)        | Interações (user_movie_interactions)  | 1:N                    | Um filme pode receber várias interações de diferentes usuários. |
-| Usuário (profiles)    | Coleções (collections)                | 1:N                    | Um usuário pode criar várias coleções.                          |
-| Coleção (collections) | Filmes em Coleção (collection_movies) | 1:N                    | Uma coleção pode conter vários filmes.                          |
-| Filme (movies)        | Filmes em Coleção (collection_movies) | 1:N                    | Um filme pode estar em várias coleções.                         |
-| Usuário (profiles)    | Preferências (user_preferences)       | 1:N                    | Um usuário pode definir múltiplas preferências.                 |
-
+## 2. Modelo de Dados
+### 2.1 Estrutura
+O modelo contempla todas as entidades do sistema, incluindo:
+* Usuários e perfis (`profiles`)
+* Filmes, tipos de título (`title_types`) e gêneros (`genres`)
+* Coleções e filmes em coleções (`collections`, `collection_movies`, `collection_members`)
+* Interações e preferências do usuário (`user_movie_interactions`, `user_ratings`, `user_preferences`, `watch_history`)
+* Integração com provedores externos (`movie_providers`)
+* Gamificação e conquistas (`achievements`, `user_achievements`)
+* Comentários de usuários (`comments`)
+### 2.2 Relacionamentos
+| Entidade Origem       | Entidade Destino                  | Tipo de Relacionamento | Descrição                                           |
+| --------------------- | -------------------------------- | -------------------- | -------------------------------------------------- |
+| Usuário (`profiles`)  | Interações (`user_movie_interactions`) | 1:N                  | Um usuário pode interagir com vários filmes       |
+| Usuário (`profiles`)  | Avaliações (`user_ratings`)       | 1:N                  | Um usuário pode avaliar cada filme apenas uma vez |
+| Usuário (`profiles`)  | Coleções (`collections`)          | 1:N                  | Um usuário pode criar várias coleções             |
+| Coleção (`collections`)| Filmes em Coleção (`collection_movies`) | 1:N              | Uma coleção pode conter vários filmes             |
+| Filme (`movies`)       | Filmes em Coleção (`collection_movies`) | 1:N               | Um filme pode estar em várias coleções           |
+| Usuário (`profiles`)   | Preferências (`user_preferences`) | 1:N                  | Um usuário pode definir múltiplas preferências    |
+| Usuário (`profiles`)   | Histórico (`watch_history`)       | 1:N                  | Um usuário pode ter vários registros de visualização |
+| Filme (`movies`)       | Gêneros (`movie_genres`)          | N:N                  | Um filme pode ter múltiplos gêneros               |
+| Usuário (`profiles`)   | Comentários (`comments`)          | 1:N                  | Um usuário pode comentar vários filmes            |
+| Usuário (`profiles`)   | Conquistas (`user_achievements`)  | 1:N                  | Um usuário pode ganhar múltiplas conquistas       |
+| Filme (`movies`)       | Provedores (`movie_providers`)    | 1:N                  | Um filme pode estar disponível em múltiplos provedores |
 ---
-
-## **3. Requisitos Não Funcionais**
-
-### **3.1 Performance**
-
-* Tempo de resposta das consultas deve ser inferior a 200ms em operações simples.
-* Utilização de índices para otimizar buscas por `tconst`, `profile_id` e `collection_id`.
-* Implementação de cache para consultas de filmes mais acessados.
-
-### **3.2 Segurança**
-
-* Criptografia de dados sensíveis (como tokens de autenticação).
-* Controle de acesso por políticas de segurança do Supabase (RLS - Row Level Security).
-* Proteção contra injeção SQL e acessos não autorizados.
-* Adoção de logs de auditoria para ações críticas.
-
-### **3.3 Escalabilidade**
-
-* Suporte a aumento no volume de dados e número de usuários sem degradação perceptível de desempenho.
-* Estrutura compatível com sharding e replicação de dados.
-* Balanceamento de carga entre múltiplas instâncias do banco, se necessário.
-
-### **3.4 Backup e Recuperação**
-
-* Backup automático diário via Supabase.
-* Retenção mínima de 7 dias para backups.
-* Procedimentos de restauração documentados e testados.
-* Verificação periódica de integridade dos dados restaurados.
-
+## 3. Requisitos Não Funcionais
+### 3.1 Performance
+* Consultas de filmes, gêneros e coleções devem responder em até 200ms
+* Índices em `tconst`, `profile_id`, `collection_id` e `genre_id`
+* Cache para filmes mais populares e recomendações
+### 3.2 Segurança
+* Criptografia de dados sensíveis e tokens
+* Controle de acesso RLS no Supabase
+* Proteção contra injeção SQL e acessos não autorizados
+* Logs de auditoria para ações críticas
+### 3.3 Escalabilidade
+* Estrutura compatível com sharding e replicação
+* Suporte ao aumento de usuários e volume de dados
+* Balanceamento de carga entre múltiplas instâncias
+### 3.4 Backup e Recuperação
+* Backups automáticos diários e retenção mínima de 7 dias
+* Procedimentos de restauração testados
+* Verificação periódica da integridade dos dados
 ---
-
-## **4. Regras de Negócio**
-
-### **4.1 Interações**
-
-* Um usuário **não pode curtir e descurtir o mesmo filme simultaneamente**.
-* Todas as interações devem ser registradas com `timestamp` UTC.
-* A exclusão de uma interação remove apenas o vínculo, sem excluir o filme nem o perfil.
-
-### **4.2 Conteúdo**
-
-* Filmes com a flag `isAdult = TRUE` são exibidos apenas para perfis autorizados.
-* A classificação etária deve ser respeitada conforme política de exibição.
-* Filmes sem metadados completos (ex: `titleType` ou `startYear` ausentes) não devem ser exibidos nas recomendações.
-
-### **4.3 Coleções**
-
-* Cada perfil pode criar até 100 coleções personalizadas.
-* Coleções podem ter visibilidade `public`, `private` ou `unlisted`.
-* Um filme pode aparecer em múltiplas coleções, inclusive de diferentes usuários.
-* A exclusão de uma coleção remove automaticamente os vínculos com os filmes (`collection_movies`).
-
+## 4. Regras de Negócio
+### 4.1 Interações
+* Um usuário não pode curtir e descurtir o mesmo filme simultaneamente
+* Todas as interações registradas em UTC
+* Exclusão de interação remove apenas o vínculo, não o filme nem o perfil
+### 4.2 Conteúdo
+* Filmes adultos (`isAdult = TRUE`) apenas para perfis autorizados
+* Filmes sem metadados essenciais (`titleType`, `startYear`) não aparecem em recomendações
+* Classificação etária respeitada conforme política de exibição
+### 4.3 Coleções
+* Cada perfil pode criar até 100 coleções
+* Coleções podem ser `public`, `private` ou `unlisted`
+* Exclusão de coleção remove vínculos com filmes (`collection_movies`)
+* Coleções colaborativas respeitam papéis (`owner`, `editor`, `viewer`)
 ---
-
-## **5. Requisitos de Integração**
-
-### **5.1 APIs Externas**
-
-* Integração com a **API IMDb** para importação e sincronização dos metadados de filmes.
-* Sincronização periódica (ex: a cada 7 dias) para atualização de notas e novos títulos.
-* Tratamento de inconsistências entre identificadores (`tconst`) durante importações.
-* Mecanismo de fallback caso a API IMDb esteja indisponível.
-
-### **5.2 Formato dos Dados**
-
-* Padronização de campos importados para correspondência com o modelo local (`titleType`, `genres`, `averageRating`).
-* Conversão automática de tipos numéricos e booleanos durante o processo de ETL.
-* Validação de integridade antes da inserção (checagem de `NULL` e formatos inválidos).
-* Mapeamento completo entre colunas externas e internas documentado no dicionário de dados.
-
+## 5. Requisitos de Integração
+### 5.1 APIs Externas
+* Integração com API IMDb para importação e atualização de filmes
+* Integração com provedores de streaming para links diretos
+* Tratamento de inconsistências de `tconst` e fallback em caso de indisponibilidade
+### 5.2 Formato dos Dados
+* Padronização de campos importados (`titleType`, `genres`, `averageRating`)
+* Conversão automática de tipos numéricos e booleanos
+* Validação de integridade antes da inserção
+* Mapeamento completo entre colunas externas e internas documentado
 ---
-
-## **6. Considerações Finais**
-
-* O modelo proposto assegura **integridade referencial** entre todas as entidades.
-* O uso de **chaves compostas** e **constraints** garante a consistência dos dados.
-* O esquema foi desenhado para **compatibilidade direta com o Supabase**, aproveitando seus recursos de autenticação e RLS.
-* As tabelas seguem convenções de nomenclatura consistentes, com nomes no singular para entidades e no plural para tabelas de associação.
-
+## 6. Considerações Finais
+* Garantia de integridade referencial entre todas as entidades
+* Uso de chaves compostas e constraints para consistência
+* Compatibilidade direta com Supabase, aproveitando autenticação e RLS
+* Convenção consistente de nomenclatura e pluralidade para tabelas de associação
 ---
-
-## **7. Extensões Futuras**
-
-Esta seção descreve **funcionalidades planejadas ou potenciais expansões** do modelo de dados, visando a evolução natural do sistema e o aumento da experiência do usuário.
-As propostas abaixo mantêm **compatibilidade total** com a estrutura atual e podem ser implementadas de forma incremental.
-
----
-
-### **7.1 Sistema de Comentários**
-
-Permitir que os usuários escrevam comentários sobre filmes ou coleções.
-
-**Tabelas propostas:**
-
-* **comments**
-
-  * `id` (PK)
-  * `profile_id` (FK → profiles.id)
-  * `movie_id` (FK → movies.tconst)
-  * `content` (TEXT, NOT NULL)
-  * `created_at` (TIMESTAMP, DEFAULT now() AT TIME ZONE 'utc')
-
-**Regras de negócio:**
-
-* Um comentário pertence a apenas um filme.
-* Usuários podem editar ou excluir seus próprios comentários.
-* Comentários são exibidos em ordem cronológica inversa.
-
----
-
-### **7.2 Avaliações Personalizadas**
-
-Permitir que usuários atribuam notas pessoais aos filmes, além da nota pública do IMDb.
-
-**Tabelas propostas:**
-
-* **user_ratings**
-
-  * `id` (PK)
-  * `profile_id` (FK → profiles.id)
-  * `movie_id` (FK → movies.tconst)
-  * `rating` (INTEGER CHECK BETWEEN 1 AND 10)
-  * `created_at` (TIMESTAMP, DEFAULT now() AT TIME ZONE 'utc')
-
-**Regras de negócio:**
-
-* Um usuário pode avaliar cada filme apenas uma vez (chave composta `profile_id + movie_id`).
-* A nota média dos usuários pode ser calculada localmente para recomendações.
-
----
-
-### **7.3 Playlists Colaborativas**
-
-Introduzir coleções compartilhadas entre múltiplos usuários, permitindo curadoria conjunta de filmes.
-
-**Tabelas propostas:**
-
-* **collection_members**
-
-  * `collection_id` (FK → collections.id)
-  * `profile_id` (FK → profiles.id)
-  * `role` (TEXT CHECK ('owner', 'editor', 'viewer'))
-  * `added_at` (TIMESTAMP, DEFAULT now() AT TIME ZONE 'utc')
-
-**Regras de negócio:**
-
-* Cada coleção pode ter múltiplos membros com diferentes níveis de permissão.
-* Apenas o `owner` pode excluir a coleção.
-* Alterações em filmes ou capa da coleção ficam restritas a membros com permissão de `editor`.
-
----
-
-### **7.4 Histórico de Visualizações**
-
-Rastrear os filmes assistidos por cada usuário, permitindo recomendações baseadas em comportamento.
-
-**Tabelas propostas:**
-
-* **watch_history**
-
-  * `id` (PK)
-  * `profile_id` (FK → profiles.id)
-  * `movie_id` (FK → movies.tconst)
-  * `watched_at` (TIMESTAMP, DEFAULT now() AT TIME ZONE 'utc')
-
-**Regras de negócio:**
-
-* Cada registro representa uma sessão de visualização.
-* É possível calcular métricas de engajamento e frequência de visualização.
-
----
-
-### **7.5 Sistema de Recomendação Avançado**
-
-Utilizar dados de preferências, histórico e interações para sugerir filmes automaticamente.
-
-**Funcionalidades planejadas:**
-
-* Recomendação híbrida (colaborativa + baseada em conteúdo).
-* Agrupamento de usuários com perfis similares.
-* Filtros de recomendação por gênero, década ou popularidade.
-* Possibilidade de integração com APIs externas de machine learning (ex: Vertex AI, AWS Sagemaker).
-
----
-
-### **7.6 Módulo de Gamificação**
-
-Introduzir elementos de engajamento como conquistas, níveis e rankings.
-
-**Tabelas propostas:**
-
-* **achievements**
-
-  * `id` (PK)
-  * `name` (TEXT, UNIQUE)
-  * `description` (TEXT)
-  * `icon_url` (TEXT)
-* **user_achievements**
-
-  * `profile_id` (FK → profiles.id)
-  * `achievement_id` (FK → achievements.id)
-  * `earned_at` (TIMESTAMP, DEFAULT now() AT TIME ZONE 'utc')
-
-**Regras de negócio:**
-
-* Conquistas são atribuídas com base em metas (ex: “100 filmes curtidos”).
-* O progresso pode ser exibido no perfil do usuário.
-
----
-
-### **7.7 Integração com Streaming Externo**
-
-Permitir que filmes disponíveis em plataformas de streaming sejam vinculados a cada registro.
-
-**Tabelas propostas:**
-
-* **movie_providers**
-
-  * `movie_id` (FK → movies.tconst)
-  * `provider_name` (TEXT)
-  * `provider_url` (TEXT)
-  * `available` (BOOLEAN DEFAULT TRUE)
-
-**Funcionalidades:**
-
-* Exibição de links diretos para assistir ao filme.
-* Atualização periódica via API de provedores (ex: JustWatch, TMDb).
-
----
-
-## **8. Conclusão**
-
-O modelo proposto garante:
-
-* Escalabilidade e segurança com base nas melhores práticas do Supabase;
-* Facilidade de expansão sem comprometer a integridade referencial;
-* Base sólida para desenvolvimento de recursos sociais, colaborativos e analíticos.
-
-O esquema atual já contempla os principais fluxos do produto, e as **extensões futuras** permitem evoluir gradualmente até um **ecossistema completo de experiência cinematográfica personalizada**  
+## 7. Extensões Futuras
+* Sistema de comentários (`comments`)
+* Avaliações personalizadas (`user_ratings`)
+* Playlists colaborativas (`collection_members`)
+* Histórico de visualizações (`watch_history`)
+* Sistema de recomendação híbrida (colaborativa + baseada em conteúdo)
+* Gamificação e conquistas (`achievements`, `user_achievements`)
+* Integração com plataformas de streaming (`movie_providers`)
 
 ---
