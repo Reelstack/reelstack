@@ -1,8 +1,11 @@
 # **Documentação do Banco de Dados**
 
-#  Glossário Técnico das Tabelas
+# Glossário Técnico das Tabelas
+
 ---
-###  **Tabela Perfis (`profiles`)**
+
+### **Tabela Perfis (`profiles`)**
+
 | Coluna        | Descrição                                                                 | Tipo de Dado | Formato                | Pode ser Nulo? |
 | -------------- | ------------------------------------------------------------------------- | ------------- | ---------------------- | -------------- |
 | id             | Identificador único do perfil, vinculado ao usuário autenticado.          | uuid          | UUID v4                | Não            |
@@ -11,20 +14,29 @@
 | updated_at     | Data e hora da última atualização do perfil.                              | timestamp     | AAAA-MM-DD HH:MM:SS±TZ | Não            |
 | avatar_url     | Endereço de imagem utilizado como avatar do perfil.                       | string        | URL                    | Sim            |
 | profile_name   | Nome público do perfil, exibido nas interações sociais e coleções.        | string        | texto                  | Não            |
+
 ---
-###  **Tabela Tipos de Título (`title_types`)**
+
+### **Tabela Tipos de Título (`title_types`)**
+
 | Coluna    | Descrição                                                 | Tipo de Dado | Formato | Pode ser Nulo? |
 | ---------- | --------------------------------------------------------- | ------------- | ------- | -------------- |
 | id         | Identificador único do tipo de título.                   | inteiro       | número inteiro | Não |
 | type_name  | Nome do tipo de título (ex: movie, short, tvSeries).     | string        | texto   | Não |
+
 ---
-###  **Tabela Gêneros (`genres`)**
+
+### **Tabela Gêneros (`genres`)**
+
 | Coluna | Descrição                            | Tipo de Dado | Formato | Pode ser Nulo? |
 | ------- | ------------------------------------ | ------------- | ------- | -------------- |
 | id      | Identificador único do gênero.       | inteiro       | número inteiro | Não |
 | name    | Nome do gênero (ex: Action, Drama).  | string        | texto   | Não |
+
 ---
-###  **Tabela Filmes (`movies`)**
+
+### **Tabela Filmes (`movies`)**
+
 | Coluna          | Descrição                                                        | Tipo de Dado | Formato        | Pode ser Nulo? |
 | ---------------- | ---------------------------------------------------------------- | ------------- | --------------- | -------------- |
 | tconst           | Identificador único do título, proveniente do IMDb.              | string        | tt1234567       | Não            |
@@ -37,14 +49,20 @@
 | runtime_minutes  | Duração total do conteúdo em minutos.                            | inteiro       | número inteiro  | Sim            |
 | average_rating   | Nota média dos usuários no IMDb.                                 | float         | 0.0 a 10.0      | Sim            |
 | num_votes        | Quantidade total de votos recebidos.                             | inteiro       | número inteiro  | Sim            |
+
 ---
-###  **Tabela Gêneros por Filme (`movie_genres`)**
+
+### **Tabela Gêneros por Filme (`movie_genres`)**
+
 | Coluna    | Descrição                                         | Tipo de Dado | Formato       | Pode ser Nulo? |
 | ---------- | ------------------------------------------------- | ------------- | -------------- | -------------- |
 | movie_id   | Identificador do filme associado (FK → movies).  | string        | tt1234567      | Não            |
 | genre_id   | Identificador do gênero associado (FK → genres). | inteiro       | número inteiro | Não            |
+
 ---
-###  **Tabela Coleções (`collections`)**
+
+### **Tabela Coleções (`collections`)**
+
 | Coluna          | Descrição                                                      | Tipo de Dado | Formato                | Pode ser Nulo? |
 | ---------------- | -------------------------------------------------------------- | ------------- | ---------------------- | -------------- |
 | id               | Identificador único da coleção.                                | inteiro       | número inteiro         | Não            |
@@ -55,15 +73,21 @@
 | updated_at       | Data e hora da última atualização.                             | timestamp     | AAAA-MM-DD HH:MM:SS±TZ | Não            |
 | visibility       | Define o nível de visibilidade (public, private, unlisted).    | string        | texto                  | Sim            |
 | cover_image_url  | Endereço da imagem de capa da coleção.                         | string        | URL                    | Sim            |
+
 ---
-###  **Tabela Filmes em Coleções (`collection_movies`)**
+
+### **Tabela Filmes em Coleções (`collection_movies`)**
+
 | Coluna        | Descrição                                                 | Tipo de Dado | Formato                | Pode ser Nulo? |
 | -------------- | --------------------------------------------------------- | ------------- | ---------------------- | -------------- |
 | collection_id  | Identificador da coleção que contém o filme.              | inteiro       | número inteiro         | Não            |
 | movie_id       | Identificador do filme associado à coleção.               | string        | tt1234567              | Não            |
 | added_at       | Data e hora em que o filme foi adicionado à coleção.      | timestamp     | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+
 ---
-###  **Tabela Interações de Usuário com Filmes (`user_movie_interactions`)**
+
+### **Tabela Interações de Usuário com Filmes (`user_movie_interactions`)**
+
 | Coluna           | Descrição                                         | Tipo de Dado | Formato                | Pode ser Nulo? |
 | ---------------- | ------------------------------------------------- | ------------- | ---------------------- | -------------- |
 | id               | Identificador único da interação.                 | inteiro       | número inteiro         | Não            |
@@ -71,16 +95,22 @@
 | movie_id         | Identificador do filme com o qual interagiu.      | string        | tt1234567              | Não            |
 | interaction_type | Tipo de interação: 'like' ou 'dislike'.           | string        | texto                  | Não            |
 | created_at       | Data e hora da interação (UTC).                   | timestamp     | AAAA-MM-DD HH:MM:SS±TZ | Não            |
+
 ---
-###  **Tabela Preferências de Usuário (`user_preferences`)**
+
+### **Tabela Preferências de Usuário (`user_preferences`)**
+
 | Coluna           | Descrição                                             | Tipo de Dado | Formato       | Pode ser Nulo? |
 | ---------------- | ----------------------------------------------------- | ------------- | -------------- | -------------- |
 | id               | Identificador único da preferência.                   | inteiro       | número inteiro | Não            |
 | profile_id       | Identificador do perfil associado à preferência.      | uuid          | UUID v4        | Não            |
 | preference_type  | Tipo da preferência (genre, actor, director, decade). | string        | texto          | Não            |
 | preference_value | Valor da preferência (ex: “Action”, “Brad Pitt”).    | string        | texto          | Não            |
+
 ---
-###  **Resumo das Relações entre Tabelas**
+
+### **Resumo das Relações entre Tabelas**
+
 | Relação                                         | Tipo                                            |
 | ----------------------------------------------- | ----------------------------------------------- |
 | **profiles** 1 → N **collections**              | Um perfil pode ter várias coleções.             |
@@ -180,85 +210,111 @@ erDiagram
 
 ---
 
-## **2. Modelo Lógico**
+## Modelo Lógico
 
-### **PERFIL**
+### PERFIL (`profiles`)
 
-| Campo            | Tipo      | Restrição                          |
-| ---------------- | --------- | ---------------------------------- |
-| id               | UUID      | PK, DEFAULT `auth.uid()`           |
-| nome_perfil      | TEXT      | UNIQUE, NOT NULL                   |
-| bio              | TEXT      |                                    |
-| avatar_url       | TEXT      |                                    |
-| data_criacao     | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'` |
-| data_atualizacao | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'` |
-| fk_auth_user     | UUID      | FK → `auth.users(id)`              |
-
----
-
-### **COLEÇÃO**
-
-| Campo            | Tipo      | Restrição                                                         |
-| ---------------- | --------- | ----------------------------------------------------------------- |
-| id               | BIGINT    | PK, IDENTITY                                                      |
-| id_perfil        | UUID      | FK → `profiles(id)`                                               |
-| nome             | TEXT      | NOT NULL                                                          |
-| descricao        | TEXT      |                                                                   |
-| visibilidade     | TEXT      | CHECK (`'public'`, `'private'`, `'unlisted'`), DEFAULT `'public'` |
-| imagem_capa      | TEXT      |                                                                   |
-| data_criacao     | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'`                                |
-| data_atualizacao | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'`                                |
+| Campo        | Tipo     | Restrição                                    |
+| ------------ | -------- | ------------------------------------------- |
+| id           | UUID     | PK, DEFAULT `auth.uid()`                     |
+| profile_name | TEXT     | UNIQUE, NOT NULL                             |
+| bio          | TEXT     |                                             |
+| avatar_url   | TEXT     |                                             |
+| created_at   | TIMESTAMP| DEFAULT `now() AT TIME ZONE 'utc'`          |
+| updated_at   | TIMESTAMP| DEFAULT `now() AT TIME ZONE 'utc'`          |
+| fk_auth_user | UUID     | FK → `auth.users(id)`                        |
 
 ---
 
-### **FILME**
+### COLEÇÃO (`collections`)
 
-| Campo            | Tipo             | Restrição |
-| ---------------- | ---------------- | --------- |
-| tconst           | TEXT             | PK        |
-| tipo_titulo      | TEXT             |           |
-| titulo_principal | TEXT             |           |
-| titulo_original  | TEXT             |           |
-| conteudo_adulto  | BOOLEAN          |           |
-| ano_inicio       | BIGINT           |           |
-| ano_fim          | BIGINT           |           |
-| duracao_minutos  | BIGINT           |           |
-| generos          | TEXT             |           |
-| nota_media       | DOUBLE PRECISION |           |
-| numero_votos     | BIGINT           |           |
+| Campo          | Tipo      | Restrição                                                          |
+| -------------- | --------- | ----------------------------------------------------------------- |
+| id             | BIGINT    | PK, IDENTITY                                                      |
+| profile_id     | UUID      | FK → `profiles(id)`                                               |
+| name           | TEXT      | NOT NULL                                                          |
+| description    | TEXT      |                                                                   |
+| visibility     | TEXT      | CHECK ('public', 'private', 'unlisted'), DEFAULT 'public'         |
+| cover_image_url| TEXT      |                                                                   |
+| created_at     | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'`                                |
+| updated_at     | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'`                                |
 
 ---
 
-### **FILME_COLEÇÃO**
+### FILME (`movies`)
 
-| Campo       | Tipo      | Restrição                          |
-| ----------- | --------- | ---------------------------------- |
-| id_colecao  | BIGINT    | PK, FK → `collections(id)`         |
-| id_filme    | TEXT      | PK, FK → `movies(tconst)`          |
-| data_adicao | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'` |
-
----
-
-### **INTERAÇÃO_FILME**
-
-| Campo          | Tipo      | Restrição                                    |
-| -------------- | --------- | -------------------------------------------- |
-| id             | BIGINT    | PK, IDENTITY                                 |
-| id_perfil      | UUID      | FK → `profiles(id)`                          |
-| id_filme       | TEXT      | FK → `movies(tconst)`                        |
-| tipo_interacao | TEXT      | CHECK (`'like'`, `'dislike'`)                |
-| data_criacao   | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'`, NOT NULL |
+| Campo          | Tipo             | Restrição                          |
+| -------------- | ---------------- | --------------------------------- |
+| tconst         | TEXT             | PK                                |
+| title_type_id  | BIGINT           | FK → `title_types(id)`             |
+| primary_title  | TEXT             |                                   |
+| original_title | TEXT             |                                   |
+| is_adult       | BOOLEAN          |                                   |
+| start_year     | BIGINT           |                                   |
+| end_year       | BIGINT           |                                   |
+| runtime_minutes| BIGINT           |                                   |
+| average_rating | DOUBLE PRECISION |                                   |
+| num_votes      | BIGINT           |                                   |
 
 ---
 
-### **PREFERÊNCIA_USUÁRIO**
+### TIPO DE TÍTULO (`title_types`)
 
-| Campo             | Tipo   | Restrição                                              |
-| ----------------- | ------ | ------------------------------------------------------ |
-| id                | BIGINT | PK, IDENTITY                                           |
-| id_perfil         | UUID   | FK → `profiles(id)`                                    |
-| tipo_preferencia  | TEXT   | CHECK (`'genre'`, `'actor'`, `'director'`, `'decade'`) |
-| valor_preferencia | TEXT   | NOT NULL                                               |
+| Campo      | Tipo  | Restrição         |
+| ---------- | ----- | ---------------- |
+| id         | BIGINT| PK, IDENTITY     |
+| type_name  | TEXT  | UNIQUE, NOT NULL |
+
+---
+
+### GÊNERO (`genres`)
+
+| Campo | Tipo  | Restrição     |
+| ----- | ----- | ------------ |
+| id    | BIGINT| PK, IDENTITY |
+| name  | TEXT  | UNIQUE, NOT NULL |
+
+---
+
+### FILME_GÊNEROS (`movie_genres`)
+
+| Campo    | Tipo   | Restrição                        |
+| -------- | ------ | -------------------------------- |
+| movie_id | TEXT   | PK, FK → `movies(tconst)`        |
+| genre_id | BIGINT | PK, FK → `genres(id)`            |
+
+---
+
+### FILME_COLEÇÃO (`collection_movies`)
+
+| Campo         | Tipo      | Restrição                           |
+| ------------- | --------- | ---------------------------------- |
+| collection_id | BIGINT    | PK, FK → `collections(id)`          |
+| movie_id      | TEXT      | PK, FK → `movies(tconst)`           |
+| added_at      | TIMESTAMP | DEFAULT `now() AT TIME ZONE 'utc'`  |
+
+---
+
+### INTERAÇÃO_FILME (`user_movie_interactions`)
+
+| Campo            | Tipo     | Restrição                                      |
+| ---------------- | -------- | --------------------------------------------- |
+| id               | BIGINT   | PK, IDENTITY                                  |
+| profile_id       | UUID     | FK → `profiles(id)`                            |
+| movie_id         | TEXT     | FK → `movies(tconst)`                          |
+| interaction_type | TEXT     | CHECK ('like', 'dislike')                      |
+| created_at       | TIMESTAMP| DEFAULT `now() AT TIME ZONE 'utc'`, NOT NULL  |
+
+---
+
+### PREFERÊNCIA_USUÁRIO (`user_preferences`)
+
+| Campo             | Tipo | Restrição                                           |
+| ----------------- | ---- | -------------------------------------------------- |
+| id                | BIGINT | PK, IDENTITY                                     |
+| profile_id        | UUID  | FK → `profiles(id)`                               |
+| preference_type   | TEXT  | CHECK ('genre', 'actor', 'director', 'decade')   |
+| preference_value  | TEXT  | NOT NULL                                          |
 
 ---
 
@@ -652,4 +708,3 @@ O modelo proposto garante:
 O esquema atual já contempla os principais fluxos do produto, e as **extensões futuras** permitem evoluir gradualmente até um **ecossistema completo de experiência cinematográfica personalizada**  
 
 ---
-
