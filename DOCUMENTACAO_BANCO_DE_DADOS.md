@@ -20,6 +20,32 @@ Este documento descreve detalhadamente o modelo de dados, regras de negócio, re
 
 ---
 
+## 2. Glossário de Termos e Siglas
+Este glossário descreve os principais termos e siglas utilizados na documentação do banco de dados e no sistema.
+| Termo / Sigla | Descrição |
+| -------------- | ------------------------------------------------------------ |
+| **RLS (Row Level Security)** | Política de segurança no nível de linha do banco de dados. Permite controlar quais linhas cada usuário pode acessar ou modificar. No Supabase/PostgreSQL, é usada para aplicar regras de acesso dinâmicas por usuário. |
+| **Supabase** | Plataforma backend open-source que oferece banco de dados PostgreSQL, autenticação, storage e funções serverless, simplificando a construção de aplicações web e mobile. |
+| **UUID (Universally Unique Identifier)** | Identificador único global, utilizado para garantir unicidade de registros sem depender de números sequenciais. Ex.: `550e8400-e29b-41d4-a716-446655440000`. |
+| **ETL (Extract, Transform, Load)** | Processo de extração, transformação e carregamento de dados, usado para importar e padronizar informações de fontes externas como a API IMDb. |
+| **IMDb (Internet Movie Database)** | Base de dados online de filmes, séries e profissionais da indústria audiovisual. Fonte principal de dados de títulos no sistema. |
+| **tconst** | Identificador único de títulos na base IMDb, utilizado como chave primária na tabela `movies`. Ex.: `tt0111161`. |
+| **Chave Primária (PK)** | Coluna ou conjunto de colunas que identifica unicamente cada registro de uma tabela. |
+| **Chave Estrangeira (FK)** | Coluna que cria vínculo com a chave primária de outra tabela, garantindo integridade referencial. |
+| **Constraint** | Restrição aplicada a uma tabela ou coluna para garantir integridade dos dados, como `CHECK`, `UNIQUE` ou `FOREIGN KEY`. |
+| **Coleção (Collection)** | Agrupamento de filmes criado por um usuário para organização, curadoria ou compartilhamento. |
+| **Interação (Interaction)** | Ação do usuário em relação a um filme, como `like` ou `dislike`. |
+| **RLS Policy** | Conjunto de regras definidas para controlar acesso a linhas de uma tabela específica com base no perfil do usuário. |
+| **Cache** | Armazenamento temporário de dados frequentemente acessados para reduzir tempo de resposta de consultas. |
+| **Backup** | Cópia de segurança dos dados do banco, utilizada para restaurar informações em caso de falhas ou perda de dados. |
+| **Sharding** | Estratégia de particionamento horizontal do banco de dados para distribuir dados entre múltiplas instâncias, aumentando a escalabilidade. |
+| **Streaming Provider** | Serviço externo que disponibiliza filmes ou séries online, como Netflix, Disney+ ou Amazon Prime. |
+| **Gamificação** | Aplicação de mecânicas de jogos (como conquistas e pontos) para aumentar engajamento do usuário no sistema. |
+| **DER (Diagrama Entidade-Relacionamento)** | Representação gráfica das entidades do banco de dados e seus relacionamentos. |
+| **KPIs (Key Performance Indicators)** | Indicadores-chave de desempenho, usados para medir a eficiência ou impacto de processos e funcionalidades do sistema. |
+
+---
+
 # Glossário Técnico das Tabelas
 
 
