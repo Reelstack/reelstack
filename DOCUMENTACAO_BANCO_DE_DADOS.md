@@ -1,8 +1,27 @@
 # **Documentação do Banco de Dados**
 
-# Glossário Técnico das Tabelas
+Este documento descreve detalhadamente o modelo de dados, regras de negócio, requisitos e extensões futuras do sistema de gerenciamento de filmes, coleções e interações de usuários.
+## Sumário
+1. [Glossário Técnico das Tabelas](#glossário-técnico-das-tabelas)  
+2. [Modelo Conceitual (DER)](#modelo-conceitual-der)  
+3. [Modelo Lógico](#modelo-lógico)  
+4. [Modelo Físico](#modelo-físico)  
+5. [Requisitos Funcionais](#requisitos-funcionais)  
+6. [Requisitos Não Funcionais](#requisitos-não-funcionais)  
+7. [Regras de Negócio](#regras-de-negócio)  
+8. [Requisitos de Integração](#requisitos-de-integração)  
+9. [Extensões Futuras](#extensões-futuras)  
+10. [Considerações Finais](#considerações-finais)  
+11. [Referências e Links](#referências-e-links)  
+12. [Changelog / Histórico de Alterações](#changelog--histórico-de-alterações)  
+13. [Exemplos de Queries](#exemplos-de-queries)  
+14. [Métricas e KPIs](#métricas-e-kpis)  
+15. [Políticas de Segurança e RLS](#políticas-de-segurança-e-rls)
 
 ---
+
+# Glossário Técnico das Tabelas
+
 
 ### **Tabela Perfis (`profiles`)**
 
