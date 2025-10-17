@@ -265,7 +265,6 @@ erDiagram
 ## 3. Modelo Físico (Script SQL)
 
 ```sql
--- Criação das tabelas
 -- WARNING: This schema is for context only and is not meant to be run.
 -- Table order and constraints may not be valid for execution.
 
@@ -289,7 +288,33 @@ CREATE TABLE public.collections (
   CONSTRAINT collections_pkey PRIMARY KEY (id),
   CONSTRAINT fk_collections_profile FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
 );
+CREATE TABLE public.genres (
+  id bigint NOT NULL DEFAULT nextval('genres_id_seq'::regclass),
+  name text NOT NULL UNIQUE,
+  CONSTRAINT genres_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.movie_genres (
+  movie_id text NOT NULL,
+  genre_id bigint NOT NULL,
+  CONSTRAINT movie_genres_pkey PRIMARY KEY (movie_id, genre_id),
+  CONSTRAINT movie_genres_movie_id_fkey FOREIGN KEY (movie_id) REFERENCES public.movies(tconst),
+  CONSTRAINT movie_genres_genre_id_fkey FOREIGN KEY (genre_id) REFERENCES public.genres(id)
+);
 CREATE TABLE public.movies (
+  tconst text NOT NULL,
+  title_type_id bigint,
+  primary_title text NOT NULL,
+  original_title text,
+  is_adult boolean,
+  start_year smallint,
+  end_year smallint,
+  runtime_minutes smallint,
+  average_rating double precision,
+  num_votes bigint,
+  CONSTRAINT movies_pkey PRIMARY KEY (tconst),
+  CONSTRAINT movies_new_title_type_id_fkey FOREIGN KEY (title_type_id) REFERENCES public.title_types(id)
+);
+CREATE TABLE public.movies_old (
   tconst text NOT NULL,
   titleType text,
   primaryTitle text,
@@ -301,7 +326,7 @@ CREATE TABLE public.movies (
   genres text,
   averageRating double precision,
   numVotes bigint,
-  CONSTRAINT movies_pkey PRIMARY KEY (tconst)
+  CONSTRAINT movies_old_pkey PRIMARY KEY (tconst)
 );
 CREATE TABLE public.profiles (
   id uuid NOT NULL DEFAULT auth.uid(),
@@ -312,6 +337,11 @@ CREATE TABLE public.profiles (
   profile_name text NOT NULL UNIQUE,
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.title_types (
+  id bigint NOT NULL DEFAULT nextval('title_types_id_seq'::regclass),
+  type_name text NOT NULL UNIQUE,
+  CONSTRAINT title_types_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.user_movie_interactions (
   created_at timestamp with time zone NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
@@ -331,6 +361,7 @@ CREATE TABLE public.user_preferences (
   CONSTRAINT user_preferences_pkey PRIMARY KEY (id),
   CONSTRAINT user_preferences_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
 );
+
 ```
 
 ---
