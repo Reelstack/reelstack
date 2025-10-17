@@ -98,68 +98,84 @@
 
 ```mermaid
 erDiagram
-    PERFIL ||--o{ COLECAO : possui
-    COLECAO ||--o{ FILME_COLECAO : contem
-    FILME ||--o{ FILME_COLECAO : pertence
-    PERFIL ||--o{ INTERACAO_FILME : realiza
-    FILME ||--o{ INTERACAO_FILME : recebe
-    PERFIL ||--o{ PREFERENCIA_USUARIO : define
+   PERFIL ||--o{ COLECAO : possui
+   COLECAO ||--o{ FILME_COLECAO : contem
+   FILME ||--o{ FILME_COLECAO : pertence
+   PERFIL ||--o{ INTERACAO_FILME : realiza
+   FILME ||--o{ INTERACAO_FILME : recebe
+   PERFIL ||--o{ PREFERENCIA_USUARIO : define
+   FILME ||--o{ MOVIE_GENRES : possui
+   GENERO ||--o{ MOVIE_GENRES : contem
+   TIPO_TITULO ||--o{ FILME : classifica
 
-    PERFIL {
-        id UUID_PK
-        nome_perfil TEXTO
-        bio TEXTO
-        avatar_url TEXTO
-        data_criacao TIMESTAMP
-        data_atualizacao TIMESTAMP
-    }
+   PERFIL {
+       id UUID_PK
+       profile_name TEXTO
+       bio TEXTO
+       avatar_url TEXTO
+       created_at TIMESTAMP
+       updated_at TIMESTAMP
+   }
 
-    COLECAO {
-        id ID_PK
-        id_perfil UUID_FK
-        nome TEXTO
-        descricao TEXTO
-        visibilidade TEXTO
-        imagem_capa URL
-        data_criacao TIMESTAMP
-        data_atualizacao TIMESTAMP
-    }
+   COLECAO {
+       id ID_PK
+       profile_id UUID_FK
+       name TEXTO
+       description TEXTO
+       visibility TEXTO
+       cover_image_url URL
+       created_at TIMESTAMP
+       updated_at TIMESTAMP
+   }
 
-    FILME {
-        tconst ID_PK
-        tipo_titulo TEXTO
-        titulo_principal TEXTO
-        titulo_original TEXTO
-        conteudo_adulto BOOL
-        ano_inicio BIGINT
-        ano_fim BIGINT
-        duracao_minutos BIGINT
-        generos TEXTO
-        nota_media DECIMAL
-        numero_votos BIGINT
-    }
+   FILME {
+       tconst ID_PK
+       title_type_id BIGINT_FK
+       primary_title TEXTO
+       original_title TEXTO
+       is_adult BOOL
+       start_year BIGINT
+       end_year BIGINT
+       runtime_minutes BIGINT
+       average_rating DOUBLE
+       num_votes BIGINT
+   }
 
-    FILME_COLECAO {
-        id_colecao ID_FK
-        id_filme ID_FILME_FK
-        data_adicao TIMESTAMP
-    }
+   FILME_COLECAO {
+       collection_id BIGINT_FK
+       movie_id ID_FILME_FK
+       added_at TIMESTAMP
+   }
 
-    INTERACAO_FILME {
-        id ID_PK
-        id_perfil UUID_FK
-        id_filme ID_FILME_FK
-        tipo_interacao TEXTO
-        data_criacao TIMESTAMP
-    }
+   INTERACAO_FILME {
+       id ID_PK
+       profile_id UUID_FK
+       movie_id ID_FILME_FK
+       interaction_type TEXTO
+       created_at TIMESTAMP
+   }
 
-    PREFERENCIA_USUARIO {
-        id ID_PK
-        id_perfil UUID_FK
-        tipo_preferencia TEXTO
-        valor_preferencia TEXTO
-    }
+   PREFERENCIA_USUARIO {
+       id ID_PK
+       profile_id UUID_FK
+       preference_type TEXTO
+       preference_value TEXTO
+   }
 
+   GENERO {
+       id ID_PK
+       name TEXTO
+   }
+
+   MOVIE_GENRES {
+       movie_id ID_FILME_FK
+       genre_id BIGINT_FK
+   }
+
+   TIPO_TITULO {
+       id ID_PK
+       type_name TEXTO
+   }
 ```
 
 ---
