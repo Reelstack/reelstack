@@ -51,6 +51,14 @@ export interface MovieRuntime {
   endYear: number | null;
 }
 
+export interface UserMovieInteraction {
+  id?: number;
+  profile_id: string;
+  movie_id: string;
+  interaction_type: 'like' | 'dislike';
+  created_at?: string;
+}
+
 export interface MoviesResponse<T = Movie> {
   data: T[] | null;
   error: unknown;
@@ -489,5 +497,68 @@ export class MoviesService {
     } catch (err) {
       return { data: null, error: err };
     }
+  }
+
+  static async addUserMovieInteraction({
+    profileId,
+    movieId,
+    interactionType,
+  }: {
+    profileId: string;
+    movieId: string;
+    interactionType: 'like' | 'dislike';
+  }) {
+    // checa se ja existe interações
+    const { data: existing, error: selectError } = await supabase
+      .from('user_movie_interactions')
+      .select('id')
+      .eq('profile_id', profileId)
+      .eq('movie_id', movieId)
+      .maybeSingle();
+
+    if (selectError) throw selectError;
+
+    if (existing) {
+      // atualiza as interações caso exista
+      const { data, error } = await supabase
+        .from('user_movie_interactions')
+        .update({ interaction_type: interactionType })
+        .eq('id', existing.id)
+        .select();
+
+      if (error) throw error;
+      return data;
+    } else {
+      // caso não exista, insere uma interação
+      const { data, error } = await supabase
+        .from('user_movie_interactions')
+        .insert({
+          profile_id: profileId,
+          movie_id: movieId,
+          interaction_type: interactionType,
+        })
+        .select();
+
+      if (error) throw error;
+      return data;
+    }
+  }
+  static async getUserMovies(
+    profileId: string,
+    interactionType: 'like' | 'dislike',
+  ) {
+    const { data, error } = await supabase
+      .from('user_movie_interactions')
+      .select('movies(*)') // metodo relacional
+      .eq('profile_id', profileId)
+      .eq('interaction_type', interactionType)
+      .order('created_at', { ascending: false }); // organiza em ordem do mais recente
+
+    if (error) throw error;
+
+    const movies = data // muda o array de arrays em um array simples
+      .map((d: any) => d.movies)
+      .filter((m: any): m is Movie => !!m); // filtro para evitar problemas
+    return movies;
   }
 }

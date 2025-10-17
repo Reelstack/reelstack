@@ -1,6 +1,8 @@
 import styles from './styles.module.css';
 import { MoviesService, type Movie } from '../../services/api/supa-api/movies';
 import { useEffect, useRef, useState } from 'react';
+import { supabase } from '../../lib/supabaseClient';
+import toast from 'react-hot-toast';
 
 const MOVIES_PER_PAGE = 18;
 
@@ -9,6 +11,7 @@ interface MovieStackProps {
   movies: Movie[];
   setMovies: React.Dispatch<React.SetStateAction<Movie[]>>;
   color?: string;
+  interactionType?: 'like' | 'dislike';
 }
 
 export function MovieStack({
@@ -16,22 +19,61 @@ export function MovieStack({
   movies,
   setMovies,
   color = 'var(--success)',
+  interactionType = 'like',
 }: MovieStackProps) {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
   const historyRef = useRef<HTMLDivElement | null>(null);
   const shouldScroll = useRef(false);
   const [isHover, setHover] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadUserMovies() {
+      setLoading(true);
+
+      try {
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+        if (sessionError || !session) throw toast.error('User not logged in');
+
+        const profileId = session.user.id;
+
+        const userMovies = await MoviesService.getUserMovies(
+          profileId,
+          interactionType,
+        );
+        if (userMovies && userMovies.length > 0) {
+          setMovies(userMovies);
+        }
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : 'Failed to load movies.',
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadUserMovies();
+  }, [interactionType, setMovies]);
 
   async function handleAddMovie() {
     const titlePrompt = prompt('Movie name?');
     if (!titlePrompt) return;
 
     setLoading(true);
-    setError(null);
 
     try {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+      if (sessionError || !session) throw toast.error('User not logged in');
+
+      const profileId = session.user.id; // Supabase ID
       // Busca filmes com o título digitado
       const { data, error } = await MoviesService.searchMovies(
         {
@@ -47,7 +89,7 @@ export function MovieStack({
       // }
       if (error) throw error;
       if (!data || data.length === 0) {
-        setError('Movie not found.');
+        toast.error('Movie not found.');
         return;
       }
 
@@ -56,15 +98,21 @@ export function MovieStack({
       // Checa duplicata
       setMovies(prev => {
         if (prev.some(m => m.tconst === movie.tconst)) {
-          setError('Movie already added.');
+          toast.error('Movie already added.');
           return prev;
         }
         return [movie, ...prev];
       });
       // atualiza a pagina
       setPage(0);
+      //salva os filmes interagidos do usuario
+      await MoviesService.addUserMovieInteraction({
+        profileId,
+        movieId: movie.tconst,
+        interactionType,
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      toast.error(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
@@ -90,12 +138,11 @@ export function MovieStack({
         <button
           className={styles.edit}
           onClick={handleAddMovie}
-          disabled={loading}  
+          disabled={loading}
         >
           {/* trocar svg no futuro */}
           <h3 style={{ color: 'var(--contrast)' }}>Edit</h3>
         </button>
-        {error && <p className={styles.error}>{error}</p>}
       </div>
 
       {loading && (
@@ -117,11 +164,11 @@ export function MovieStack({
             onMouseEnter={() => setHover(m.tconst)} // passa o id
             onMouseLeave={() => setHover(null)} // reseta
           >
-            <img 
+            <img
               /* src={m.posterUrl || '/placeholder-poster.jpg'} */
               src={'/goncha.jpg'}
-              alt={m.primaryTitle ?? 'Movie poster'} 
-              onError={(e) => {
+              alt={m.primaryTitle ?? 'Movie poster'}
+              onError={e => {
                 (e.target as HTMLImageElement).src = '/placeholder-poster.jpg';
               }}
             />
