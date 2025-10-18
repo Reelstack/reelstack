@@ -4,17 +4,25 @@ Este documento descreve detalhadamente o modelo de dados, regras de negócio, re
 
 ## **Sumário**
 
+### Parte 1 — Estrutura e Contexto
+
 1. [Glossário de Termos e Siglas](#1-glossário-de-termos-e-siglas)
 2. [Glossário Técnico das Tabelas](#2-glossário-técnico-das-tabelas)
 3. [Modelo Conceitual (Diagrama Entidade-Relacionamento)](#3-modelo-conceitual-diagrama-entidade-relacionamento)
 4. [Modelo Lógico](#4-modelo-lógico)
 5. [Modelo Físico (Script SQL)](#5-modelo-físico-script-sql)
+
+### Parte 2 — Operações e Regras
+
 6. [Requisitos Funcionais](#6-requisitos-funcionais)
 7. [Modelo de Dados](#7-modelo-de-dados)
 8. [Diagrama de Fluxo de Dados (DFD)](#8-diagrama-de-fluxo-de-dados-dfd)
 9. [Requisitos Não Funcionais](#9-requisitos-não-funcionais)
 10. [Regras de Negócio](#10-regras-de-negócio)
 11. [Requisitos de Integração](#11-requisitos-de-integração)
+
+### Parte 3 — Manutenção e Evolução
+
 12. [Considerações Finais](#12-considerações-finais)
 13. [Extensões Futuras](#13-extensões-futuras)
 14. [Histórico de Alterações (Changelog)](#14-histórico-de-alterações-changelog)
