@@ -1,26 +1,34 @@
 # **Documentação do Banco de Dados**
 
 Este documento descreve detalhadamente o modelo de dados, regras de negócio, requisitos e extensões futuras do sistema de gerenciamento de filmes, coleções e interações de usuários.
-## Sumário
 
-1. [Glossário de Termos e Siglas](#2-glossário-de-termos-e-siglas)
-2. [Glossário Técnico das Tabelas](#glossário-técnico-das-tabelas)
-3. [Modelo Conceitual (DER)](#1-modelo-conceitual-diagrama-entidade-relacionamento)
-4. [Modelo Lógico](#modelo-lógico)
-5. [Modelo Físico (Script SQL)](#3-modelo-físico-script-sql)
-6. [Requisitos Funcionais](#1-requisitos-funcionais)
-7. [Requisitos Não Funcionais](#3-requisitos-não-funcionais)
-8. [Regras de Negócio](#4-regras-de-negócio)
-9. [Requisitos de Integração](#5-requisitos-de-integração)
-10. [Considerações Finais](#6-considerações-finais)
-11. [Extensões Futuras](#7-extensões-futuras)
-12. [Referências e Links](#referências-e-links)
-13. [Histórico de Alterações](#changelog--histórico-de-alterações)
+## **Sumário**
+
+1. [Glossário de Termos e Siglas](#1-glossário-de-termos-e-siglas)
+2. [Glossário Técnico das Tabelas](#2-glossário-técnico-das-tabelas)
+3. [Modelo Conceitual (Diagrama Entidade-Relacionamento)](#3-modelo-conceitual-diagrama-entidade-relacionamento)
+4. [Modelo Lógico](#4-modelo-lógico)
+5. [Modelo Físico (Script SQL)](#5-modelo-físico-script-sql)
+6. [Requisitos Funcionais](#6-requisitos-funcionais)
+7. [Modelo de Dados](#7-modelo-de-dados)
+8. [Diagrama de Fluxo de Dados (DFD)](#8-diagrama-de-fluxo-de-dados-dfd)
+9. [Requisitos Não Funcionais](#9-requisitos-não-funcionais)
+10. [Regras de Negócio](#10-regras-de-negócio)
+11. [Requisitos de Integração](#11-requisitos-de-integração)
+12. [Considerações Finais](#12-considerações-finais)
+13. [Extensões Futuras](#13-extensões-futuras)
+14. [Histórico de Alterações (Changelog)](#14-histórico-de-alterações-changelog)
+15. [Notas de Performance e Escalabilidade](#15-notas-de-performance-e-escalabilidade)
+16. [Guia de Nomenclatura e Convenções](#16-guia-de-nomenclatura-e-convenções)
+17. [Referências Técnicas](#17-referências-técnicas)
+18. [Plano de Evolução Técnica](#18-plano-de-evolução-técnica)
 
 ---
 
-## 2. Glossário de Termos e Siglas
+## 1. Glossário de Termos e Siglas
+
 Este glossário descreve os principais termos e siglas utilizados na documentação do banco de dados e no sistema.
+
 | Termo / Sigla | Descrição |
 | -------------- | ------------------------------------------------------------ |
 | **RLS (Row Level Security)** | Política de segurança no nível de linha do banco de dados. Permite controlar quais linhas cada usuário pode acessar ou modificar. No Supabase/PostgreSQL, é usada para aplicar regras de acesso dinâmicas por usuário. |
@@ -45,8 +53,7 @@ Este glossário descreve os principais termos e siglas utilizados na documentaç
 
 ---
 
-# Glossário Técnico das Tabelas
-
+## 2. Glossário Técnico das Tabelas
 
 ### **Tabela Perfis (`profiles`)**
 
@@ -168,7 +175,7 @@ Este glossário descreve os principais termos e siglas utilizados na documentaç
 
 ---
 
-## 1. Modelo Conceitual (Diagrama Entidade-Relacionamento)
+## 3. Modelo Conceitual (Diagrama Entidade-Relacionamento)
 
 ```mermaid
 erDiagram
@@ -254,7 +261,7 @@ erDiagram
 
 ---
 
-## Modelo Lógico
+## 4. Modelo Lógico
 
 ### PERFIL (`profiles`)
 
@@ -362,7 +369,7 @@ erDiagram
 
 ---
 
-## 3. Modelo Físico (Script SQL)
+## 5. Modelo Físico (Script SQL)
 
 ```sql
 -- WARNING: This schema is for context only and is not meant to be run.
@@ -466,31 +473,38 @@ CREATE TABLE public.user_preferences (
 
 ---
 
-## 1. Requisitos Funcionais
+## 6. Requisitos Funcionais
+
 Os requisitos abaixo descrevem as principais funcionalidades do sistema, considerando a nova estrutura do banco de dados:
+
 * **Cadastro e gerenciamento de usuários**
- * Inserção de dados na tabela `profiles`
- * Validação de dados únicos (`profile_name`, email do usuário)
- * Atualização de perfil e avatar
+* Inserção de dados na tabela `profiles`
+* Validação de dados únicos (`profile_name`, email do usuário)
+* Atualização de perfil e avatar
 * **Interações com filmes**
- * Registro de curtidas e descurtidas (`user_movie_interactions`)
- * Registro de avaliações pessoais (`user_ratings`)
- * Armazenamento do histórico de visualizações (`watch_history`)
+* Registro de curtidas e descurtidas (`user_movie_interactions`)
+* Registro de avaliações pessoais (`user_ratings`)
+* Armazenamento do histórico de visualizações (`watch_history`)
 * **Coleções de filmes**
- * Criação e gerenciamento de coleções (`collections`)
- * Adição e remoção de filmes em coleções (`collection_movies`)
- * Coleções colaborativas com diferentes níveis de permissão (`collection_members`)
+* Criação e gerenciamento de coleções (`collections`)
+* Adição e remoção de filmes em coleções (`collection_movies`)
+* Coleções colaborativas com diferentes níveis de permissão (`collection_members`)
 * **Busca e filtros**
- * Busca de filmes por título, gênero (`movie_genres`) ou tipo de título (`title_types`)
- * Filtros por avaliação média (`averageRating`) e número de votos
- * Controle de conteúdo adulto (`isAdult`)
+* Busca de filmes por título, gênero (`movie_genres`) ou tipo de título (`title_types`)
+* Filtros por avaliação média (`averageRating`) e número de votos
+* Controle de conteúdo adulto (`isAdult`)
 * **Integração com fontes externas**
- * Importação e atualização de dados via API IMDb
- * Integração com provedores de streaming (`movie_providers`)
+* Importação e atualização de dados via API IMDb
+* Integração com provedores de streaming (`movie_providers`)
+
 ---
-## 2. Modelo de Dados
-### 2.1 Estrutura
+
+## 7. Modelo de Dados
+
+### 7.1 Estrutura
+
 O modelo contempla todas as entidades do sistema, incluindo:
+
 * Usuários e perfis (`profiles`)
 * Filmes, tipos de título (`title_types`) e gêneros (`genres`)
 * Coleções e filmes em coleções (`collections`, `collection_movies`, `collection_members`)
@@ -498,7 +512,9 @@ O modelo contempla todas as entidades do sistema, incluindo:
 * Integração com provedores externos (`movie_providers`)
 * Gamificação e conquistas (`achievements`, `user_achievements`)
 * Comentários de usuários (`comments`)
-### 2.2 Relacionamentos
+
+### 7.2 Relacionamentos
+
 | Entidade Origem       | Entidade Destino                  | Tipo de Relacionamento | Descrição                                           |
 | --------------------- | -------------------------------- | -------------------- | -------------------------------------------------- |
 | Usuário (`profiles`)  | Interações (`user_movie_interactions`) | 1:N                  | Um usuário pode interagir com vários filmes       |
@@ -512,59 +528,123 @@ O modelo contempla todas as entidades do sistema, incluindo:
 | Usuário (`profiles`)   | Comentários (`comments`)          | 1:N                  | Um usuário pode comentar vários filmes            |
 | Usuário (`profiles`)   | Conquistas (`user_achievements`)  | 1:N                  | Um usuário pode ganhar múltiplas conquistas       |
 | Filme (`movies`)       | Provedores (`movie_providers`)    | 1:N                  | Um filme pode estar disponível em múltiplos provedores |
+
 ---
-## 3. Requisitos Não Funcionais
-### 3.1 Performance
+
+## 8. Diagrama de Fluxo de Dados (DFD)
+
+### Descrição
+
+O Diagrama de Fluxo de Dados (DFD) representa o caminho percorrido pelas informações desde sua origem até o destino final, ilustrando os processos internos, entidades externas e repositórios de dados envolvidos.
+
+### DFD - Nível 0
+
+```mermaid
+flowchart TD
+    A[Usuário] -->|Cadastro/Login| B[(Tabela profiles)]
+    A -->|Interação com filmes| C[Processo de Interação]
+    C --> D[(Tabela user_movie_interactions)]
+    C --> E[(Tabela user_preferences)]
+    F[(IMDb API / TMDb API)] -->|Importação| G[Processo ETL]
+    G --> H[(Tabelas movies, genres, movie_genres)]
+    E --> I[Motor de Recomendação]
+    I --> A
+```
+
+### DFD - Nível 1 (Detalhamento do Processo de Interação)
+
+```mermaid
+flowchart TD
+    A[Usuário] --> B[Interface de Filme]
+    B --> C{Filme disponível?}
+    C -->|Sim| D[Registrar ação #40;assistir/avaliar/adicionar à coleção#41;]
+    D --> E[#40;Tabela user_movie_interactions#41;]
+    D --> F[#40;Tabela collections / collection_movies#41;]
+    C -->|Não| G[Mostrar recomendação alternativa]
+```
+
+---
+
+## 9. Requisitos Não Funcionais
+
+### 9.1 Performance
+
 * Consultas de filmes, gêneros e coleções devem responder em até 200ms
 * Índices em `tconst`, `profile_id`, `collection_id` e `genre_id`
 * Cache para filmes mais populares e recomendações
-### 3.2 Segurança
+
+### 9.2 Segurança
+
 * Criptografia de dados sensíveis e tokens
 * Controle de acesso RLS no Supabase
 * Proteção contra injeção SQL e acessos não autorizados
 * Logs de auditoria para ações críticas
-### 3.3 Escalabilidade
+
+### 9.3 Escalabilidade
+
 * Estrutura compatível com sharding e replicação
 * Suporte ao aumento de usuários e volume de dados
 * Balanceamento de carga entre múltiplas instâncias
-### 3.4 Backup e Recuperação
+
+### 9.4 Backup e Recuperação
+
 * Backups automáticos diários e retenção mínima de 7 dias
 * Procedimentos de restauração testados
 * Verificação periódica da integridade dos dados
+
 ---
-## 4. Regras de Negócio
-### 4.1 Interações
+
+## 10. Regras de Negócio
+
+### 10.1 Interações
+
 * Um usuário não pode curtir e descurtir o mesmo filme simultaneamente
 * Todas as interações registradas em UTC
 * Exclusão de interação remove apenas o vínculo, não o filme nem o perfil
-### 4.2 Conteúdo
+
+### 10.2 Conteúdo
+
 * Filmes adultos (`isAdult = TRUE`) apenas para perfis autorizados
 * Filmes sem metadados essenciais (`titleType`, `startYear`) não aparecem em recomendações
 * Classificação etária respeitada conforme política de exibição
-### 4.3 Coleções
+
+### 10.3 Coleções
+
 * Cada perfil pode criar até 100 coleções
 * Coleções podem ser `public`, `private` ou `unlisted`
 * Exclusão de coleção remove vínculos com filmes (`collection_movies`)
 * Coleções colaborativas respeitam papéis (`owner`, `editor`, `viewer`)
+
 ---
-## 5. Requisitos de Integração
-### 5.1 APIs Externas
+
+## 11. Requisitos de Integração
+
+### 11.1 APIs Externas
+
 * Integração com API IMDb para importação e atualização de filmes
 * Integração com provedores de streaming para links diretos
 * Tratamento de inconsistências de `tconst` e fallback em caso de indisponibilidade
-### 5.2 Formato dos Dados
+
+### 11.2 Formato dos Dados
+
 * Padronização de campos importados (`titleType`, `genres`, `averageRating`)
 * Conversão automática de tipos numéricos e booleanos
 * Validação de integridade antes da inserção
 * Mapeamento completo entre colunas externas e internas documentado
+
 ---
-## 6. Considerações Finais
+
+## 12. Considerações Finais
+
 * Garantia de integridade referencial entre todas as entidades
 * Uso de chaves compostas e constraints para consistência
 * Compatibilidade direta com Supabase, aproveitando autenticação e RLS
 * Convenção consistente de nomenclatura e pluralidade para tabelas de associação
+
 ---
-## 7. Extensões Futuras
+
+## 13. Extensões Futuras
+
 * Sistema de comentários (`comments`)
 * Avaliações personalizadas (`user_ratings`)
 * Playlists colaborativas (`collection_members`)
@@ -572,5 +652,76 @@ O modelo contempla todas as entidades do sistema, incluindo:
 * Sistema de recomendação híbrida (colaborativa + baseada em conteúdo)
 * Gamificação e conquistas (`achievements`, `user_achievements`)
 * Integração com plataformas de streaming (`movie_providers`)
+
+## 14. Histórico de Alterações (Changelog)
+
+| Versão | Data       | Autor | Descrição das Alterações                                            | Observações                                |
+| :----- | :--------- | :---- | :------------------------------------------------------------------ | :----------------------------------------- |
+| v1.0   | 2024-09-10 | Gabs  | Estrutura inicial das tabelas principais                            | Primeira versão pública                    |
+| v1.1   | 2024-10-05 | Gabs  | Inclusão das tabelas `user_preferences` e `user_movie_interactions` | Suporte a sistema de recomendações         |
+| v1.2   | 2024-10-20 | Gabs  | Adição de policies RLS e diagrama DFD                               | Aperfeiçoamento da segurança e arquitetura |
+| v1.3   | 2025-01-08 | Gabs  | Ajustes de índices e normalização de dados                          | Melhoria de performance                    |
+| v1.4   | 2025-03-15 | Gabs  | Inclusão do guia de nomenclatura e versão inicial de caching        | Padronização e otimização técnica          |
+
+---
+
+## 15. Notas de Performance e Escalabilidade
+
+### Índices Recomendados
+
+```sql
+CREATE INDEX idx_profiles_name ON profiles(profile_name);
+CREATE INDEX idx_movies_year_type ON movies(start_year, title_type_id);
+CREATE INDEX idx_user_movie_interactions_profile_movie ON user_movie_interactions(profile_id, movie_id);
+CREATE INDEX idx_collection_movies_relation ON collection_movies(collection_id, movie_id);
+CREATE INDEX idx_movie_genres_relation ON movie_genres(genre_id, movie_id);
+```
+
+---
+
+## 16. Guia de Nomenclatura e Convenções
+
+| Elemento                | Convenção                      | Exemplo                                |
+| ----------------------- | ------------------------------ | -------------------------------------- |
+| **Tabelas**             | Nome plural, minúsculo         | `movies`, `user_preferences`           |
+| **Colunas**             | `snake_case`                   | `start_year`, `average_rating`         |
+| **Chaves Primárias**    | `id` (tipo `bigint` ou `uuid`) | `id`                                   |
+| **Chaves Estrangeiras** | `fk_<tabela>_<referência>`     | `fk_user_movie_interactions_profile`   |
+| **Constraints**         | Prefixo: `pk_`, `fk_`, `chk_`  | `pk_profiles_id`, `fk_movies_genre_id` |
+| **Timezone Padrão**     | `UTC`                          | `created_at TIMESTAMPTZ DEFAULT now()` |
+
+---
+
+## 17. Referências Técnicas
+
+| Categoria                   | Link                                                                 |
+| --------------------------- | -------------------------------------------------------------------- |
+| IMDb Dataset                | [https://datasets.imdbws.com/](https://datasets.imdbws.com/)         |
+| Supabase Docs               | [https://supabase.com/docs](https://supabase.com/docs)               |
+| PostgreSQL 16 Documentation | [https://www.postgresql.org/docs/](https://www.postgresql.org/docs/) |
+| Mermaid ER & Flow Syntax    | [https://mermaid.js.org/syntax/](https://mermaid.js.org/syntax/)     |
+
+---
+
+## 18. Plano de Evolução Técnica
+
+### Controle de Versionamento
+
+* Ferramenta: Supabase CLI + Git.
+* Padrão de branches:
+
+  * `main`: produção
+  * `developer`: integração
+  * `feature/<nome>`: novas features (ex: `feature/add-movie-ranking`)
+
+### Migrações
+
+* Todas as mudanças de schema devem gerar uma migration SQL.
+* Versões armazenadas no diretório `/supabase/migrations`.
+
+### Compatibilidade e Manutenção
+
+* Manter tabelas legadas com sufixo `_old` até conclusão de migração completa.
+* Views intermediárias para compatibilidade entre versões.
 
 ---
