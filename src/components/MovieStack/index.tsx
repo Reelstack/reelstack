@@ -167,15 +167,15 @@ export function MovieStack({
             <img
               /* src={m.posterUrl || '/placeholder-poster.jpg'} */
               src={'/goncha.jpg'}
-              alt={m.primaryTitle ?? 'Movie poster'}
+              alt={m.primary_title ?? 'Movie poster'}
               onError={e => {
                 (e.target as HTMLImageElement).src = '/placeholder-poster.jpg';
               }}
             />
             {isHover === m.tconst && ( // checa o id
               <div className={styles.movieName}>
-                <p>{m.primaryTitle ?? 'Unknown Title'}</p>
-                <p>({m.startYear ?? 'Unknown Year'})</p>
+                <p>{m.primary_title ?? 'Unknown Title'}</p>
+                <p>({m.start_year ?? 'Unknown Year'})</p>
               </div>
             )}
           </div>

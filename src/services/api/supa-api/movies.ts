@@ -3,52 +3,52 @@ import { supabase } from '../../../lib/supabaseClient';
 // All columns
 export interface Movie {
   tconst: string;
-  titleType: string | null;
-  primaryTitle: string | null;
-  originalTitle: string | null;
-  isAdult: boolean | null;
-  startYear: number | null;
-  endYear: number | null;
-  runtimeMinutes: number | null;
+  title_type_id: string | null;
+  primary_title: string | null;
+  original_title: string | null;
+  is_adult: boolean | null;
+  start_year: number | null;
+  end_year: number | null;
+  runtime_minutes: number | null;
   genres: string | null;
-  averageRating: number | null;
-  numVotes: number | null;
+  average_rating: number | null;
+  num_votes: number | null;
 }
 
 // Essential fields only
 export interface BasicMovie {
   tconst: string;
-  primaryTitle: string | null;
-  startYear: number | null;
+  primary_title: string | null;
+  start_year: number | null;
 }
 
 // Interfaces para colunas específicas
 export interface MovieTitles {
   tconst: string;
-  primaryTitle: string | null;
-  originalTitle: string | null;
+  primary_title: string | null;
+  original_title: string | null;
 }
 
 export interface MovieRatings {
   tconst: string;
-  primaryTitle: string | null;
-  averageRating: number | null;
-  numVotes: number | null;
+  primary_title: string | null;
+  average_rating: number | null;
+  num_votes: number | null;
 }
 
 export interface MovieGenres {
   tconst: string;
-  primaryTitle: string | null;
+  primary_title: string | null;
   genres: string | null;
-  titleType: string | null;
+  title_type_id: string | null;
 }
 
 export interface MovieRuntime {
   tconst: string;
-  primaryTitle: string | null;
-  runtimeMinutes: number | null;
-  startYear: number | null;
-  endYear: number | null;
+  primary_title: string | null;
+  runtime_minutes: number | null;
+  start_year: number | null;
+  end_year: number | null;
 }
 
 export interface UserMovieInteraction {
@@ -98,7 +98,7 @@ export class MoviesService {
     try {
       const { data, error } = await supabase
         .from('movies')
-        .select('tconst, primaryTitle, startYear')
+        .select('tconst, primary_title, start_year')
         .range(from, to);
 
       return { data, error };
@@ -112,7 +112,7 @@ export class MoviesService {
    * @param filters Filtros para busca
    * @param limit Limite de resultados (padrão: 20)
    * @param offset Offset para paginação (padrão: 0)
-   * @param orderBy Campo para ordenação (padrão: 'primaryTitle')
+   * @param orderBy Campo para ordenação (padrão: 'primary_title')
    * @param ascending Ordenação crescente ou decrescente (padrão: true)
    */
   static async searchMovies(
@@ -121,10 +121,10 @@ export class MoviesService {
       yearFrom?: number;
       yearTo?: number;
       title?: string;
-      originalTitle?: string;
+      original_title?: string;
       genre?: string;
-      titleType?: string;
-      isAdult?: boolean;
+      title_type_id?: string;
+      is_adult?: boolean;
       minRating?: number;
       maxRating?: number;
       minVotes?: number;
@@ -133,7 +133,7 @@ export class MoviesService {
     },
     limit: number = 20,
     offset: number = 0,
-    orderBy: keyof Movie = 'primaryTitle',
+    orderBy: keyof Movie = 'primary_title',
     ascending: boolean = true,
   ): Promise<MoviesResponse<Movie>> {
     try {
@@ -141,51 +141,51 @@ export class MoviesService {
 
       // Aplicar filtros de ano
       if (filters.year) {
-        query = query.eq('startYear', filters.year);
+        query = query.eq('start_year', filters.year);
       }
       if (filters.yearFrom) {
-        query = query.gte('startYear', filters.yearFrom);
+        query = query.gte('start_year', filters.yearFrom);
       }
       if (filters.yearTo) {
-        query = query.lte('startYear', filters.yearTo);
+        query = query.lte('start_year', filters.yearTo);
       }
 
       // Aplicar filtros de título
       if (filters.title) {
-        query = query.ilike('primaryTitle', `%${filters.title}%`);
+        query = query.ilike('primary_title', `%${filters.title}%`);
       }
-      if (filters.originalTitle) {
-        query = query.ilike('originalTitle', `%${filters.originalTitle}%`);
+      if (filters.original_title) {
+        query = query.ilike('original_title', `%${filters.original_title}%`);
       }
 
       // Aplicar filtros de gênero e tipo
       if (filters.genre) {
         query = query.ilike('genres', `%${filters.genre}%`);
       }
-      if (filters.titleType) {
-        query = query.eq('titleType', filters.titleType);
+      if (filters.title_type_id) {
+        query = query.eq('title_type_id', filters.title_type_id);
       }
-      if (filters.isAdult !== undefined) {
-        query = query.eq('isAdult', filters.isAdult);
+      if (filters.is_adult !== undefined) {
+        query = query.eq('is_adult', filters.is_adult);
       }
 
       // Aplicar filtros de rating
       if (filters.minRating) {
-        query = query.gte('averageRating', filters.minRating);
+        query = query.gte('average_rating', filters.minRating);
       }
       if (filters.maxRating) {
-        query = query.lte('averageRating', filters.maxRating);
+        query = query.lte('average_rating', filters.maxRating);
       }
       if (filters.minVotes) {
-        query = query.gte('numVotes', filters.minVotes);
+        query = query.gte('num_votes', filters.minVotes);
       }
 
       // Aplicar filtros de runtime
       if (filters.minRuntime) {
-        query = query.gte('runtimeMinutes', filters.minRuntime);
+        query = query.gte('runtime_minutes', filters.minRuntime);
       }
       if (filters.maxRuntime) {
-        query = query.lte('runtimeMinutes', filters.maxRuntime);
+        query = query.lte('runtime_minutes', filters.maxRuntime);
       }
 
       // Aplicar ordenação
@@ -263,9 +263,9 @@ export class MoviesService {
       const { data, error } = await supabase
         .from('movies')
         .select('*')
-        .gte('numVotes', minVotes)
-        .not('averageRating', 'is', null)
-        .order('averageRating', { ascending: false })
+        .gte('num_votes', minVotes)
+        .not('average_rating', 'is', null)
+        .order('average_rating', { ascending: false })
         .limit(limit);
 
       return { data, error };
@@ -308,8 +308,8 @@ export class MoviesService {
     yearTo?: number;
     title?: string;
     genre?: string;
-    titleType?: string;
-    isAdult?: boolean;
+    title_type_id?: string;
+    is_adult?: boolean;
     minRating?: number;
     maxRating?: number;
     minVotes?: number;
@@ -321,34 +321,34 @@ export class MoviesService {
 
       if (filters) {
         if (filters.year) {
-          query = query.eq('startYear', filters.year);
+          query = query.eq('start_year', filters.year);
         }
         if (filters.yearFrom) {
-          query = query.gte('startYear', filters.yearFrom);
+          query = query.gte('start_year', filters.yearFrom);
         }
         if (filters.yearTo) {
-          query = query.lte('startYear', filters.yearTo);
+          query = query.lte('start_year', filters.yearTo);
         }
         if (filters.title) {
-          query = query.ilike('primaryTitle', `%${filters.title}%`);
+          query = query.ilike('primary_title', `%${filters.title}%`);
         }
         if (filters.genre) {
           query = query.ilike('genres', `%${filters.genre}%`);
         }
-        if (filters.titleType) {
-          query = query.eq('titleType', filters.titleType);
+        if (filters.title_type_id) {
+          query = query.eq('title_type_id', filters.title_type_id);
         }
-        if (filters.isAdult !== undefined) {
-          query = query.eq('isAdult', filters.isAdult);
+        if (filters.is_adult !== undefined) {
+          query = query.eq('is_adult', filters.is_adult);
         }
         if (filters.minRating) {
-          query = query.gte('averageRating', filters.minRating);
+          query = query.gte('average_rating', filters.minRating);
         }
         if (filters.maxRating) {
-          query = query.lte('averageRating', filters.maxRating);
+          query = query.lte('average_rating', filters.maxRating);
         }
         if (filters.minVotes) {
-          query = query.gte('numVotes', filters.minVotes);
+          query = query.gte('num_votes', filters.minVotes);
         }
       }
 
@@ -409,17 +409,17 @@ export class MoviesService {
 
   /**
    * Busca filmes por tipo de título
-   * @param titleTypes Array de tipos de título (movie, tvSeries, etc.)
+   * @param title_type_ids Array de tipos de título (movie, tvSeries, etc.)
    * @param limit Limite de resultados (padrão: 20)
    * @param offset Offset para paginação (padrão: 0)
    */
-  static async getMoviesByTitleTypes(
-    titleTypes: string[],
+  static async getMoviesBytitle_type_ids(
+    title_type_ids: string[],
     limit: number = 20,
     offset: number = 0,
   ): Promise<MoviesResponse<Movie>> {
     try {
-      if (!titleTypes || titleTypes.length === 0) {
+      if (!title_type_ids || title_type_ids.length === 0) {
         return {
           data: null,
           error: new Error('Title types array cannot be empty'),
@@ -429,7 +429,7 @@ export class MoviesService {
       const { data, error } = await supabase
         .from('movies')
         .select('*')
-        .in('titleType', titleTypes)
+        .in('title_type_id', title_type_ids)
         .range(offset, offset + limit - 1);
 
       return { data, error };
@@ -453,14 +453,14 @@ export class MoviesService {
       let query = supabase
         .from('movies')
         .select('*')
-        .not('numVotes', 'is', null)
-        .order('numVotes', { ascending: false });
+        .not('num_votes', 'is', null)
+        .order('num_votes', { ascending: false });
 
       if (yearFrom) {
-        query = query.gte('startYear', yearFrom);
+        query = query.gte('start_year', yearFrom);
       }
       if (yearTo) {
-        query = query.lte('startYear', yearTo);
+        query = query.lte('start_year', yearTo);
       }
 
       query = query.limit(limit);
@@ -489,8 +489,8 @@ export class MoviesService {
       const { data, error } = await supabase
         .from('movies')
         .select('*')
-        .gte('runtimeMinutes', minMinutes)
-        .lte('runtimeMinutes', maxMinutes)
+        .gte('runtime_minutes', minMinutes)
+        .lte('runtime_minutes', maxMinutes)
         .range(offset, offset + limit - 1);
 
       return { data, error };
