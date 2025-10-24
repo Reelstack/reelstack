@@ -36,41 +36,83 @@ function genresToVector(genres: Genre[], allGenres: string[]): number[] {
 // fetching de likes e dislikes
 
 async function fetchAllMovies(): Promise<Movie[]> {
-  const { data, error } = await supabase.from('movies').select(`
-    tconst,
-    primary_title,
-    movie_genres(
-      genre_id,
-      genres_name(id, name)
-    )
-  `);
+  const { data: movies, error: moviesError } = await supabase
+    .from('movies')
+    .select('tconst, primary_title');
+  if (moviesError) throw moviesError;
 
-  if (error) throw error;
+  // fetch nas relações filmes-genero
+  const { data: movieGenres, error: mgError } = await supabase
+    .from('movie_genres')
+    .select('movie_id, genre_id');
+  if (mgError) throw mgError;
 
-  return data.map(movie => ({
+  // fetch dos generos
+  const { data: genres, error: gError } = await supabase
+    .from('genres_name')
+    .select('id, name');
+  if (gError) throw gError;
+
+  // merge manual (fix temporario?)
+  return movies.map(movie => ({
     id: movie.tconst,
     title: movie.primary_title,
-    genres: movie.movie_genres.map((mg: any) => mg.genres),
-  })) as Movie[];
+    genres: movieGenres
+      .filter(mg => mg.movie_id === movie.tconst)
+      .map(mg => ({
+        id: mg.genre_id,
+        name: genres.find(g => g.id === mg.genre_id)?.name || '',
+      })),
+  }));
 }
 
 async function fetchUserMovies(
   profileId: string,
   type: 'like' | 'dislike',
 ): Promise<Movie[]> {
-  const { data, error } = await supabase
+  // fetch de interações do usuario
+  const { data: interactions, error: iError } = await supabase
     .from('user_movie_interactions')
-    .select(`movies(id, title, movie_genres(genres(id, name)))`)
+    .select('movie_id')
     .eq('profile_id', profileId)
     .eq('interaction_type', type);
+  if (iError) throw iError;
 
-  if (error) throw error;
+  const movieIds = interactions.map((i: any) => i.movie_id);
 
-  return data.map((d: any) => ({
-    id: d.movies.tconst,
-    title: d.movies.primary_title,
-    genres: d.movies.movie_genres.map((mg: any) => mg.genres),
-  })) as Movie[];
+  if (movieIds.length === 0) return [];
+
+  // fetch dos filmes
+  const { data: movies, error: moviesError } = await supabase
+    .from('movies')
+    .select('tconst, primary_title')
+    .in('tconst', movieIds);
+  if (moviesError) throw moviesError;
+
+  // fetch das relações filme-genero
+  const { data: movieGenres, error: mgError } = await supabase
+    .from('movie_genres')
+    .select('movie_id, genre_id')
+    .in('movie_id', movieIds);
+  if (mgError) throw mgError;
+
+  // fetch dos generos
+  const { data: genres, error: gError } = await supabase
+    .from('genres_name')
+    .select('id, name');
+  if (gError) throw gError;
+
+  // merge manual (temporario?)
+  return movies.map(movie => ({
+    id: movie.tconst,
+    title: movie.primary_title,
+    genres: movieGenres
+      .filter(mg => mg.movie_id === movie.tconst)
+      .map(mg => ({
+        id: mg.genre_id,
+        name: genres.find(g => g.id === mg.genre_id)?.name || '',
+      })),
+  }));
 }
 
 // logica de recomendação
