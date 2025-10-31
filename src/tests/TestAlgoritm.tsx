@@ -6,7 +6,7 @@ import { recommendMovies } from '../services/api/recommendations/prototypeRecomm
  */
 export async function testUserRecommendations() {
   // colocar um id de usuario valido
-  const testUserId = 'e5638353-03ed-4af4-b962-999b0ea88f79';
+  const testUserId = 'e4aca076-5f7d-4fcf-a1c1-77c306b4b3e3';
 
   console.log(`Generating movie recommendations for user: ${testUserId}...`);
 
@@ -21,7 +21,7 @@ export async function testUserRecommendations() {
     console.log(`Top ${recommendations.length} recommended movies:`);
     recommendations.forEach((movie, index) => {
       console.log(
-        `${index + 1}. ${movie.title} (similarity: ${movie.similarity.toFixed(3)})`,
+        `${index + 1}. ${movie.title}, ${movie.director} (similarity: ${movie.similarity.toFixed(3)})`,
       );
     });
   } catch (error) {

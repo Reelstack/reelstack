@@ -13,6 +13,9 @@ export interface Movie {
   genres: string | null;
   average_rating: number | null;
   num_votes: number | null;
+  director: string | null;
+  actors: string | null;
+  banner: string | null;
 }
 
 // Essential fields only

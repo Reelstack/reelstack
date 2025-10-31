@@ -3,7 +3,13 @@ import { supabase } from '../../../lib/supabaseClient';
 // pega os generos relacionais
 type Genre = { id: number; name: string };
 // pega elementos importantes do filmes para o algoritmo
-type Movie = { id: string; title: string; genres: Genre[] };
+type Movie = {
+  id: string;
+  title: string;
+  genres: Genre[];
+  director: string;
+  actors: any;
+};
 
 // função para a similaridade de cosseno
 function cosineSimilarity(a: number[], b: number[]): number {
@@ -24,13 +30,76 @@ function averageVectors(vectors: number[][]): number[] {
 }
 
 // separador dos generos
-function buildGenreList(movies: Movie[]): string[] {
-  return Array.from(new Set(movies.flatMap(m => m.genres.map(g => g.name))));
+function buildFeatureLists(movies: Movie[]) {
+  const allGenres = Array.from(new Set(movies.flatMap(m => m.genres.map(g => g.name))));
+
+  const allDirectors = Array.from(
+    new Set(
+      movies
+        .map(m => (m.director ? m.director.trim() : null))
+        .filter((d): d is string => !!d)
+    )
+  );
+
+  const allActors = Array.from(
+    new Set(
+      movies.flatMap(m => {
+        if (!m.actors) return [];
+        if (typeof m.actors === 'string') {
+          return m.actors
+            .split(',')
+            .map(a => a?.trim())
+            .filter(Boolean);
+        }
+        if (Array.isArray(m.actors)) {
+          return m.actors
+            .map(a => (a ? a.trim() : null))
+            .filter((a): a is string => !!a);
+        }
+        return [];
+      })
+    )
+  );
+
+  return { allGenres, allDirectors, allActors };
 }
 
 // conversão de genero para vetor para tangibilidade dos calculos
-function genresToVector(genres: Genre[], allGenres: string[]): number[] {
-  return allGenres.map(g => (genres.some(gg => gg.name === g) ? 1 : 0));
+function movieToVector(
+  movie: Movie,
+  allGenres: string[],
+  allDirectors: string[],
+  allActors: string[],
+  weights = { genre: 0.6, director: 0.2, actor: 0.2 },
+): number[] {
+  const genreVector = allGenres.map(g =>
+    movie.genres.some(gg => gg.name === g) ? weights.genre : 0,
+  );
+
+  const directorVector = allDirectors.map(d =>
+    movie.director && movie.director === d ? weights.director : 0,
+  );
+
+  let actorList: string[] = [];
+
+  if (movie.actors) {
+    if (typeof movie.actors === 'string') {
+      actorList = movie.actors
+        .split(',')
+        .map(a => a?.trim())
+        .filter(Boolean);
+    } else if (Array.isArray(movie.actors)) {
+      actorList = movie.actors
+        .map(a => (a ? a.trim() : ''))
+        .filter(Boolean);
+    }
+  }
+
+  const actorVector = allActors.map(a =>
+    actorList.includes(a) ? weights.actor : 0,
+  );
+
+  return [...genreVector, ...directorVector, ...actorVector];
 }
 
 // fetching de likes e dislikes
@@ -38,7 +107,7 @@ function genresToVector(genres: Genre[], allGenres: string[]): number[] {
 async function fetchAllMovies(): Promise<Movie[]> {
   const { data: movies, error: moviesError } = await supabase
     .from('movies')
-    .select('tconst, primary_title');
+    .select('tconst, primary_title, director, actors');
   if (moviesError) throw moviesError;
 
   // fetch nas relações filmes-genero
@@ -57,6 +126,8 @@ async function fetchAllMovies(): Promise<Movie[]> {
   return movies.map(movie => ({
     id: movie.tconst,
     title: movie.primary_title,
+    director: movie.director,
+    actors: movie.actors,
     genres: movieGenres
       .filter(mg => mg.movie_id === movie.tconst)
       .map(mg => ({
@@ -85,7 +156,7 @@ async function fetchUserMovies(
   // fetch dos filmes
   const { data: movies, error: moviesError } = await supabase
     .from('movies')
-    .select('tconst, primary_title')
+    .select('tconst, primary_title, director, actors')
     .in('tconst', movieIds);
   if (moviesError) throw moviesError;
 
@@ -106,6 +177,8 @@ async function fetchUserMovies(
   return movies.map(movie => ({
     id: movie.tconst,
     title: movie.primary_title,
+    director: movie.director,
+    actors: movie.actors,
     genres: movieGenres
       .filter(mg => mg.movie_id === movie.tconst)
       .map(mg => ({
@@ -127,13 +200,13 @@ export async function recommendMovies(profileId: string, limit = 10) {
     return [];
   }
 
-  const allGenres = buildGenreList(allMovies);
+  const { allGenres, allDirectors, allActors } = buildFeatureLists(allMovies);
 
   const likedVectors = likedMovies.map(m =>
-    genresToVector(m.genres, allGenres),
+    movieToVector(m, allGenres, allDirectors, allActors),
   );
   const dislikedVectors = dislikedMovies.map(m =>
-    genresToVector(m.genres, allGenres),
+    movieToVector(m, allGenres, allDirectors, allActors),
   );
   // determina peso dos generos baseados em frequência
   const genreFrequency = allGenres.map(
@@ -185,7 +258,7 @@ export async function recommendMovies(profileId: string, limit = 10) {
       ...movie,
       similarity: cosineSimilarity(
         userProfile,
-        genresToVector(movie.genres, allGenres),
+        movieToVector(movie, allGenres, allDirectors, allActors),
       ),
     }))
     .sort((a, b) => b.similarity - a.similarity)
