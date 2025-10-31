@@ -29,7 +29,7 @@ function averageVectors(vectors: number[][]): number[] {
   return sum.map(x => x / n);
 }
 
-// separador dos generos
+// separador das variaveis para evitar nesting
 function buildFeatureLists(movies: Movie[]) {
   const allGenres = Array.from(new Set(movies.flatMap(m => m.genres.map(g => g.name))));
 
@@ -64,7 +64,7 @@ function buildFeatureLists(movies: Movie[]) {
   return { allGenres, allDirectors, allActors };
 }
 
-// conversão de genero para vetor para tangibilidade dos calculos
+// conversão de variaveis para vetor para tangibilidade dos calculos
 function movieToVector(
   movie: Movie,
   allGenres: string[],
