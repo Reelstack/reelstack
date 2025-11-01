@@ -9,6 +9,7 @@ type Movie = {
   genres: Genre[];
   director: string;
   actors: any;
+  average_rating: number;
 };
 
 // função para a similaridade de cosseno
@@ -31,14 +32,16 @@ function averageVectors(vectors: number[][]): number[] {
 
 // separador das variaveis para evitar nesting
 function buildFeatureLists(movies: Movie[]) {
-  const allGenres = Array.from(new Set(movies.flatMap(m => m.genres.map(g => g.name))));
+  const allGenres = Array.from(
+    new Set(movies.flatMap(m => m.genres.map(g => g.name))),
+  );
 
   const allDirectors = Array.from(
     new Set(
       movies
         .map(m => (m.director ? m.director.trim() : null))
-        .filter((d): d is string => !!d)
-    )
+        .filter((d): d is string => !!d),
+    ),
   );
 
   const allActors = Array.from(
@@ -57,8 +60,8 @@ function buildFeatureLists(movies: Movie[]) {
             .filter((a): a is string => !!a);
         }
         return [];
-      })
-    )
+      }),
+    ),
   );
 
   return { allGenres, allDirectors, allActors };
@@ -89,9 +92,7 @@ function movieToVector(
         .map(a => a?.trim())
         .filter(Boolean);
     } else if (Array.isArray(movie.actors)) {
-      actorList = movie.actors
-        .map(a => (a ? a.trim() : ''))
-        .filter(Boolean);
+      actorList = movie.actors.map(a => (a ? a.trim() : '')).filter(Boolean);
     }
   }
 
@@ -107,7 +108,7 @@ function movieToVector(
 async function fetchAllMovies(): Promise<Movie[]> {
   const { data: movies, error: moviesError } = await supabase
     .from('movies')
-    .select('tconst, primary_title, director, actors');
+    .select('tconst, primary_title, director, actors, average_rating');
   if (moviesError) throw moviesError;
 
   // fetch nas relações filmes-genero
@@ -128,6 +129,7 @@ async function fetchAllMovies(): Promise<Movie[]> {
     title: movie.primary_title,
     director: movie.director,
     actors: movie.actors,
+    average_rating: movie.average_rating,
     genres: movieGenres
       .filter(mg => mg.movie_id === movie.tconst)
       .map(mg => ({
@@ -156,7 +158,7 @@ async function fetchUserMovies(
   // fetch dos filmes
   const { data: movies, error: moviesError } = await supabase
     .from('movies')
-    .select('tconst, primary_title, director, actors')
+    .select('tconst, primary_title, director, actors, average_rating')
     .in('tconst', movieIds);
   if (moviesError) throw moviesError;
 
@@ -179,6 +181,7 @@ async function fetchUserMovies(
     title: movie.primary_title,
     director: movie.director,
     actors: movie.actors,
+    average_rating: movie.average_rating,
     genres: movieGenres
       .filter(mg => mg.movie_id === movie.tconst)
       .map(mg => ({
@@ -254,14 +257,23 @@ export async function recommendMovies(profileId: string, limit = 10) {
   // recomenda os filmes baseados no peso final
   const scored = allMovies
     .filter(m => !interactedIds.has(m.id))
-    .map(movie => ({
-      ...movie,
-      similarity: cosineSimilarity(
+    .map(movie => {
+      const similarity = cosineSimilarity(
         userProfile,
         movieToVector(movie, allGenres, allDirectors, allActors),
-      ),
-    }))
-    .sort((a, b) => b.similarity - a.similarity)
+      );
+
+      // Normalise average_rating pra [0, 1]
+      const ratingScore = movie.average_rating
+        ? movie.average_rating / 10 // estilos proximos ao IMDB vão até 10
+        : 0.5; // neutralizar caso estiver faltando
+
+      // Combine similaridade + rating weight
+      const finalScore = 0.7 * similarity + 0.3 * ratingScore;
+
+      return { ...movie, similarity, finalScore };
+    })
+    .sort((a, b) => b.finalScore - a.finalScore)
     .slice(0, limit);
 
   return scored;
