@@ -103,92 +103,67 @@ function movieToVector(
   return [...genreVector, ...directorVector, ...actorVector];
 }
 
-// fetching de likes e dislikes
+// fetching dos filmes
 
-async function fetchAllMovies(): Promise<Movie[]> {
-  const { data: movies, error: moviesError } = await supabase
-    .from('movies')
-    .select('tconst, primary_title, director, actors, average_rating');
-  if (moviesError) throw moviesError;
+async function fetchMoviesByIds(movieIds?: string[]): Promise<Movie[]> {
+  const query = supabase.from('movies').select(`
+      tconst,
+      primary_title,
+      director,
+      actors,
+      average_rating,
+      movie_genres:movie_genres(
+        genre_id,
+        genres_name(
+          name
+        )
+      )
+    `);
 
-  // fetch nas relações filmes-genero
-  const { data: movieGenres, error: mgError } = await supabase
-    .from('movie_genres')
-    .select('movie_id, genre_id');
-  if (mgError) throw mgError;
+  if (movieIds && movieIds.length > 0) {
+    query.in('tconst', movieIds);
+  }
 
-  // fetch dos generos
-  const { data: genres, error: gError } = await supabase
-    .from('genres_name')
-    .select('id, name');
-  if (gError) throw gError;
+  const { data, error } = await query;
+  if (error) throw error;
 
-  // merge manual (fix temporario?)
-  return movies.map(movie => ({
+  return data.map(movie => ({
     id: movie.tconst,
     title: movie.primary_title,
     director: movie.director,
     actors: movie.actors,
     average_rating: movie.average_rating,
-    genres: movieGenres
-      .filter(mg => mg.movie_id === movie.tconst)
-      .map(mg => ({
-        id: mg.genre_id,
-        name: genres.find(g => g.id === mg.genre_id)?.name || '',
-      })),
+    genres:
+      movie.movie_genres?.map((g: any) => ({
+        id: g.genre_id,
+        // ajeita os arrays e os objetos unicos
+        name: Array.isArray(g.genres_name)
+          ? g.genres_name[0]?.name || ''
+          : g.genres_name?.name || '',
+      })) || [],
   }));
 }
-
+// fetch dos likes e dislikes
 async function fetchUserMovies(
   profileId: string,
   type: 'like' | 'dislike',
 ): Promise<Movie[]> {
-  // fetch de interações do usuario
-  const { data: interactions, error: iError } = await supabase
+  const { data: interactions, error } = await supabase
     .from('user_movie_interactions')
     .select('movie_id')
     .eq('profile_id', profileId)
     .eq('interaction_type', type);
-  if (iError) throw iError;
 
-  const movieIds = interactions.map((i: any) => i.movie_id);
+  if (error) throw error;
 
+  const movieIds = interactions.map(i => i.movie_id);
   if (movieIds.length === 0) return [];
 
-  // fetch dos filmes
-  const { data: movies, error: moviesError } = await supabase
-    .from('movies')
-    .select('tconst, primary_title, director, actors, average_rating')
-    .in('tconst', movieIds);
-  if (moviesError) throw moviesError;
+  return fetchMoviesByIds(movieIds);
+}
 
-  // fetch das relações filme-genero
-  const { data: movieGenres, error: mgError } = await supabase
-    .from('movie_genres')
-    .select('movie_id, genre_id')
-    .in('movie_id', movieIds);
-  if (mgError) throw mgError;
-
-  // fetch dos generos
-  const { data: genres, error: gError } = await supabase
-    .from('genres_name')
-    .select('id, name');
-  if (gError) throw gError;
-
-  // merge manual (temporario?)
-  return movies.map(movie => ({
-    id: movie.tconst,
-    title: movie.primary_title,
-    director: movie.director,
-    actors: movie.actors,
-    average_rating: movie.average_rating,
-    genres: movieGenres
-      .filter(mg => mg.movie_id === movie.tconst)
-      .map(mg => ({
-        id: mg.genre_id,
-        name: genres.find(g => g.id === mg.genre_id)?.name || '',
-      })),
-  }));
+async function fetchAllMovies(): Promise<Movie[]> {
+  return fetchMoviesByIds(); // fetch de uma vez só pra evitar gasto
 }
 
 // logica de recomendação
