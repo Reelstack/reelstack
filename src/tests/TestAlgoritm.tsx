@@ -1,8 +1,8 @@
 import { recommendMovies } from '../services/api/recommendations/prototypeRecommender';
 
 /**
- * teste rápido de recomendações
- * abre o log do browser e vê se foi ou bombou
+ * Teste rápido de recomendações
+ * Abre o log do browser e vê se foi ou bombou
  */
 export async function testUserRecommendations() {
   // colocar um id de usuario valido
@@ -19,11 +19,14 @@ export async function testUserRecommendations() {
     }
 
     console.log(`Top ${recommendations.length} recommended movies:`);
-    recommendations.forEach((movie, index) => {
-      console.log(
-        `${index + 1}. ${movie.title}, ${movie.director} (similarity: ${movie.similarity.toFixed(3)})`,
-      );
-    });
+
+    recommendations
+      .filter((movie): movie is NonNullable<typeof movie> => movie !== null)
+      .forEach((movie, index) => {
+        console.log(
+          `${index + 1}. ${movie.title}, ${movie.director} (similarity: ${movie.similarity?.toFixed(3) ?? 'N/A'})`,
+        );
+      });
   } catch (error) {
     console.error('Error generating recommendations:', error);
   }

@@ -31,7 +31,11 @@ async function saveVector(movieId: string, vector: number[]) {
   const tx = db.transaction('movieVectors', 'readwrite');
   const store = tx.objectStore('movieVectors');
   store.put(vector, movieId);
-  return tx.complete;
+  return await new Promise<void>((resolve, reject) => {
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
 }
 
 async function getVector(movieId: string): Promise<number[] | undefined> {
@@ -180,7 +184,12 @@ export async function cacheAllMovieVectors() {
     };
     request.onerror = () => reject(request.error);
   });
-  await tx.complete;
+  await new Promise<void>((resolve, reject) => {
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
+
   console.log(`Already cached movie vectors: ${cachedIds.size}`);
 
   // checagem em batches
@@ -204,6 +213,29 @@ export async function cacheAllMovieVectors() {
   }
 
   console.log('All movie vectors processed!');
+}
+
+async function loadAllCachedVectors(): Promise<Record<string, number[]>> {
+  const db = await getDB();
+  const tx = db.transaction('movieVectors', 'readonly');
+  const store = tx.objectStore('movieVectors');
+  const allVectors: Record<string, number[]> = {};
+
+  return new Promise((resolve, reject) => {
+    const request = store.openCursor();
+    request.onsuccess = event => {
+      const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
+      if (cursor) {
+        allVectors[cursor.key as string] = cursor.value as number[];
+        cursor.continue();
+      } else {
+        console.log(`Loaded ${Object.keys(allVectors).length} cached vectors`);
+        resolve(allVectors);
+      }
+    };
+    request.onerror = () => reject(request.error);
+    tx.oncomplete = () => console.log('IndexedDB read complete');
+  });
 }
 
 // fetching dos filmes
@@ -272,11 +304,6 @@ async function fetchAllMovies(): Promise<Movie[]> {
 // logica de recomendação
 
 export async function recommendMovies(profileId: string, limit = 10) {
-  // pre guarda tudo no cache
-  if (!window.__movieVectorsCached) {
-    await cacheAllMovieVectors();
-    window.__movieVectorsCached = true;
-  }
   const allMovies = await fetchAllMovies();
   const likedMovies = await fetchUserMovies(profileId, 'like');
   const dislikedMovies = await fetchUserMovies(profileId, 'dislike');
@@ -288,6 +315,11 @@ export async function recommendMovies(profileId: string, limit = 10) {
 
   const { allGenres, allDirectors, allActors } = buildFeatureLists(allMovies);
 
+  console.time('🔹 Load all cached vectors');
+  const allVectors = await loadAllCachedVectors();
+  console.timeEnd('🔹 Load all cached vectors');
+
+  // Precomputa o usuario
   const likedVectors = await Promise.all(
     likedMovies.map(m => getMovieVector(m, allGenres, allDirectors, allActors)),
   );
@@ -298,7 +330,7 @@ export async function recommendMovies(profileId: string, limit = 10) {
     ),
   );
 
-  // determina peso dos generos baseados em frequência
+  // determina o peso dos generos baseados em frequencia
   const genreFrequency = allGenres.map(
     g =>
       1 /
@@ -309,7 +341,6 @@ export async function recommendMovies(profileId: string, limit = 10) {
 
   const L = likedVectors.length;
   const D = dislikedVectors.length;
-
   const likedProfile =
     L > 0 ? averageVectors(likedVectors) : new Array(allGenres.length).fill(0);
   const dislikedProfile =
@@ -341,30 +372,26 @@ export async function recommendMovies(profileId: string, limit = 10) {
     ...dislikedMovies.map(m => m.id),
   ]);
 
+  console.time('Scoring movies');
+
   // recomenda os filmes baseados no peso final
-  const scored = await Promise.all(
-    allMovies
-      .filter(m => !interactedIds.has(m.id))
-      .map(async movie => {
-        const movieVector = await getMovieVector(
-          movie,
-          allGenres,
-          allDirectors,
-          allActors,
-        );
-        const similarity = cosineSimilarity(userProfile, movieVector);
+  const scored = allMovies
+    .filter(m => !interactedIds.has(m.id))
+    .map(movie => {
+      const movieVector = allVectors[movie.id];
+      if (!movieVector) return null; // pula se não estiver no cache
+      const similarity = cosineSimilarity(userProfile, movieVector);
+      const ratingScore = movie.average_rating
+        ? movie.average_rating / 10
+        : 0.5;
+      // aplica os ratings pós similaridade
+      const finalScore = 0.7 * similarity + 0.3 * ratingScore;
+      return { ...movie, similarity, finalScore };
+    })
+    .filter(Boolean)
+    .sort((a, b) => (b?.finalScore ?? 0) - (a?.finalScore ?? 0))
+    .slice(0, limit);
+  console.timeEnd('Scoring movies');
 
-        // Normalise average_rating pra [0, 1]
-        const ratingScore = movie.average_rating
-          ? movie.average_rating / 10 // estilos proximos ao IMDB vão até 10
-          : 0.5; // neutralizar caso estiver faltando
-        // similaridade + rating weight
-        const finalScore = 0.7 * similarity + 0.3 * ratingScore;
-
-        return { ...movie, similarity, finalScore };
-      }),
-  );
-
-  scored.sort((a, b) => b.finalScore - a.finalScore);
-  return scored.slice(0, limit);
+  return scored;
 }
