@@ -1,24 +1,10 @@
 ```mermaid
-%%{init: {'theme': 'neutral'}}%%
-C4Context
-title ReelStack – Diagrama de Contexto (Compacto)
-
-Person(usuario, "Usuário", "Descobre e organiza filmes.")
-Person(admin, "Admin", "Gerencia dados e monitora.")
-
-System_Boundary(reelstack_boundary, "ReelStack") {
-    System(reelstack, "Web App", "Recomenda e organiza filmes.")
-}
-
-System_Ext(tmdb, "TMDB", "Dados de filmes.")
-System_Ext(postgres, "PostgreSQL", "Banco de dados.")
-System_Ext(cdn, "CDN", "Imagens e banners.")
-
-Rel(usuario, reelstack, "Navegador\nHTTPS")
-Rel(admin, reelstack, "Admin Console\nHTTPS")
-Rel(reelstack, tmdb, "API TMDB\nHTTPS")
-Rel(reelstack, postgres, "Persistência segura")
-Rel(reelstack, cdn, "Imagens\nHTTPS")
+graph TB
+    Usuario["Usuário"] --> ReelStack["Web App"]
+    Admin["Admin"] --> ReelStack
+    ReelStack --> TMDB["TMDB API"]
+    ReelStack --> PostgreSQL["Banco de Dados"]
+    ReelStack --> CDN["CDN Imagens"]
 ```
 
 **Descrição do Contexto e Limites**
