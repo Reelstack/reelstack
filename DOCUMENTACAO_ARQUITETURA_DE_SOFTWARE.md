@@ -1,5 +1,16 @@
 ```mermaid
-%%{init: {'theme':'dark','themeVariables':{'background':'transparent','primaryTextColor':'#e6edf3','lineColor':'#8b949e'}}}%%
+%%{init:{
+  'theme':'dark',
+  'themeVariables':{
+    'background':'transparent',
+    'primaryTextColor':'#e6edf3',
+    'lineColor':'#8b949e'
+  },
+  'themeCSS':'
+    .edgeLabel{ color:#e6edf3 !important; fill:#e6edf3 !important; }
+    .labelBkg{ fill:transparent !important; }
+  '
+}}%%
 C4Context
 title ReelStack – Diagrama Compacto (Centralizado)
 Person(usuario, "Usuário", "Descobreorganiza filmes")
@@ -29,7 +40,18 @@ O **Administrador** acessa o sistema por meio de um painel protegido, dedicado �
 Essa arquitetura de contexto reforça os **NFRs de desempenho e segurança**, ao delimitar claramente as fronteiras de comunicação segura (TLS 1.3) e ao delegar tarefas de latência crítica — como o carregamento de imagens — para componentes otimizados (CDN). Além disso, o uso de uma API consolidada (TMDB) e o isolamento entre camadas de aplicação e dados favorecem o controle de tempo de resposta (swipe ≤1s p90 com 100 usuários) e a escalabilidade do MVP.
 
 ```mermaid
-%%{init:{'theme':'dark','themeVariables':{'background':'transparent','primaryTextColor':'#e6edf3','lineColor':'#8b949e'}}}%%
+%%{init:{
+  'theme':'dark',
+  'themeVariables':{
+    'background':'transparent',
+    'primaryTextColor':'#e6edf3',
+    'lineColor':'#8b949e'
+  },
+  'themeCSS':'
+    .edgeLabel{ color:#e6edf3 !important; fill:#e6edf3 !important; }
+    .labelBkg{ fill:transparent !important; }
+  '
+}}%%
 C4Container
 title ReelStack – Containers (GitHub-optimized)
 Person(u, "Usuário")
