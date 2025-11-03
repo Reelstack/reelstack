@@ -4,7 +4,7 @@
   'themeVariables':{
     'background':'transparent',
     'primaryTextColor':'#e6edf3',
-    'lineColor':'#8b949e'
+    'lineColor':'#d6d6d6ff'
   },
   'themeCSS':'
     .edgeLabel{ color:#e6edf3 !important; fill:#e6edf3 !important; }
@@ -45,7 +45,7 @@ Essa arquitetura de contexto reforça os **NFRs de desempenho e segurança**, ao
   'themeVariables':{
     'background':'transparent',
     'primaryTextColor':'#e6edf3',
-    'lineColor':'#8b949e'
+    'lineColor':'#d6d6d6ff'
   },
   'themeCSS':'
     .edgeLabel{ color:#e6edf3 !important; fill:#e6edf3 !important; }
