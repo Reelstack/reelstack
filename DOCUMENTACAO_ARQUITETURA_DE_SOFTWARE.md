@@ -1,24 +1,23 @@
 ```mermaid
 %%{init: {'theme':'dark','themeVariables':{'background':'transparent','primaryTextColor':'#e6edf3','lineColor':'#8b949e'}}}%%
 C4Context
-title ReelStack – Diagrama Compacto (Vertical)
-
-Person(usuario, "Usuário", "Descobre e organiza filmes")
-Person(admin, "Admin", "Gerencia dados")
-
-System_Boundary(reelstack_boundary, "ReelStack") {
-    System(reelstack, "Web App", "Recomenda e organiza filmes")
+title ReelStack – Diagrama Compacto (Centralizado)
+Person(usuario, "Usuário", "Descobreorganiza filmes")
+System_Boundary(rs, "ReelStack") {
+System(reelstack, "Web App", "Recomendaorganiza filmes")
 }
-
-System_Ext(tmdb, "TMDB", "Dados de filmes")
-System_Ext(postgres, "PostgreSQL", "Banco de dados")
+Person(admin, "Admin", "Gerenciadados")
+System_Ext(tmdb, "TMDB", "Dadosfilmes")
+System_Ext(postgres, "PostgreSQL", "Bancodados")
 System_Ext(cdn, "CDN", "Imagens")
-
-Rel(usuario, reelstack, "Navegador\nHTTPS")
-Rel(admin, reelstack, "Console\nHTTPS")
-Rel(reelstack, tmdb, "API TMDB\nHTTPS")
-Rel(reelstack, postgres, "Persistência segura")
-Rel(reelstack, cdn, "Imagens\nHTTPS")
+Rel(usuario, reelstack, "Navegador", "HTTPS")
+Rel(admin, reelstack, "Console", "HTTPS")
+Rel(reelstack, tmdb, "API TMDB", "HTTPS")
+Rel(reelstack, postgres, "Persistência", "")
+Rel(reelstack, cdn, "Imagens", "HTTPS")
+UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+UpdateRelStyle(usuario, reelstack, $offsetY="-10")
+UpdateRelStyle(admin, reelstack, $offsetY="10")
 ```
 
 ### Descrição do Contexto e Limites
@@ -30,26 +29,36 @@ O **Administrador** acessa o sistema por meio de um painel protegido, dedicado �
 Essa arquitetura de contexto reforça os **NFRs de desempenho e segurança**, ao delimitar claramente as fronteiras de comunicação segura (TLS 1.3) e ao delegar tarefas de latência crítica — como o carregamento de imagens — para componentes otimizados (CDN). Além disso, o uso de uma API consolidada (TMDB) e o isolamento entre camadas de aplicação e dados favorecem o controle de tempo de resposta (swipe ≤1s p90 com 100 usuários) e a escalabilidade do MVP.
 
 ```mermaid
-%%{init: {'theme':'dark','themeVariables':{'background':'transparent','primaryTextColor':'#e6edf3','lineColor':'#8b949e'}}}%%
+%%{init:{'theme':'dark','themeVariables':{'background':'transparent','primaryTextColor':'#e6edf3','lineColor':'#8b949e'}}}%%
 C4Container
-title ReelStack – Containers
+title ReelStack – Containers (GitHub-optimized)
 Person(u, "Usuário")
 Person(a, "Admin")
 System_Boundary(rs, "ReelStack") {
-Container(web, "Web SPA", "React/TS", "UI e coleções")
-Container(api, "API", "Node/Express", "Auth, recs e dados")
+Container_Boundary(f, "Frontend") {
+Container(web, "Web(React/TS)", "SPA", "UI e coleções")
+}
+Container_Boundary(b, "Backend") {
+Container(api, "API(Node/Express)", "REST", "Auth, recs, dados")
+Container(vec, "Vetores(Python)", "Worker", "user/movie vectors")
+}
+Container_Boundary(d, "Dados") {
 ContainerDb(db, "PostgreSQL", "Relacional", "Perfis, filmes, interações")
-Container(vec, "Vetores", "Python", "user/movie vectors")
+}
 }
 System_Ext(tmdb, "TMDB", "API filmes")
-System_Ext(obs, "Observabilidade", "Logs e métricas")
+System_Ext(obs, "Observabilidade", "Logs/Métricas")
 Rel(u, web, "Navegador", "HTTPS")
 Rel(a, web, "Painel", "HTTPS")
 Rel(web, api, "REST/JSON", "HTTPS/JWT")
 Rel(api, db, "SQL")
 Rel(api, vec, "Atualiza/Lê")
 Rel(api, tmdb, "Consulta", "HTTPS")
-Rel(api, obs, "Logs/Metrics", "HTTPS")
+Rel(api, obs, "Logs", "HTTPS")
+UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="2")
+UpdateRelStyle(web, api, $offsetY="-10")
+UpdateRelStyle(api, db, $offsetY="10")
+UpdateRelStyle(api, vec, $offsetX="-20")
 ```
 
 ### Justificativa Arquitetural
