@@ -6,7 +6,7 @@ import { recommendMovies } from '../services/api/recommendations/prototypeRecomm
  */
 export async function testUserRecommendations() {
   // colocar um id de usuario valido
-  const testUserId = 'e4aca076-5f7d-4fcf-a1c1-77c306b4b3e3';
+  const testUserId = '0e2c681a-5599-43b7-a954-65a0abcad305';
 
   console.log(`Generating movie recommendations for user: ${testUserId}...`);
 

@@ -12,6 +12,39 @@ type Movie = {
   average_rating: number;
 };
 
+// indexedDB pro cache local
+
+async function getDB() {
+  return new Promise<IDBDatabase>((resolve, reject) => {
+    const request = indexedDB.open('MovieCacheDB', 1);
+    request.onupgradeneeded = event => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      db.createObjectStore('movieVectors');
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function saveVector(movieId: string, vector: number[]) {
+  const db = await getDB();
+  const tx = db.transaction('movieVectors', 'readwrite');
+  const store = tx.objectStore('movieVectors');
+  store.put(vector, movieId);
+  return tx.complete;
+}
+
+async function getVector(movieId: string): Promise<number[] | undefined> {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('movieVectors', 'readonly');
+    const store = tx.objectStore('movieVectors');
+    const request = store.get(movieId);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
 // função para a similaridade de cosseno
 function cosineSimilarity(a: number[], b: number[]): number {
   const dot = a.reduce((sum, ai, i) => sum + ai * b[i], 0);
@@ -103,6 +136,76 @@ function movieToVector(
   return [...genreVector, ...directorVector, ...actorVector];
 }
 
+async function getMovieVector(
+  movie: Movie,
+  allGenres: string[],
+  allDirectors: string[],
+  allActors: string[],
+  weights = { genre: 0.6, director: 0.2, actor: 0.2 },
+): Promise<number[]> {
+  const cached = await getVector(movie.id);
+  if (cached) return cached;
+
+  const vector = movieToVector(
+    movie,
+    allGenres,
+    allDirectors,
+    allActors,
+    weights,
+  );
+  await saveVector(movie.id, vector);
+  return vector;
+}
+
+export async function cacheAllMovieVectors() {
+  const allMovies = await fetchAllMovies();
+  const { allGenres, allDirectors, allActors } = buildFeatureLists(allMovies);
+
+  // leitura rapida de primeira vez
+  const db = await getDB();
+  const tx = db.transaction('movieVectors', 'readonly');
+  const store = tx.objectStore('movieVectors');
+
+  const cachedIds: Set<string> = new Set();
+  await new Promise<void>((resolve, reject) => {
+    const request = store.openCursor();
+    request.onsuccess = event => {
+      const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
+      if (cursor) {
+        cachedIds.add(cursor.key as string);
+        cursor.continue();
+      } else {
+        resolve();
+      }
+    };
+    request.onerror = () => reject(request.error);
+  });
+  await tx.complete;
+  console.log(`Already cached movie vectors: ${cachedIds.size}`);
+
+  // checagem em batches
+  const BATCH_SIZE = 2000;
+  for (let i = 0; i < allMovies.length; i += BATCH_SIZE) {
+    const batch = allMovies.slice(i, i + BATCH_SIZE);
+
+    await Promise.all(
+      batch.map(async movie => {
+        if (cachedIds.has(movie.id)) {
+          console.log(`Already cached "${movie.title}"`);
+        } else {
+          await getMovieVector(movie, allGenres, allDirectors, allActors);
+          console.log(`Cached "${movie.title}"`);
+        }
+      }),
+    );
+
+    console.log(`Processed movies ${i + 1} to ${i + batch.length}`);
+    await new Promise(r => setTimeout(r, 50)); // yield pra não travar a ui
+  }
+
+  console.log('All movie vectors processed!');
+}
+
 // fetching dos filmes
 
 async function fetchMoviesByIds(movieIds?: string[]): Promise<Movie[]> {
@@ -169,6 +272,11 @@ async function fetchAllMovies(): Promise<Movie[]> {
 // logica de recomendação
 
 export async function recommendMovies(profileId: string, limit = 10) {
+  // pre guarda tudo no cache
+  if (!window.__movieVectorsCached) {
+    await cacheAllMovieVectors();
+    window.__movieVectorsCached = true;
+  }
   const allMovies = await fetchAllMovies();
   const likedMovies = await fetchUserMovies(profileId, 'like');
   const dislikedMovies = await fetchUserMovies(profileId, 'dislike');
@@ -180,12 +288,16 @@ export async function recommendMovies(profileId: string, limit = 10) {
 
   const { allGenres, allDirectors, allActors } = buildFeatureLists(allMovies);
 
-  const likedVectors = likedMovies.map(m =>
-    movieToVector(m, allGenres, allDirectors, allActors),
+  const likedVectors = await Promise.all(
+    likedMovies.map(m => getMovieVector(m, allGenres, allDirectors, allActors)),
   );
-  const dislikedVectors = dislikedMovies.map(m =>
-    movieToVector(m, allGenres, allDirectors, allActors),
+
+  const dislikedVectors = await Promise.all(
+    dislikedMovies.map(m =>
+      getMovieVector(m, allGenres, allDirectors, allActors),
+    ),
   );
+
   // determina peso dos generos baseados em frequência
   const genreFrequency = allGenres.map(
     g =>
@@ -230,26 +342,29 @@ export async function recommendMovies(profileId: string, limit = 10) {
   ]);
 
   // recomenda os filmes baseados no peso final
-  const scored = allMovies
-    .filter(m => !interactedIds.has(m.id))
-    .map(movie => {
-      const similarity = cosineSimilarity(
-        userProfile,
-        movieToVector(movie, allGenres, allDirectors, allActors),
-      );
+  const scored = await Promise.all(
+    allMovies
+      .filter(m => !interactedIds.has(m.id))
+      .map(async movie => {
+        const movieVector = await getMovieVector(
+          movie,
+          allGenres,
+          allDirectors,
+          allActors,
+        );
+        const similarity = cosineSimilarity(userProfile, movieVector);
 
-      // Normalise average_rating pra [0, 1]
-      const ratingScore = movie.average_rating
-        ? movie.average_rating / 10 // estilos proximos ao IMDB vão até 10
-        : 0.5; // neutralizar caso estiver faltando
+        // Normalise average_rating pra [0, 1]
+        const ratingScore = movie.average_rating
+          ? movie.average_rating / 10 // estilos proximos ao IMDB vão até 10
+          : 0.5; // neutralizar caso estiver faltando
+        // similaridade + rating weight
+        const finalScore = 0.7 * similarity + 0.3 * ratingScore;
 
-      // Combine similaridade + rating weight
-      const finalScore = 0.7 * similarity + 0.3 * ratingScore;
+        return { ...movie, similarity, finalScore };
+      }),
+  );
 
-      return { ...movie, similarity, finalScore };
-    })
-    .sort((a, b) => b.finalScore - a.finalScore)
-    .slice(0, limit);
-
-  return scored;
+  scored.sort((a, b) => b.finalScore - a.finalScore);
+  return scored.slice(0, limit);
 }
