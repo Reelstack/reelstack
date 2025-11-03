@@ -30,36 +30,24 @@ Essa arquitetura de contexto reforça os **NFRs de desempenho e segurança**, ao
 
 ```mermaid
 C4Container
-title ReelStack – Diagrama de Containers (Nível 2)
-Person(usuario, "Usuário Final", "Interage com o ReelStack para descobrir, curtir e organizar filmes.")
-Person(admin, "Administrador", "Gerencia o sistema e monitora operações.")
-System_Boundary(reelstack_boundary, "Sistema ReelStack") {
-   Container(webapp, "Frontend Web (SPA)", "React / TypeScript",
-       "Interface única (Single Page Application) que oferece navegação baseada em swipe, autenticação e gestão de coleções."
-   )
-   Container(api, "Backend API (REST)", "Node.js / Express",
-       "Fornece endpoints REST para autenticação, recomendações, interações e coleções. Expõe dados via JSON sobre HTTPS."
-   )
-   ContainerDb(db, "PostgreSQL", "Banco de Dados Relacional",
-       "Armazena perfis, filmes, coleções, interações e vetores de recomendação.\nTabelas-chave: collections, user_movie_interactions, movies, genres_name, user_vectors."
-   )
-   Container(service_vectors, "Serviço de Vetores", "Python / Internal Module",
-       "Gera e atualiza vetores de preferência e similaridade de filmes (user_vectors, movie_vectors). Executado em background ou via job."
-   )
-   Container_Ext(tmdb, "TMDB API", "API REST Externa",
-       "Fonte única de metadados de filmes (RN-005): sinopse, elenco, imagens e ano."
-   )
-   Container_Ext(observability, "Serviço de Observabilidade", "Logs & Metrics",
-       "Armazena logs de requisições, métricas de latência e eventos de erro (ex.: Prometheus + Grafana ou ELK)."
-   )
+title ReelStack – Containers
+Person(u, "Usuário")
+Person(a, "Admin")
+System_Boundary(rs, "ReelStack") {
+Container(web, "Web SPA", "React/TS", "UI e coleções")
+Container(api, "API", "Node/Express", "Auth, recs e dados")
+ContainerDb(db, "PostgreSQL", "Relacional", "Perfis, filmes, interações")
+Container(vec, "Vetores", "Python", "user/movie vectors")
 }
-Rel(usuario, webapp, "Acessa via navegador\n (HTTPS / TLS 1.3)")
-Rel(admin, webapp, "Acessa painel administrativo\n (HTTPS / TLS 1.3)")
-Rel(webapp, api, "Requisições REST / JSON\n (HTTPS / Autenticação JWT)")
-Rel(api, db, "Consultas SQL seguras / Pooling")
-Rel(api, service_vectors, "Atualiza / lê vetores\n (JSON interno ou função DB)")
-Rel(api, tmdb, "Obtém dados de filmes\n (HTTPS / JSON)")
-Rel(api, observability, "Envio de logs e métricas\n (JSON / TLS 1.3)")
+System_Ext(tmdb, "TMDB", "API filmes")
+System_Ext(obs, "Observabilidade", "Logs e métricas")
+Rel(u, web, "Navegador", "HTTPS")
+Rel(a, web, "Painel", "HTTPS")
+Rel(web, api, "REST/JSON", "HTTPS/JWT")
+Rel(api, db, "SQL")
+Rel(api, vec, "Atualiza/Lê")
+Rel(api, tmdb, "Consulta", "HTTPS")
+Rel(api, obs, "Logs/Metrics", "HTTPS")
 ```
 
 ### Justificativa Arquitetural
