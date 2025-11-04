@@ -246,6 +246,10 @@ linkStyle default stroke:#8b949e,stroke-width:1px,color:#e6edf3
 | **DB_URL** | URL de conexão segura ao banco de dados PostgreSQL. |
 | **JWT_SECRET** | Chave secreta usada para assinatura e verificação de tokens JWT. |
 
+<div style="text-align: right;">
+<em>Tabela 4 – Checklist de Implantação do ReelStack</em>
+</div>
+
 ## 6.3 Checklist de Implantação
 
 1. **Build do Frontend:** gerar versão otimizada da SPA (ex.: `npm run build`) e publicar em hosting/CDN.  
@@ -254,4 +258,61 @@ linkStyle default stroke:#8b949e,stroke-width:1px,color:#e6edf3
 4. **Implantação da API:** iniciar backend configurando variáveis de ambiente e logs seguros.  
 5. **Verificação de TLS:** garantir comunicação HTTPS com certificado TLS 1.3 ativo.  
 6. **Testes Finais:** validar autenticação, acesso ao banco, integração TMDB e endpoints críticos.  
-**Tabela 4 – Checklist de Implantação do ReelStack**
+
+# 7. Visão da Implementação (opcional)
+
+A implementação do **ReelStack** segue uma estrutura modular e organizada por contexto de responsabilidade, garantindo manutenibilidade e clareza entre camadas. O projeto é estruturado conforme o padrão monorepo simplificado:
+
+```bash
+/apps
+├── /frontend      # SPA em React (Next.js ou Vite)
+└── /api           # API REST Node.js / Express
+/packages
+└── /shared        # Tipos TypeScript, DTOs, utilitários e contratos OpenAPI
+/infra
+├── docker/        # Configuração de containers e banco
+├── migrations/    # Scripts SQL de schema e seeds
+└── ci-cd/         # Pipelines de build e deploy
+```
+
+O contrato entre **frontend** e **backend** será formalizado por meio de **OpenAPI (Swagger)**, assegurando consistência entre clientes e serviços (detalhado no Apêndice).  
+As convenções de código incluem:
+
+- **ESLint** e **Prettier** para padronização e formatação automática.  
+- Comentários de documentação (`JSDoc` / `TypeDoc`) em funções públicas e APIs.  
+- Testes unitários com **Jest**, priorizando funções críticas.  
+- Versionamento semântico e *commit linting* para controle evolutivo.  
+
+---
+
+# 8. Volume e Desempenho
+
+## 8.1 Metas do MVP
+
+- Suporte a até **100 usuários simultâneos** com respostas médias adequadas.  
+- **Tempo de resposta p90 ≤ 1s** para operações de interação (*swipe*, curtir/rejeitar).  
+
+## 8.2 Táticas de Desempenho
+
+- Criação de **índices** sobre colunas-chave (`profile_id`, `movie_id`, `genre_id`).  
+- Aplicação de **filtros de candidatos** com base em métricas como `num_votes` e `average_rating`.  
+- Envio de **payloads enxutos** em respostas JSON (sem campos não utilizados).  
+- Ativação de **compressão HTTP (gzip ou brotli)**.  
+- Implementação de **cache leve** para sinopses e metadados de filmes da TMDB.  
+- Adoção de **API stateless** e *connection pooling* no banco de dados para escalabilidade.  
+
+## 8.3 Validação de Desempenho
+
+Os testes de carga e desempenho serão conduzidos com **JMeter**, avaliando métricas de latência (p90, p95), throughput e uso de recursos. Logs estruturados e métricas de API (ex.: Prometheus + Grafana) permitirão verificar conformidade com os **Requisitos Não Funcionais (RNF-002)** e **RNF-003** de desempenho e estabilidade.
+
+# 9. Qualidade
+
+| Atributo | Descrição | Solução Aplicada |
+|-----------|------------|------------------|
+| **Escalabilidade** | Capacidade de lidar com aumento gradual de usuários e requisições. | Arquitetura **stateless** com API REST e banco **PostgreSQL gerenciado**; uso de *connection pooling* e possibilidade de horizontalização futura do backend. |
+| **Confiabilidade** | Garantia de integridade e consistência das operações. | Uso de **transações ACID**, restrições **UNIQUE** e *foreign keys*; rollback automático em falhas e versionamento controlado de schema. |
+| **Disponibilidade** | Manutenção do serviço acessível e responsivo ao usuário. | Hospedagem em ambiente de **nuvem** com monitoramento e *uptime* contínuo; fallback simples em cache local e CDN para frontend. |
+| **Portabilidade** | Facilidade de implantação em diferentes infraestruturas. | Implementação em **Node.js** e **React**, dependências padrão e imagens **Docker** multiplataforma; compatibilidade com múltiplos provedores de nuvem. |
+| **Segurança** | Proteção de dados, autenticação e controle de acesso. | Comunicação **TLS 1.3**, autenticação **JWT**, e **RLS (Row-Level Security)** no PostgreSQL; políticas de acesso e encriptação de dados sensíveis. |
+
+A arquitetura de qualidade do **ReelStack** assegura conformidade com os **Requisitos Não Funcionais (RNFs)** de desempenho, segurança e disponibilidade, além de reforçar o atendimento das **Regras de Negócio (RNs)** ligadas à integridade dos dados, controle de acesso e consistência das recomendações. Essa base técnica garante estabilidade operacional e suporte sustentável à evolução do sistema.
