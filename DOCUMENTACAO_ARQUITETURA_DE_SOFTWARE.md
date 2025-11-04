@@ -34,3 +34,59 @@ A seguir são apresentados os principais requisitos e restrições arquiteturais
 <div style="text-align: right;">
 <em>Tabela 1 – Requisitos e Restrições da Arquitetura do ReelStack</em>
 </div>
+
+# 3. Visão de Casos de Uso
+O sistema **ReelStack** permite que o usuário autenticado descubra filmes personalizados por meio de interações do tipo *swipe* (curtir ou rejeitar), visualize recomendações com base em seu histórico, gerencie coleções de filmes e compartilhe listas públicas. O administrador possui acesso restrito para fins de manutenção e auditoria de dados. Os principais casos de uso refletem as jornadas essenciais do produto no MVP, priorizando a simplicidade, o desempenho (NFR-002) e a clareza nas mensagens de erro e sucesso (NFR-004).
+## 3.1 Diagrama de Casos de Uso (Visão Geral)
+```mermaid
+%%{init:{
+'theme':'dark',
+'themeVariables':{
+'background':'transparent',
+'primaryTextColor':'#e6edf3',
+'lineColor':'#8b949e'
+},
+'flowchart':{
+'curve':'linear',
+'nodeSpacing':30,
+'rankSpacing':50,
+'padding':8,
+'htmlLabels':true
+},
+'wrap': true
+}}%%
+flowchart TB
+%% Colunas: esquerda (atores), centro (ReelStack), direita (atores)
+subgraph L[" "]
+direction TB
+actorUsuario["Usuário"]
+end
+subgraph ReelStack
+direction TB
+UC1([Autenticar-se])
+UC2([Visualizar recomendações])
+UC3([Curtir ou rejeitar filme])
+UC4([Gerenciar coleções])
+UC5([Visualizar histórico de curtidas])
+UC6([Compartilhar coleção])
+UC7([Administrar base de filmes])
+end
+subgraph R[" "]
+direction TB
+actorAdmin["Administrador"]
+end
+%% Relações
+actorUsuario --> UC1
+actorUsuario --> UC2
+actorUsuario --> UC3
+actorUsuario --> UC4
+actorUsuario --> UC5
+actorUsuario --> UC6
+actorAdmin   --> UC7
+%% Estilos
+classDef actor fill:#161b22,stroke:#8b949e,color:#e6edf3;
+classDef uc    fill:#1f6feb,stroke:#388bfd,color:#ffffff;
+class actorUsuario,actorAdmin actor
+class UC1,UC2,UC3,UC4,UC5,UC6,UC7 uc
+linkStyle default stroke:#8b949e,stroke-width:1px,color:#e6edf3
+```
