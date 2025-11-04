@@ -341,3 +341,17 @@ Os testes de carga e desempenho serão conduzidos com **JMeter**, avaliando mét
 | **Segurança** | Proteção de dados, autenticação e controle de acesso. | Comunicação **TLS 1.3**, autenticação **JWT**, e **RLS (Row-Level Security)** no PostgreSQL; políticas de acesso e encriptação de dados sensíveis. |
 
 A arquitetura de qualidade do **ReelStack** assegura conformidade com os **Requisitos Não Funcionais (RNFs)** de desempenho, segurança e disponibilidade, além de reforçar o atendimento das **Regras de Negócio (RNs)** ligadas à integridade dos dados, controle de acesso e consistência das recomendações. Essa base técnica garante estabilidade operacional e suporte sustentável à evolução do sistema.
+
+# Histórico da Revisão
+| Data       | Versão   | Descrição                                               | Autor        |
+|-------------|-----------|---------------------------------------------------------|---------------|
+| 2025-11-03  | v1.0 | Adiciona documentação inicial de arquitetura de software | Gabs          |
+| 2025-11-03  | v1.1  | Atualiza diagramas e detalha arquitetura do ReelStack   | Gabs          |
+| 2025-11-04  | v1.2  | Adiciona visão de casos de uso e diagrama principal     | Gabs          |
+| 2025-11-04  | v1.3  | Melhora documentação com sintaxe Mermaid unificada       | Gabs          |
+| 2025-11-04  | v1.4  | Adiciona visão de processos e implantação à documentação | Gabs          |
+| 2025-11-04  | v1.5  | Inclui seções de implementação, desempenho e qualidade   | Gabs          |
+| 2025-11-04  | v1.6  | Adiciona índice analítico à documentação                 | Gabs          |
+| 2025-11-05  | v1.7  | Inclui diagrama ERD atualizado (sem tabelas *_old)      | Gabs          |
+| 2025-11-05  | v1.8  | Adiciona apêndices A–D com detalhamento técnico         | Gabs          |
+| 2025-11-05  | v1.9  | Ajusta políticas de RLS e descrição de variáveis de ambiente | Gabs      |
