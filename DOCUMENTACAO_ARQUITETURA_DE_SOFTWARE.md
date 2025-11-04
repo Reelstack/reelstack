@@ -122,6 +122,7 @@ linkStyle default stroke:#8b949e,stroke-width:1px,color:#e6edf3
 # 4. Visão Lógica
 ## 4.1 Visão Geral
 A arquitetura lógica do **ReelStack** é estruturada em camadas independentes e coesas, visando modularidade, segurança e desempenho. O sistema adota uma abordagem **web-first**, com frontend em **SPA (Single Page Application)** comunicando-se via **HTTPS/JSON** com um backend em **API RESTful**, que integra serviços especializados de autenticação, recomendação e persistência. O **PostgreSQL** é utilizado como camada final de armazenamento, garantindo integridade referencial e suporte a políticas de **Row-Level Security (RLS)**.
+
 ```Mermaid
 %%{init:{
 'theme':'dark',
@@ -165,6 +166,7 @@ class E db
 class F ext
 linkStyle default stroke:#8b949e,stroke-width:1px,color:#e6edf3
 ```
+
 Cada camada desempenha um papel definido:
 - **Frontend SPA**: responsável pela interação com o usuário, fornecendo uma experiência fluida e responsiva. Implementa cache local e chamadas assíncronas para otimizar desempenho (NFR-002).
 - **Backend API**: centraliza a lógica de negócios e a integração entre módulos. Utiliza autenticação JWT e HTTPS (TLS 1.3) para comunicação segura (NFR-001), e divide responsabilidades em micro-serviços internos, permitindo escalabilidade horizontal.
