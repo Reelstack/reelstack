@@ -115,15 +115,18 @@ linkStyle default stroke:#8b949e,stroke-width:1px,color:#e6edf3
 | **UC5 – Visualizar histórico de curtidas** | RN-004 (Histórico atualizado em tempo real) | RNF-002, RNF-004 |
 | **UC6 – Compartilhar coleção** | RN-007 (Coleções públicas podem ser compartilhadas) | RNF-001 (Segurança), RNF-004 |
 | **UC7 – Administrar base de filmes** | RN-008 (Manutenção e auditoria do catálogo) | RNF-001 (Segurança), RNF-005 (Integridade dos dados) |
+
 <div style="text-align: right;">
 <em>Tabela 2 – Mapeamento entre Casos de Uso, Regras de Negócio e RNFs</em>
 </div>
 
 # 4. Visão Lógica
+
 ## 4.1 Visão Geral
+
 A arquitetura lógica do **ReelStack** é estruturada em camadas independentes e coesas, visando modularidade, segurança e desempenho. O sistema adota uma abordagem **web-first**, com frontend em **SPA (Single Page Application)** comunicando-se via **HTTPS/JSON** com um backend em **API RESTful**, que integra serviços especializados de autenticação, recomendação e persistência. O **PostgreSQL** é utilizado como camada final de armazenamento, garantindo integridade referencial e suporte a políticas de **Row-Level Security (RLS)**.
 
-```Mermaid
+```mermaid
 %%{init:{
 "theme":"dark",
 "themeVariables":{
@@ -167,12 +170,14 @@ linkStyle default stroke:#8b949e,stroke-width:1px,color:#e6edf3
 ```
 
 Cada camada desempenha um papel definido:
+
 - **Frontend SPA**: responsável pela interação com o usuário, fornecendo uma experiência fluida e responsiva. Implementa cache local e chamadas assíncronas para otimizar desempenho (NFR-002).
 - **Backend API**: centraliza a lógica de negócios e a integração entre módulos. Utiliza autenticação JWT e HTTPS (TLS 1.3) para comunicação segura (NFR-001), e divide responsabilidades em micro-serviços internos, permitindo escalabilidade horizontal.
 - **Camada de Acesso a Dados (DAL)**: encapsula consultas SQL e transações, garantindo integridade e rastreabilidade. Usa índices e *prepared statements* para reduzir latência (NFR-002).
 - **Banco PostgreSQL**: provê armazenamento relacional seguro com controle de acesso granular (RLS), assegurando consistência e isolamento de dados.
 
 ## 4.2 Pacotes de Design Significativos
+
 | Pacote / Componente | Descrição e Responsabilidades | Decisões de Integridade / Regras de Negócio |
 |----------------------|-------------------------------|---------------------------------------------|
 | **Auth Controller / Service** | Gerencia autenticação via e-mail/senha, emissão e verificação de JWT. | Garante conformidade com **RN-001**; tokens expiram após tempo definido; falhas autenticadas registradas para auditoria. |
@@ -187,3 +192,66 @@ Cada camada desempenha um papel definido:
 <div style="text-align: right;">
 <em>Tabela 3 – Pacotes de Design Significativos do ReelStack</em>
 </div>
+
+# 5. Visão de Processos (opcional)
+
+O **ReelStack** adota um modelo de concorrência baseado em **API stateless**, onde cada requisição é independente e contém suas credenciais de autenticação via **JWT**. As operações críticas sobre o banco de dados utilizam **transações curtas e atômicas**, garantindo integridade sem manter bloqueios prolongados.  
+Processos assíncronos são utilizados para **recomputar vetores de recomendação de usuários** com base em novas interações, podendo ocorrer de forma agendada (*batch*) fora do ciclo principal de requisição. Em futuras iterações, poderá ser introduzido um sistema de **filas de mensagens** (ex.: RabbitMQ, Redis Queue) para balancear cargas. No MVP, o processamento assíncrono é simplificado e executado sob demanda pelo backend.
+
+# 6. Visão de Implantação
+
+## 6.1 Diagrama de Implantação
+
+```mermaid
+%%{init:{
+"theme":"dark",
+"themeVariables":{
+"background":"transparent",
+"primaryTextColor":"#e6edf3",
+"lineColor":"#8b949e"
+},
+"flowchart":{
+"curve":"linear",
+"nodeSpacing":30,
+"rankSpacing":50,
+"padding":8,
+"htmlLabels":true
+},
+"wrap": true
+}}%%
+flowchart LR
+A["Usuário"] -->|HTTPS / TLS 1.3| B["Frontend SPACDN / Hosting"]
+B -->|HTTPS / JSON| C["Backend APINode.js"]
+C -->|Consultas SQL| D["PostgreSQL"]
+C -->|Requisições REST| E["TMDB API"]
+%% Estilos
+classDef client fill:#161b22,stroke:#8b949e,color:#e6edf3;
+classDef fe     fill:#1f6feb,stroke:#388bfd,color:#ffffff;
+classDef api    fill:#1f6feb,stroke:#388bfd,color:#ffffff;
+classDef db     fill:#161b22,stroke:#8b949e,color:#e6edf3;
+classDef ext    fill:#161b22,stroke:#8b949e,color:#e6edf3;
+class A client
+class B fe
+class C api
+class D db
+class E ext
+linkStyle default stroke:#8b949e,stroke-width:1px,color:#e6edf3
+```
+
+## 6.2 Variáveis de Ambiente
+
+| Variável | Descrição |
+|-----------|------------|
+| **TMDB_KEY** | Chave de autenticação para integração com a API TMDB. |
+| **DB_URL** | URL de conexão segura ao banco de dados PostgreSQL. |
+| **JWT_SECRET** | Chave secreta usada para assinatura e verificação de tokens JWT. |
+
+## 6.3 Checklist de Implantação
+
+1. **Build do Frontend:** gerar versão otimizada da SPA (ex.: `npm run build`) e publicar em hosting/CDN.  
+2. **Migração do Banco:** executar scripts de criação (`schema.sql`) e migrações adicionais.  
+3. **Aplicar Políticas RLS:** configurar *Row-Level Security* em tabelas com dados de perfil.  
+4. **Implantação da API:** iniciar backend configurando variáveis de ambiente e logs seguros.  
+5. **Verificação de TLS:** garantir comunicação HTTPS com certificado TLS 1.3 ativo.  
+6. **Testes Finais:** validar autenticação, acesso ao banco, integração TMDB e endpoints críticos.  
+**Tabela 4 – Checklist de Implantação do ReelStack**
