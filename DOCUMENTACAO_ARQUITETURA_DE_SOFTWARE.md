@@ -125,32 +125,31 @@ A arquitetura lógica do **ReelStack** é estruturada em camadas independentes e
 
 ```Mermaid
 %%{init:{
-'theme':'dark',
-'themeVariables':{
-'background':'transparent',
-'primaryTextColor':'#e6edf3',
-'lineColor':'#8b949e'
+"theme":"dark",
+"themeVariables":{
+"background":"transparent",
+"primaryTextColor":"#e6edf3",
+"lineColor":"#8b949e"
 },
-'flowchart':{
-'curve':'linear',
-'nodeSpacing':30,
-'rankSpacing':50,
-'padding':8,
-'htmlLabels':true
-},
-'wrap': true
+"flowchart":{
+"curve":"linear",
+"nodeSpacing":30,
+"rankSpacing":50,
+"padding":8,
+"htmlLabels":true
+}
 }}%%
 flowchart LR
-A[Frontend SPA React] -->|HTTPS / JSON| B[Backend API Node.js / Express]
-B -->|Serviço Auth| C1[Auth Service]
-B -->|Serviço Perfil| C2[Users / Profile Service]
-B -->|Serviço Filmes| C3[Movies / TMDB Service]
-B -->|Serviço Recomendações| C4[Recommendation Service]
-B -->|Serviço Coleções| C5[Collections Service]
-B -->|Serviço Interações| C6[Interactions Service]
-B -->|Acesso a Dados ORM / SQL| D[Data Access Layer DAL]
-D -->|Consultas SQL| E[PostgreSQL]
-C3 -->|API externa| F[TMDB API]
+A["Frontend SPA React"] -->|HTTPS / JSON| B["Backend API Node.js / Express"]
+B -->|Serviço Auth| C1["Auth Service"]
+B -->|Serviço Perfil| C2["Users / Profile Service"]
+B -->|Serviço Filmes| C3["Movies / TMDB Service"]
+B -->|Serviço Recomendações| C4["Recommendation Service"]
+B -->|Serviço Coleções| C5["Collections Service"]
+B -->|Serviço Interações| C6["Interactions Service"]
+B -->|Acesso a Dados ORM / SQL| D["Data Access Layer DAL"]
+D -->|Consultas SQL| E["PostgreSQL"]
+C3 -->|API externa| F["TMDB API"]
 %% Estilos
 classDef fe  fill:#161b22,stroke:#8b949e,color:#e6edf3;
 classDef api fill:#1f6feb,stroke:#388bfd,color:#ffffff;
