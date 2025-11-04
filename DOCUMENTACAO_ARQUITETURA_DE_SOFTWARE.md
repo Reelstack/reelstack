@@ -1,93 +1,36 @@
-```mermaid
-%%{init:{
-  'theme':'dark',
-  'themeVariables':{
-    'background':'transparent',
-    'primaryTextColor':'#e6edf3',
-    'lineColor':'#d6d6d6ff'
-  },
-  'themeCSS':'
-    .edgeLabel{ color:#e6edf3 !important; fill:#e6edf3 !important; }
-    .labelBkg{ fill:transparent !important; }
-  '
-}}%%
-C4Context
-title ReelStack – Diagrama Compacto (Centralizado)
-Person(usuario, "Usuário", "Descobreorganiza filmes")
-System_Boundary(rs, "ReelStack") {
-System(reelstack, "Web App", "Recomendaorganiza filmes")
-}
-Person(admin, "Admin", "Gerenciadados")
-System_Ext(tmdb, "TMDB", "Dadosfilmes")
-System_Ext(postgres, "PostgreSQL", "Bancodados")
-System_Ext(cdn, "CDN", "Imagens")
-Rel(usuario, reelstack, "Navegador", "HTTPS")
-Rel(admin, reelstack, "Console", "HTTPS")
-Rel(reelstack, tmdb, "API TMDB", "HTTPS")
-Rel(reelstack, postgres, "Persistência", "")
-Rel(reelstack, cdn, "Imagens", "HTTPS")
-UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
-UpdateRelStyle(usuario, reelstack, $offsetY="-10")
-UpdateRelStyle(admin, reelstack, $offsetY="10")
-```
+ # 1. Introdução
+## 1.1 Finalidade
+Este documento tem como finalidade descrever a arquitetura de software do sistema **ReelStack**, detalhando sua estrutura lógica, componentes, integrações e decisões arquiteturais que sustentam seu funcionamento. O objetivo é assegurar que todos os envolvidos no desenvolvimento, manutenção e evolução do sistema possuam uma visão unificada e tecnicamente fundamentada sobre sua concepção, atendendo aos requisitos funcionais e não funcionais especificados.
+## 1.2 Escopo
+O **ReelStack** é uma aplicação **web-first** voltada à recomendação personalizada de filmes, permitindo que usuários expressem preferências por meio de interações do tipo *swipe* (like/dislike), formem coleções temáticas e recebam sugestões baseadas em similaridade e histórico de interações.  
+O sistema integra-se exclusivamente à API **TMDB (The Movie Database)** para obtenção de metadados de filmes, e utiliza autenticação via e-mail e senha. O backend opera sobre banco de dados **PostgreSQL**, conforme o esquema definido no artefato `schema.sql`. O sistema é protegido por autenticação **JWT**, comunicação segura via **TLS 1.3** e políticas de **Row-Level Security (RLS)** quando aplicável.
+## 1.3 Definições, Acrônimos e Abreviações
+| Termo | Definição |
+|-------|------------|
+| **API** | Interface de Programação de Aplicações, utilizada para integração com serviços externos. |
+| **JWT** | *JSON Web Token*, padrão para autenticação e autorização baseada em tokens. |
+| **TMDB** | *The Movie Database*, serviço externo de metadados de filmes e séries. |
+| **RLS** | *Row-Level Security*, política de segurança em nível de linha do PostgreSQL. |
+| **ETL** | *Extract, Transform, Load*, processo de extração, transformação e carga de dados. |
+| **ReelStack** | Sistema de recomendação e gerenciamento de coleções de filmes desenvolvido neste projeto. |
+## 1.4 Referências
+- **REQUISITO_SOFTWARE.md** – Documento de requisitos funcionais, não funcionais e regras de negócio do projeto ReelStack.  
+- **schema.sql** – Artefato contendo o esquema relacional completo do banco de dados PostgreSQL.  
+- **Template_DocumentoArquiteturaSoftware.docx** – Modelo base utilizado para a estruturação deste documento conforme o método RUP/4+1.
 
-### Descrição do Contexto e Limites
+# 2. Requisitos e Restrições da Arquitetura
+A seguir são apresentados os principais requisitos e restrições arquiteturais do sistema **ReelStack**, definidos a partir dos requisitos funcionais, não funcionais e regras de negócio documentados.
+| Categoria | Descrição | Decisão Arquitetural / Restrição |
+|------------|------------|----------------------------------|
+| **Linguagem / Plataforma** | O sistema deve ser web-first, priorizando compatibilidade com navegadores modernos e dispositivos móveis. | Implementação em **TypeScript/JavaScript (Node.js)** no backend e **React** no frontend. Arquitetura RESTful e comunicação via HTTPS. |
+| **Segurança** | O acesso deve ser autenticado e autorizado de forma segura. | Utilização de **JWT (JSON Web Token)** para autenticação, **TLS 1.3** para criptografia de tráfego e **RLS (Row-Level Security)** no PostgreSQL para controle de acesso por perfil. |
+| **Persistência** | O sistema deve armazenar dados de usuários, filmes, coleções e interações de forma consistente e rastreável. | Banco de dados **PostgreSQL**, conforme o artefato `schema.sql`. Tabelas normalizadas, chaves primárias compostas e *foreign keys* explícitas. |
+| **Internacionalização** | O conteúdo deve ser adaptável a múltiplos idiomas. | MVP restrito ao idioma **português (pt-BR)**. Estrutura preparada para futura integração de i18n no frontend. |
+| **Integração Externa (TMDB)** | Os metadados de filmes devem ser obtidos de fonte externa. | Integração exclusiva com a **API TMDB**, utilizando chave de acesso segura e cache local para otimização de requisições. |
+| **Desempenho** | O sistema deve manter boa responsividade sob carga moderada. | Meta de **p90 ≤ 1s** de tempo de resposta com **até 100 usuários simultâneos** no MVP. Uso de cache em memória (Redis opcional) e otimização de consultas SQL. |
+| **Manutenibilidade / Padronização** | O código deve seguir boas práticas e padrões de desenvolvimento. | Adoção de **ESLint**, **Prettier**, **TypeScript**, *design patterns* RESTful e versionamento semântico. Estrutura modular para facilitar testes e refatorações. |
+| **Dependências / Infraestrutura** | A solução deve operar em ambiente escalável e seguro. | Implantação em **nuvem (AWS ou Supabase)**, com **PostgreSQL gerenciado** e suporte a **CI/CD** via GitHub Actions. Dependências gerenciadas por **npm**. |
 
-O **ReelStack** é um sistema **web-first** que centraliza as funcionalidades de descoberta, recomendação e organização de filmes, fornecendo uma experiência de uso fluida baseada em gestos de swipe. Ele atua como intermediário entre o **usuário final**, que realiza interações como curtir, rejeitar e criar coleções, e as fontes externas de dados e mídia — notadamente a **API do TMDB**, utilizada como fonte exclusiva de metadados conforme a RN-005, e uma **CDN de imagens**, responsável pela entrega rápida de recursos visuais. Todas as interações entre navegador e sistema ocorrem via **HTTPS/TLS 1.3**, garantindo a proteção dos dados em trânsito e atendendo ao requisito não funcional de **segurança**.
-
-O **Administrador** acessa o sistema por meio de um painel protegido, dedicado à gestão de dados internos, auditoria de logs e resolução de falhas operacionais, mantendo o controle de integridade e conformidade do sistema. O **Banco de Dados PostgreSQL** concentra o armazenamento de informações críticas — perfis, coleções, interações e vetores de recomendação — sustentando as operações do back-end e garantindo consistência relacional.
-
-Essa arquitetura de contexto reforça os **NFRs de desempenho e segurança**, ao delimitar claramente as fronteiras de comunicação segura (TLS 1.3) e ao delegar tarefas de latência crítica — como o carregamento de imagens — para componentes otimizados (CDN). Além disso, o uso de uma API consolidada (TMDB) e o isolamento entre camadas de aplicação e dados favorecem o controle de tempo de resposta (swipe ≤1s p90 com 100 usuários) e a escalabilidade do MVP.
-
-```mermaid
-%%{init:{
-  'theme':'dark',
-  'themeVariables':{
-    'background':'transparent',
-    'primaryTextColor':'#e6edf3',
-    'lineColor':'#d6d6d6ff'
-  },
-  'themeCSS':'
-    .edgeLabel{ color:#e6edf3 !important; fill:#e6edf3 !important; }
-    .labelBkg{ fill:transparent !important; }
-  '
-}}%%
-C4Container
-title ReelStack – Containers (GitHub-optimized)
-Person(u, "Usuário")
-Person(a, "Admin")
-System_Boundary(rs, "ReelStack") {
-Container_Boundary(f, "Frontend") {
-Container(web, "Web(React/TS)", "SPA", "UI e coleções")
-}
-Container_Boundary(b, "Backend") {
-Container(api, "API(Node/Express)", "REST", "Auth, recs, dados")
-Container(vec, "Vetores(Python)", "Worker", "user/movie vectors")
-}
-Container_Boundary(d, "Dados") {
-ContainerDb(db, "PostgreSQL", "Relacional", "Perfis, filmes, interações")
-}
-}
-System_Ext(tmdb, "TMDB", "API filmes")
-System_Ext(obs, "Observabilidade", "Logs/Métricas")
-Rel(u, web, "Navegador", "HTTPS")
-Rel(a, web, "Painel", "HTTPS")
-Rel(web, api, "REST/JSON", "HTTPS/JWT")
-Rel(api, db, "SQL")
-Rel(api, vec, "Atualiza/Lê")
-Rel(api, tmdb, "Consulta", "HTTPS")
-Rel(api, obs, "Logs", "HTTPS")
-UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="2")
-UpdateRelStyle(web, api, $offsetY="-10")
-UpdateRelStyle(api, db, $offsetY="10")
-UpdateRelStyle(api, vec, $offsetX="-20")
-```
-
-### Justificativa Arquitetural
-
-A arquitetura em **nível de containers** do ReelStack foi projetada para garantir **segurança, baixa latência** e **escalabilidade horizontal**, preservando a simplicidade de um MVP web-first. O **Frontend Web (SPA)**, desenvolvido em React/TypeScript, oferece uma experiência contínua e responsiva, minimizando recarregamentos de página e permitindo que interações de swipe ocorram em menos de 1 segundo (p90) graças à renderização local e cache leve de requisições. O **Backend API REST**, implementado em Node.js/Express, é responsável por autenticação, persistência e lógica de negócio, comunicando-se exclusivamente via **HTTPS/TLS 1.3** e utilizando **JSON** como formato padrão de troca de dados.
-
-O **PostgreSQL** centraliza o armazenamento transacional (coleções, filmes, gêneros, interações), além dos **vetores de recomendação** (user_vectors e movie_vectors), garantindo consistência e integridade das informações. O **Serviço de Vetores**, modular e interno, realiza a manutenção dos dados de similaridade, otimizando as recomendações sem sobrecarregar o fluxo principal de requisições do usuário. Esse desacoplamento permite que o swipe responda rapidamente, mesmo durante cálculos de recomendação em segundo plano.
-
-A comunicação com a **API do TMDB** ocorre de forma segura e assíncrona, assegurando conformidade com a RN-005 e reduzindo latência com caching e pré-carregamento seletivo. A camada de **observabilidade** coleta logs e métricas de latência (via Prometheus, Grafana ou ELK), permitindo monitorar tempos de resposta e detecção proativa de falhas. O uso consistente de TLS 1.3 em todas as conexões externas e a autenticação via **JWT** garantem a confidencialidade e integridade dos dados, atendendo diretamente aos NFRs de **desempenho** (swipe ≤1s p90) e **segurança**.
- 
+<div style="text-align: right;">
+<em>Tabela 1 – Requisitos e Restrições da Arquitetura do ReelStack</em>
+</div>
