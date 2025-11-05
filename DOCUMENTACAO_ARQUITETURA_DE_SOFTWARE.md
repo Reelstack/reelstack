@@ -887,8 +887,9 @@ CREATE INDEX idx_movie_genres_genre ON public.movie_genres (genre_id);
 CREATE INDEX idx_user_interactions_profile ON public.user_movie_interactions (profile_id);
 CREATE INDEX idx_user_interactions_movie ON public.user_movie_interactions (movie_id);
 CREATE INDEX idx_movies_rating_votes ON public.movies (average_rating, num_votes);
--- Regras de exclusão em cascata (integridade de junções)  
 
+
+-- Regras de exclusão em cascata (integridade de junções)  
 ALTER TABLE public.collection_movies
    DROP CONSTRAINT IF EXISTS collection_movies_collection_id_fkey,
    ADD CONSTRAINT collection_movies_collection_id_fkey
