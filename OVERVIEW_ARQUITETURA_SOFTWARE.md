@@ -3,7 +3,7 @@
 ## 1. Visão Geral
 
 O **ReelStack** é uma plataforma web de recomendação e curadoria de filmes, voltada a entusiastas de cinema que desejam descobrir, avaliar e organizar títulos de forma personalizada. O sistema permite ao usuário curtir ou rejeitar filmes por meio de um fluxo de navegação interativo (*swipe*), formar coleções temáticas e compartilhar listas públicas.  
-O público-alvo inclui **usuários finais de streaming**, **criadores de conteúdo** e **curadores de filmes independentes**, oferecendo uma experiência gamificada e responsiva em navegadores e dispositivos móveis. O produto prioriza desempenho, segurança e simplicidade de uso, com base em dados integrados à **TMDB API**
+O público-alvo inclui **usuários finais de streaming**, **criadores de conteúdo** e **curadores de filmes independentes**, oferecendo uma experiência gamificada e responsiva em navegadores e dispositivos móveis. O produto prioriza desempenho, segurança e simplicidade de uso, com base em dados integrados à **TMDB API**.
 
 ---
 
