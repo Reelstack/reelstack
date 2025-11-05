@@ -861,9 +861,10 @@ CREATE POLICY collections_public_read
 
 ## D.2 Migrações de Higiene e Performance
 
--- Padronização de timestamps para `timestamptz DEFAULT now()`  
+
 
 ```sql
+-- Padronização de timestamps para `timestamptz DEFAULT now()`  
 ALTER TABLE public.profiles ALTER COLUMN created_at SET DEFAULT now();
 ALTER TABLE public.profiles ALTER COLUMN updated_at SET DEFAULT now();
 ALTER TABLE public.collections ALTER COLUMN created_at SET DEFAULT now();
