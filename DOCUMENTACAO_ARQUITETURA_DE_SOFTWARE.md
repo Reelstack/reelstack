@@ -1,27 +1,46 @@
+# Histórico da Revisão
+
+| Data       | Versão   | Descrição                                               | Autor        |
+|-------------|-----------|---------------------------------------------------------|---------------|
+| 2025-11-03  | v1.0 | Adiciona documentação inicial de arquitetura de software | Gabs          |
+| 2025-11-03  | v1.1  | Atualiza diagramas e detalha arquitetura do ReelStack   | Gabs          |
+| 2025-11-04  | v1.2  | Adiciona visão de casos de uso e diagrama principal     | Gabs          |
+| 2025-11-04  | v1.3  | Melhora documentação com sintaxe Mermaid unificada       | Gabs          |
+| 2025-11-04  | v1.4  | Adiciona visão de processos e implantação à documentação | Gabs          |
+| 2025-11-04  | v1.5  | Inclui seções de implementação, desempenho e qualidade   | Gabs          |
+| 2025-11-04  | v1.6  | Adiciona índice analítico à documentação                 | Gabs          |
+| 2025-11-05  | v1.7  | Inclui diagrama ERD atualizado (sem tabelas *_old)      | Gabs          |
+| 2025-11-05  | v1.8  | Adiciona apêndices A–D com detalhamento técnico         | Gabs          |
+| 2025-11-05  | v1.9  | Ajusta políticas de RLS e descrição de variáveis de ambiente | Gabs      |
+
 # Índice Analítico
+
 - [1. Introdução](#1-introdução)
- - [1.1 Finalidade](#11-finalidade)
- - [1.2 Escopo](#12-escopo)
- - [1.3 Definições, Acrônimos e Abreviações](#13-definições-acrônimos-e-abreviações)
- - [1.4 Referências](#14-referências)
+- [1.1 Finalidade](#11-finalidade)
+- [1.2 Escopo](#12-escopo)
+- [1.3 Definições, Acrônimos e Abreviações](#13-definições-acrônimos-e-abreviações)
+- [1.4 Referências](#14-referências)
 - [2. Requisitos e Restrições da Arquitetura](#2-requisitos-e-restrições-da-arquitetura)
 - [3. Visão de Casos de Uso](#3-visão-de-casos-de-uso)
- - [3.1 Diagrama de Casos de Uso (Visão Geral)](#31-diagrama-de-casos-de-uso-visão-geral)
- - [3.2 Mapeamento de Casos de Uso, Regras de Negócio e RNFs](#32-mapeamento-de-casos-de-uso-regras-de-negócio-e-rnfs)
+- [3.1 Diagrama de Casos de Uso (Visão Geral)](#31-diagrama-de-casos-de-uso-visão-geral)
+- [3.2 Mapeamento de Casos de Uso, Regras de Negócio e RNFs](#32-mapeamento-de-casos-de-uso-regras-de-negócio-e-rnfs)
 - [4. Visão Lógica](#4-visão-lógica)
- - [4.1 Visão Geral](#41-visão-geral)
- - [4.2 Pacotes de Design Significativos](#42-pacotes-de-design-significativos)
-- [5. Visão de Processos (opcional)](#5-visão-de-processos-opcional)
+- [4.1 Visão Geral](#41-visão-geral)
+- [4.2 Pacotes de Design Significativos](#42-pacotes-de-design-significativos)
+- [5. Visão de Processos](#5-visão-de-processos)
 - [6. Visão de Implantação](#6-visão-de-implantação)
- - [6.1 Diagrama de Implantação](#61-diagrama-de-implantação)
- - [6.2 Variáveis de Ambiente](#62-variáveis-de-ambiente)
- - [6.3 Checklist de Implantação](#63-checklist-de-implantação)
-- [7. Visão da Implementação (opcional)](#7-visão-da-implementação-opcional)
+- [6.1 Diagrama de Implantação](#61-diagrama-de-implantação)
+- [6.2 Variáveis de Ambiente](#62-variáveis-de-ambiente)
+- [6.3 Checklist de Implantação](#63-checklist-de-implantação)
+- [7. Visão da Implementação](#7-visão-da-implementação)
+- [8. Visão de Dados](#8-visão-de-dados)
 - [8. Volume e Desempenho](#8-volume-e-desempenho)
- - [8.1 Metas do MVP](#81-metas-do-mvp)
- - [8.2 Táticas de Desempenho](#82-táticas-de-desempenho)
- - [8.3 Validação de Desempenho](#83-validação-de-desempenho)
-- [9. Qualidade](#9-qualidade)
+- [8.1 Diagrama Entidade-Relacionamento ER](#81-diagrama-entidade-relacionamento-er)
+- [8.2 Melhorias Técnicas Recomendadas](#82-melhorias-técnicas-recomendadas)
+- [9.1 Metas do MVP](#91-metas-do-mvp)
+- [9.2 Táticas de Desempenho](#92-táticas-de-desempenho)
+- [9.3 Validação de Desempenho](#93-validação-de-desempenho)
+- [10. Qualidade](#10-qualidade)
 
 # 1. Introdução
 
@@ -218,7 +237,7 @@ Cada camada desempenha um papel definido:
 <em>Tabela 3 – Pacotes de Design Significativos do ReelStack</em>
 </div>
 
-# 5. Visão de Processos (opcional)
+# 5. Visão de Processos
 
 O **ReelStack** adota um modelo de concorrência baseado em **API stateless**, onde cada requisição é independente e contém suas credenciais de autenticação via **JWT**. As operações críticas sobre o banco de dados utilizam **transações curtas e atômicas**, garantindo integridade sem manter bloqueios prolongados.  
 Processos assíncronos são utilizados para **recomputar vetores de recomendação de usuários** com base em novas interações, podendo ocorrer de forma agendada (*batch*) fora do ciclo principal de requisição. Em futuras iterações, poderá ser introduzido um sistema de **filas de mensagens** (ex.: RabbitMQ, Redis Queue) para balancear cargas. No MVP, o processamento assíncrono é simplificado e executado sob demanda pelo backend.
@@ -284,7 +303,7 @@ linkStyle default stroke:#8b949e,stroke-width:1px,color:#e6edf3
 5. **Verificação de TLS:** garantir comunicação HTTPS com certificado TLS 1.3 ativo.  
 6. **Testes Finais:** validar autenticação, acesso ao banco, integração TMDB e endpoints críticos.  
 
-# 7. Visão da Implementação (opcional)
+# 7. Visão da Implementação
 
 A implementação do **ReelStack** segue uma estrutura modular e organizada por contexto de responsabilidade, garantindo manutenibilidade e clareza entre camadas. O projeto é estruturado conforme o padrão monorepo simplificado:
 
@@ -310,14 +329,105 @@ As convenções de código incluem:
 
 ---
 
-# 8. Volume e Desempenho
+# 8. Visão de Dados
 
-## 8.1 Metas do MVP
+## 8.1 Diagrama Entidade-Relacionamento ER
+
+```mermaid
+erDiagram
+    profiles {
+        uuid id PK
+        text profile_name
+        text bio
+        text avatar_url
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    collections {
+        bigint id PK
+        uuid profile_id FK
+        text name
+        text description
+        text visibility
+        text cover_image_url
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    collection_movies {
+        bigint collection_id FK
+        text movie_id FK
+        timestamptz added_at
+    }
+    movies {
+        text tconst PK
+        bigint title_type_id FK
+        text primary_title
+        text original_title
+        boolean is_adult
+        smallint start_year
+        smallint end_year
+        smallint runtime_minutes
+        double average_rating
+        bigint num_votes
+        text director
+        text actors
+        text banner
+    }
+    title_types {
+        bigint id PK
+        text type_name
+    }
+    genres_name {
+        bigint id PK
+        text name
+    }
+    movie_genres {
+        text movie_id FK
+        bigint genre_id FK
+    }
+    user_movie_interactions {
+        bigint id PK
+        uuid profile_id FK
+        text movie_id FK
+        text interaction_type
+        timestamptz created_at
+    }
+    user_preferences {
+        bigint id PK
+        uuid profile_id FK
+        text preference_type
+        text preference_value
+    }
+
+    profiles ||--o{ collections : "possui"
+    collections ||--o{ collection_movies : "inclui"
+    collection_movies }o--|| movies : "referencia"
+    movies ||--o{ movie_genres : "tem"
+    movie_genres }o--|| genres_name : "pertence_a"
+    movies }o--|| title_types : "do_tipo"
+    profiles ||--o{ user_movie_interactions : "faz"
+    movies ||--o{ user_movie_interactions : "recebe"
+    profiles ||--o{ user_preferences : "tem"
+```
+
+## 8.2 Melhorias Técnicas Recomendadas
+
+- **Timestamps:** padronizar todas as colunas de data para `timestamptz DEFAULT now()`, garantindo consistência temporal em UTC.  
+- **Índices:** criar índices para colunas de chave estrangeira e de filtro frequente (`profile_id`, `movie_id`, `genre_id`, `title_type_id`, `average_rating`, `num_votes`) para otimizar desempenho.  
+- **UNIQUE compostas:** aplicar restrições em `(profile_id, movie_id)` em `user_movie_interactions` e `(profile_id, preference_type, preference_value)` em `user_preferences` para prevenir duplicações lógicas.  
+- **ON DELETE:** definir políticas adequadas (`CASCADE` ou `SET NULL`) nas FKs derivadas de `profiles` e `collections` para evitar registros órfãos.  
+- **Vetores:** planejar migração futura de campos de vetor (usuários e filmes) para o tipo **pgvector**, permitindo consultas vetoriais mais eficientes em recomendações.  
+
+---
+
+# 9. Volume e Desempenho
+
+## 9.1 Metas do MVP
 
 - Suporte a até **100 usuários simultâneos** com respostas médias adequadas.  
 - **Tempo de resposta p90 ≤ 1s** para operações de interação (*swipe*, curtir/rejeitar).  
 
-## 8.2 Táticas de Desempenho
+## 9.2 Táticas de Desempenho
 
 - Criação de **índices** sobre colunas-chave (`profile_id`, `movie_id`, `genre_id`).  
 - Aplicação de **filtros de candidatos** com base em métricas como `num_votes` e `average_rating`.  
@@ -326,11 +436,13 @@ As convenções de código incluem:
 - Implementação de **cache leve** para sinopses e metadados de filmes da TMDB.  
 - Adoção de **API stateless** e *connection pooling* no banco de dados para escalabilidade.  
 
-## 8.3 Validação de Desempenho
+## 9.3 Validação de Desempenho
 
 Os testes de carga e desempenho serão conduzidos com **JMeter**, avaliando métricas de latência (p90, p95), throughput e uso de recursos. Logs estruturados e métricas de API (ex.: Prometheus + Grafana) permitirão verificar conformidade com os **Requisitos Não Funcionais (RNF-002)** e **RNF-003** de desempenho e estabilidade.
 
-# 9. Qualidade
+---
+
+# 10. Qualidade
 
 | Atributo | Descrição | Solução Aplicada |
 |-----------|------------|------------------|
@@ -342,16 +454,5 @@ Os testes de carga e desempenho serão conduzidos com **JMeter**, avaliando mét
 
 A arquitetura de qualidade do **ReelStack** assegura conformidade com os **Requisitos Não Funcionais (RNFs)** de desempenho, segurança e disponibilidade, além de reforçar o atendimento das **Regras de Negócio (RNs)** ligadas à integridade dos dados, controle de acesso e consistência das recomendações. Essa base técnica garante estabilidade operacional e suporte sustentável à evolução do sistema.
 
-# Histórico da Revisão
-| Data       | Versão   | Descrição                                               | Autor        |
-|-------------|-----------|---------------------------------------------------------|---------------|
-| 2025-11-03  | v1.0 | Adiciona documentação inicial de arquitetura de software | Gabs          |
-| 2025-11-03  | v1.1  | Atualiza diagramas e detalha arquitetura do ReelStack   | Gabs          |
-| 2025-11-04  | v1.2  | Adiciona visão de casos de uso e diagrama principal     | Gabs          |
-| 2025-11-04  | v1.3  | Melhora documentação com sintaxe Mermaid unificada       | Gabs          |
-| 2025-11-04  | v1.4  | Adiciona visão de processos e implantação à documentação | Gabs          |
-| 2025-11-04  | v1.5  | Inclui seções de implementação, desempenho e qualidade   | Gabs          |
-| 2025-11-04  | v1.6  | Adiciona índice analítico à documentação                 | Gabs          |
-| 2025-11-05  | v1.7  | Inclui diagrama ERD atualizado (sem tabelas *_old)      | Gabs          |
-| 2025-11-05  | v1.8  | Adiciona apêndices A–D com detalhamento técnico         | Gabs          |
-| 2025-11-05  | v1.9  | Ajusta políticas de RLS e descrição de variáveis de ambiente | Gabs      |
+---
+
