@@ -1,17 +1,42 @@
+
+# Documento de Arquitetura de Software — ReelStack
+
+**Versão:** v1.14  
+**Data:** 05/11/2025  
+**Autores:** Gabriel de Oliveira Batista (Gabs) e Equipe ReelStack  
+**Projeto:** ReelStack — Sistema de recomendação e gerenciamento de coleções de filmes  
+**Disciplina:** Engenharia de Software / Arquitetura de Software  
+**Instituição:** Universidade Católica de Brasília  
+
+---
+
+<p align="center">  
+<img src="https://ucb.catolica.edu.br/hs-fs/hubfs/Logo%20Cat%C3%B3lica-01%201.png?width=200&height=40" alt="UCB" width="300">  
+</p>
+
+> Este documento descreve a arquitetura do sistema **ReelStack**, incluindo visões lógica, física, de processos, dados, requisitos não funcionais e apêndices técnicos (ADRs, OpenAPI, RLS, migrações SQL).
+
+
 # Histórico da Revisão
 
-| Data       | Versão   | Descrição                                               | Autor        |
-|-------------|-----------|---------------------------------------------------------|---------------|
-| 2025-11-03  | v1.0 | Adiciona documentação inicial de arquitetura de software | Gabs          |
-| 2025-11-03  | v1.1  | Atualiza diagramas e detalha arquitetura do ReelStack   | Gabs          |
-| 2025-11-04  | v1.2  | Adiciona visão de casos de uso e diagrama principal     | Gabs          |
-| 2025-11-04  | v1.3  | Melhora documentação com sintaxe Mermaid unificada       | Gabs          |
-| 2025-11-04  | v1.4  | Adiciona visão de processos e implantação à documentação | Gabs          |
-| 2025-11-04  | v1.5  | Inclui seções de implementação, desempenho e qualidade   | Gabs          |
-| 2025-11-04  | v1.6  | Adiciona índice analítico à documentação                 | Gabs          |
-| 2025-11-05  | v1.7  | Inclui diagrama ERD atualizado (sem tabelas *_old)      | Gabs          |
-| 2025-11-05  | v1.8  | Adiciona apêndices A–D com detalhamento técnico         | Gabs          |
-| 2025-11-05  | v1.9  | Ajusta políticas de RLS e descrição de variáveis de ambiente | Gabs      |
+| Data       | Versão | Descrição                                                      | Autor |
+|------------|--------|----------------------------------------------------------------|-------|
+| 2025-11-03 | v1.0   | Adiciona documentação inicial de arquitetura de software       | Gabs  |
+| 2025-11-03 | v1.1   | Atualiza diagramas e detalha arquitetura do ReelStack          | Gabs  |
+| 2025-11-03 | v1.2   | Atualiza diagramas C4 para layout centralizado                | Gabs  |
+| 2025-11-03 | v1.3   | Simplifica diagramas e aplica tema Mermaid                    | Gabs  |
+| 2025-11-04 | v1.4   | Reescreve documentação e adiciona visão de casos de uso       | Gabs  |
+| 2025-11-04 | v1.5   | Melhora sintaxe Mermaid e adiciona diagramas principais       | Gabs  |
+| 2025-11-04 | v1.6   | Adiciona visão de processos e implantação                     | Gabs  |
+| 2025-11-04 | v1.7   | Inclui seções de implementação, desempenho e qualidade        | Gabs  |
+| 2025-11-04 | v1.8   | Adiciona índice analítico e histórico de revisão              | Gabs  |
+| 2025-11-05 | v1.9   | Incorpora visão de dados (ERD) à documentação principal       | Gabs  |
+| 2025-11-05 | v1.10  | Adiciona diagramas de sequência ao apêndice                   | Gabs  |
+| 2025-11-05 | v1.11  | Inclui ADRs (decisões arquiteturais)                          | Gabs  |
+| 2025-11-05 | v1.12  | Adiciona resumo OpenAPI do MVP                                | Gabs  |
+| 2025-11-05 | v1.13  | Adiciona políticas de segurança e exemplos de migração SQL    | Gabs  |
+| 2025-11-05 | v1.14  | Refina recomendações e reorganiza seções                      | Gabs  |
+
 
 # Índice Analítico
 
