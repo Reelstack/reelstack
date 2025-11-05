@@ -599,3 +599,164 @@ Adotar o tipo **timestamptz DEFAULT now()** em todas as tabelas, armazenando hor
 
 ---
 
+# Apêndice C — OpenAPI (Resumo do MVP)
+
+```yaml
+openapi: 3.1.0
+info:
+ title: ReelStack API (MVP)
+ version: 1.0.0
+ description: API RESTful para autenticação, recomendações, interações e coleções de filmes.
+servers:
+ - url: https://api.reelstack.app/v1
+components:
+ securitySchemes:
+   bearerAuth:
+     type: http
+     scheme: bearer
+     bearerFormat: JWT
+ schemas:
+   Recommendation:
+     type: object
+     properties:
+       movie_id:
+         type: string
+       title:
+         type: string
+       banner:
+         type: string
+       average_rating:
+         type: number
+       num_votes:
+         type: integer
+   Interaction:
+     type: object
+     properties:
+       movie_id:
+         type: string
+       interaction_type:
+         type: string
+         enum: [like, dislike]
+     required: [movie_id, interaction_type]
+security:
+ - bearerAuth: []
+paths:
+ /auth/signup:
+   post:
+     summary: Cria novo usuário.
+     requestBody:
+       required: true
+       content:
+         application/json:
+           schema:
+             type: object
+             properties:
+               email: { type: string }
+               password: { type: string }
+     responses:
+       "201": { description: Usuário criado }
+       "400": { description: Dados inválidos }
+ /auth/login:
+   post:
+     summary: Autentica usuário e retorna token JWT.
+     responses:
+       "200": { description: Token JWT emitido }
+ /me:
+   get:
+     summary: Retorna perfil autenticado.
+     security: [{ bearerAuth: [] }]
+     responses:
+       "200": { description: Perfil do usuário }
+ /recommendations:
+   get:
+     summary: Retorna lista de recomendações personalizadas.
+     security: [{ bearerAuth: [] }]
+     parameters:
+       - name: limit
+         in: query
+         schema: { type: integer, default: 10 }
+     responses:
+       "200":
+         description: Lista de recomendações
+         content:
+           application/json:
+             schema:
+               type: array
+               items: { $ref: "#/components/schemas/Recommendation" }
+ /interactions:
+   post:
+     summary: Registra interação (curtir/rejeitar).
+     security: [{ bearerAuth: [] }]
+     requestBody:
+       required: true
+       content:
+         application/json:
+           schema: { $ref: "#/components/schemas/Interaction" }
+     responses:
+       "201": { description: Interação registrada }
+ /collections:
+   get:
+     summary: Lista coleções do usuário autenticado.
+     security: [{ bearerAuth: [] }]
+     responses:
+       "200": { description: Lista de coleções }
+   post:
+     summary: Cria nova coleção.
+     security: [{ bearerAuth: [] }]
+     responses:
+       "201": { description: Coleção criada }
+ /collections/{id}:
+   put:
+     summary: Atualiza coleção existente.
+     security: [{ bearerAuth: [] }]
+     responses:
+       "200": { description: Coleção atualizada }
+   delete:
+     summary: Remove coleção.
+     security: [{ bearerAuth: [] }]
+     responses:
+       "204": { description: Removida com sucesso }
+ /collections/{id}/items:
+   post:
+     summary: Adiciona filme à coleção.
+     security: [{ bearerAuth: [] }]
+     responses:
+       "201": { description: Item adicionado }
+   delete:
+     summary: Remove filme da coleção.
+     security: [{ bearerAuth: [] }]
+     responses:
+       "204": { description: Item removido }
+ /public/collections/{slug}:
+   get:
+     summary: Acessa coleção compartilhada (pública ou não listada).
+     responses:
+       "200": { description: Coleção acessível publicamente }
+```
+
+## Regras de Paginação e Filtros
+
+• Parâmetro limit: define o número máximo de itens retornados por requisição (padrão 10, máximo 50).
+• Filtros de recomendação priorizam filmes com **num_votes ≥ 100 e average_rating ≥ 5.0.**
+• Requisições subsequentes podem incluir offset para navegação paginada.
+
+## Padrão de Erros da API
+
+• Respostas de erro seguem o formato JSON:
+
+```json
+{
+  "error": {
+    "code": "BAD_REQUEST",
+    "message": "Parâmetros inválidos.",
+    "details": {}
+  }
+}
+```
+
+### Códigos comuns:
+• **400** – Requisição inválida (dados incorretos)
+• **401** – Não autorizado (token ausente ou inválido)
+• **403** – Acesso negado
+• **404** – Recurso não encontrado
+• **500** – Erro interno no servidor
