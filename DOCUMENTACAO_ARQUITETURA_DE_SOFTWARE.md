@@ -848,10 +848,6 @@ CREATE POLICY user_vectors_owner_rw
    ON public.user_vectors
    USING (auth.uid() = profile_id)
    WITH CHECK (auth.uid() = profile_id);
--- Política: leitura pública de coleções “public” ou “unlisted”  
-```
-
-```sql
 CREATE POLICY collections_public_read
    ON public.collections
    FOR SELECT
