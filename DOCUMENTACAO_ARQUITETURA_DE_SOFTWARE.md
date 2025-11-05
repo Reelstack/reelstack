@@ -877,8 +877,8 @@ ALTER TABLE public.user_movie_interactions
    ADD CONSTRAINT uq_user_movie UNIQUE (profile_id, movie_id);
 ALTER TABLE public.user_preferences
    ADD CONSTRAINT uq_user_preferences UNIQUE (profile_id, preference_type, preference_value);
--- Índices de FKs e colunas de filtro  
 
+-- Índices de FKs e colunas de filtro
 CREATE INDEX idx_collections_profile ON public.collections (profile_id);
 CREATE INDEX idx_collection_movies_collection ON public.collection_movies (collection_id);
 CREATE INDEX idx_collection_movies_movie ON public.collection_movies (movie_id);
