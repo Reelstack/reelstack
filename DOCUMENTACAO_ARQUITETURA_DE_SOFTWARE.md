@@ -289,7 +289,7 @@ Processos assíncronos são utilizados para **recomputar vetores de recomendaç�
 "wrap": true
 }}%%
 flowchart LR
-A["Usuário"] -->|HTTPS / TLS 1.3| B["Frontend SPACDN / Hosting"]
+A["Usuário"] -->|HTTPS / TLS 1.3| B["Frontend SPA CDN / Hosting"]
 B -->|HTTPS / JSON| C["Backend APINode.js"]
 C -->|Consultas SQL| D["PostgreSQL"]
 C -->|Requisições REST| E["TMDB API"]
