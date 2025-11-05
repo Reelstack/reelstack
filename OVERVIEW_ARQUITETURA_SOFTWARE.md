@@ -19,7 +19,7 @@ graph LR
    B -->|Metadados| T[(TMDB API)]
 ```
 
-O design favorece independência entre camadas, permitindo evolução incremental e manutenção isolada por serviços (auth, recomendações, coleções e interações)
+O design favorece independência entre camadas, permitindo evolução incremental e manutenção isolada por serviços (auth, recomendações, coleções e interações).
 
 ---
 
