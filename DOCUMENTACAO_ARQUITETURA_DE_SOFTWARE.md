@@ -533,3 +533,69 @@ Cumpre **RN-007** (coleções compartilháveis) e **RN-008** (auditoria de acess
 
 ---
 
+# Apêndice B — Decisões Arquiteturais (ADRs)
+## ADR-001 — Adoção de Banco Relacional PostgreSQL
+**Contexto:**  
+O sistema ReelStack exige integridade referencial, suporte a transações ACID e flexibilidade para consultas analíticas sobre dados relacionais e históricos. Era necessário um SGBD maduro, compatível com nuvem e com suporte a políticas de segurança em nível de linha (RLS).  
+**Decisão:**  
+Foi adotado o **PostgreSQL** como banco de dados relacional padrão do sistema. Ele oferece compatibilidade com JSONB, suporte nativo a índices complexos e extensões como **pgvector**, além de ferramentas maduras de replicação e segurança.  
+**Consequências:**  
+- Benefícios: consistência, confiabilidade e extensibilidade.  
+- Risco: necessidade de otimização manual para consultas mais complexas em grande escala.  
+---
+## ADR-002 — TMDB como Fonte Exclusiva de Metadados no MVP
+**Contexto:**  
+Durante o MVP, a equipe precisava de uma fonte confiável e gratuita de dados de filmes para alimentar o sistema de recomendações e coleções. Avaliar múltiplas integrações aumentaria o tempo de desenvolvimento.  
+**Decisão:**  
+Optou-se por utilizar exclusivamente a **API TMDB** para obtenção de metadados (títulos, banners, elenco e notas), reduzindo o esforço de integração e assegurando padronização nos dados exibidos.  
+**Consequências:**  
+- Benefício: agilidade na entrega do MVP e uniformidade dos dados.  
+- Risco: dependência de terceiros e necessidade futura de cache e redundância local.  
+---
+## ADR-003 — Representação Vetorial em JSONB (Migração futura para pgvector)
+**Contexto:**  
+Os vetores de similaridade de usuários e filmes são essenciais para o sistema de recomendação, mas a extensão **pgvector** não é nativa em todos os ambientes de nuvem.  
+**Decisão:**  
+Optou-se por armazenar vetores em formato **JSONB** no MVP, garantindo compatibilidade imediata e portabilidade. A migração para **pgvector** está planejada para a próxima versão, visando melhorar o desempenho em consultas de similaridade.  
+**Consequências:**  
+- Benefício: facilidade de implantação inicial e compatibilidade universal.  
+- Risco: menor eficiência em operações vetoriais até a migração definitiva.  
+---
+## ADR-004 — Arquitetura Web-First (SPA + REST)
+**Contexto:**  
+A aplicação visa usuários em múltiplas plataformas (desktop e mobile). O foco do MVP é a fluidez e responsividade da interface, com baixo acoplamento entre frontend e backend.  
+**Decisão:**  
+Adotou-se uma arquitetura **web-first** com **Single Page Application (React)** comunicando-se via **API RESTful (Node.js/Express)**. Essa separação permite desenvolvimento paralelo e escalabilidade futura por microsserviços.  
+**Consequências:**  
+- Benefício: flexibilidade, reuso e independência tecnológica.  
+- Risco: maior complexidade inicial em autenticação e CORS.  
+---
+## ADR-005 — Segurança com TLS 1.3, JWT e RLS
+**Contexto:**  
+O sistema lida com dados pessoais e deve garantir confidencialidade, autenticação segura e controle granular de acesso a registros.  
+**Decisão:**  
+Implementar **TLS 1.3** para criptografia de tráfego, **JWT** para autenticação stateless e **Row-Level Security (RLS)** no PostgreSQL para isolar dados por usuário.  
+**Consequências:**  
+- Benefício: conformidade com boas práticas de segurança e proteção por múltiplas camadas.  
+- Risco: sobrecarga mínima de configuração e necessidade de rotação periódica de chaves JWT.  
+---
+## ADR-006 — Padronização de Mensagens e Tratamento Centralizado de Erros
+**Contexto:**  
+Mensagens inconsistentes prejudicam a experiência do usuário e dificultam o rastreio de falhas.  
+**Decisão:**  
+Centralizar o tratamento de exceções no backend, com respostas padronizadas em JSON, seguindo um formato unificado (`error.code`, `message`, `details`).  
+**Consequências:**  
+- Benefício: consistência nas respostas e melhor rastreabilidade.  
+- Risco: dependência da manutenção de um middleware unificado.  
+---
+## ADR-007 — Timezone e Timestamps com `timestamptz DEFAULT now()`
+**Contexto:**  
+O sistema envolve usuários em diferentes fusos e eventos registrados por hora. É essencial padronizar o registro temporal para evitar discrepâncias.  
+**Decisão:**  
+Adotar o tipo **timestamptz DEFAULT now()** em todas as tabelas, armazenando horários em UTC e mantendo consistência em logs e auditorias.  
+**Consequências:**  
+- Benefício: coerência temporal entre ambientes e simplicidade em auditoria.  
+- Risco: necessidade de conversão no frontend para exibição no fuso horário do usuário.
+
+---
+
