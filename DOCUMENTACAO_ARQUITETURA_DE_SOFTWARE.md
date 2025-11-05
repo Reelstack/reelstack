@@ -34,9 +34,9 @@
 - [6.3 Checklist de Implantação](#63-checklist-de-implantação)
 - [7. Visão da Implementação](#7-visão-da-implementação)
 - [8. Visão de Dados](#8-visão-de-dados)
-- [8. Volume e Desempenho](#8-volume-e-desempenho)
 - [8.1 Diagrama Entidade-Relacionamento ER](#81-diagrama-entidade-relacionamento-er)
 - [8.2 Melhorias Técnicas Recomendadas](#82-melhorias-técnicas-recomendadas)
+- [9. Volume e Desempenho](#9-volume-e-desempenho)
 - [9.1 Metas do MVP](#91-metas-do-mvp)
 - [9.2 Táticas de Desempenho](#92-táticas-de-desempenho)
 - [9.3 Validação de Desempenho](#93-validação-de-desempenho)
@@ -227,7 +227,7 @@ Cada camada desempenha um papel definido:
 | **Auth Controller / Service** | Gerencia autenticação via e-mail/senha, emissão e verificação de JWT. | Garante conformidade com **RN-001**; tokens expiram após tempo definido; falhas autenticadas registradas para auditoria. |
 | **Users / Profile Service** | Mantém dados de perfis e preferências; integra RLS para segurança por perfil. | Usa RLS em consultas; evita duplicação de nomes de perfil; segue **RN-006**. |
 | **Movies / Metadata Service** | Integra com a API **TMDB** para recuperar metadados de filmes; mantém cache local para reduzir chamadas externas. | Cache TTL de 24h; controle de atualização assíncrona; segue **RN-005**. |
-| **Recommendation Service** | Gera recomendações personalizadas com base no histórico e vetores de similaridade. | Baseado em **RN-002**; operações idempotentes; cálculos em batch para desempenho. |
+| **Recommendation Service** | Gera recomendações personalizadas com base no histórico e vetores de similaridade. | Baseado em **RN-002**; operações idempotentes; cálculos em batch para desempenho. Utiliza também preferências explícitas (`user_preferences`) para refinar recomendações (**RN-005**) |
 | **Interactions Service** | Registra curtidas e rejeições (*like/dislike*) e atualiza vetores de recomendação. | Garante unicidade por filme e perfil (**RN-003**); utiliza transações para atomicidade. |
 | **Collections Service** | Criação, atualização, remoção e compartilhamento de coleções de filmes. | Enforce de visibilidade (**RN-007**); controle transacional em exclusões e adições múltiplas. |
 | **Error Handling Module** | Padroniza respostas de erro da API, garantindo mensagens claras e consistentes. | Atende **NFR-004** (mensagens compreensíveis e rastreáveis). |
@@ -848,7 +848,6 @@ ALTER TABLE public.collections ALTER COLUMN created_at SET DEFAULT now();
 ALTER TABLE public.collections ALTER COLUMN updated_at SET DEFAULT now();
 ALTER TABLE public.collection_movies ALTER COLUMN added_at SET DEFAULT now();
 ALTER TABLE public.user_movie_interactions ALTER COLUMN created_at SET DEFAULT now();
-ALTER TABLE public.user_vectors ALTER COLUMN updated_at SET DEFAULT now();
 -- Restrições UNIQUE compostas  
 
 ALTER TABLE public.user_movie_interactions
@@ -882,25 +881,4 @@ ALTER TABLE public.movie_genres
    ADD CONSTRAINT movie_genres_movie_id_fkey
    FOREIGN KEY (movie_id) REFERENCES public.movies(tconst)
    ON DELETE CASCADE
-```
-
----
-
-## D.3 (Opcional) Esboço de Migração para pgvector
-
--- Criação de extensão pgvector (caso ainda não exista)  
-
-```sql
-CREATE EXTENSION IF NOT EXISTS vector;
--- Criação de novas colunas vetoriais (substituindo JSONB futuramente)  
-
-ALTER TABLE public.user_vectors ADD COLUMN IF NOT EXISTS vector_pg vector(256);
-ALTER TABLE public.movie_vectors ADD COLUMN IF NOT EXISTS vector_pg vector(256);
--- Exemplo de atualização migratória (comentado, apenas esboço)  
-
--- UPDATE public.user_vectors
--- SET vector_pg = to_vector(array(select jsonb_array_elements_text(vector)::float));
--- UPDATE public.movie_vectors
--- SET vector_pg = to_vector(array(select jsonb_array_elements_text(vector)::float));
--- Planejar substituição definitiva após validação de queries de similaridade
 ```
