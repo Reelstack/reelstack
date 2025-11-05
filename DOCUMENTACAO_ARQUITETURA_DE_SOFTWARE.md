@@ -871,8 +871,8 @@ ALTER TABLE public.collections ALTER COLUMN created_at SET DEFAULT now();
 ALTER TABLE public.collections ALTER COLUMN updated_at SET DEFAULT now();
 ALTER TABLE public.collection_movies ALTER COLUMN added_at SET DEFAULT now();
 ALTER TABLE public.user_movie_interactions ALTER COLUMN created_at SET DEFAULT now();
--- Restrições UNIQUE compostas  
 
+-- Restrições UNIQUE compostas
 ALTER TABLE public.user_movie_interactions
    ADD CONSTRAINT uq_user_movie UNIQUE (profile_id, movie_id);
 ALTER TABLE public.user_preferences
