@@ -820,9 +820,10 @@ paths:
 
 ## D.1 Políticas de Segurança (Row-Level Security)
 
--- Ativação do Row-Level Security (RLS) nas tabelas sensíveis  
+
 
 ```sql
+-- Ativação do Row-Level Security (RLS) nas tabelas sensíveis  
 ALTER TABLE public.collections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_movie_interactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_preferences ENABLE ROW LEVEL SECURITY;
