@@ -456,3 +456,80 @@ A arquitetura de qualidade do **ReelStack** assegura conformidade com os **Requi
 
 ---
 
+# Apêndice A — Diagramas de Sequência
+
+## A.1 Swipe (curtir/rejeitar)
+
+```mermaid
+sequenceDiagram
+   participant U as Usuário
+   participant F as Frontend (SPA)
+   participant B as Backend API
+   participant DB as PostgreSQL
+   participant TMDB as TMDB API
+   U->>F: Realiza swipe (curtir/rejeitar)
+   F->>B: Envia interação (movie_id, like/dislike)
+   B->>DB: Registra interação em user_movie_interactions
+   DB-->>B: Confirma gravação (transação curta)
+   B->>DB: Atualiza vetor de usuário (user_vectors)
+   DB-->>B: Vetor atualizado
+   B->>TMDB: Solicita próximo candidato (filme)
+   TMDB-->>B: Retorna metadados do filme
+   B-->>F: Envia próxima recomendação
+   F-->>U: Exibe novo filme para interação
+```
+
+**Regras aplicáveis:**  
+Atende **RN-001** (autenticação segura) e **RN-002** (recomendações personalizadas) com persistência imediata da interação. Cumpre **RNF-002** (desempenho p90 ≤ 1s) e **RNF-004** (mensagens claras e feedback visual).  
+
+---
+
+## A.2 Criar coleção e adicionar filme curtido
+
+```mermaid
+sequenceDiagram
+   participant U as Usuário
+   participant F as Frontend (SPA)
+   participant B as Backend API
+   participant DB as PostgreSQL
+   U->>F: Cria nova coleção
+   F->>B: Envia dados da coleção (nome, descrição, visibilidade)
+   B->>DB: Insere em collections
+   DB-->>B: Retorna id da nova coleção
+   U->>F: Seleciona filme curtido
+   F->>B: Adiciona filme à coleção (collection_id, movie_id)
+   B->>DB: Insere em collection_movies
+   DB-->>B: Confirma inserção
+   B-->>F: Retorna sucesso
+   F-->>U: Exibe confirmação visual
+```
+
+**Regras aplicáveis:**  
+Baseado em **RN-006** (gerenciamento de coleções) e **RN-007** (visibilidade pública/privada). Garante integridade via transação atômica (**RNF-003**) e mensagens consistentes (**RNF-004**).  
+
+---
+
+## A.3 Acesso público a coleção compartilhada
+
+```mermaid
+sequenceDiagram
+   participant V as Visitante
+   participant F as Frontend (SPA)
+   participant B as Backend API
+   participant DB as PostgreSQL
+   participant TMDB as TMDB API
+   V->>F: Acessa link de coleção compartilhada
+   F->>B: Solicita dados da coleção (id ou slug)
+   B->>DB: Valida visibilidade (public/unlisted)
+   DB-->>B: Retorna metadados e lista de filmes
+   B->>TMDB: Obtém informações detalhadas dos filmes
+   TMDB-->>B: Retorna dados de exibição
+   B-->>F: Retorna coleção completa com metadados
+   F-->>V: Exibe coleção e filmes acessíveis
+```
+
+**Regras aplicáveis:**  
+Cumpre **RN-007** (coleções compartilháveis) e **RN-008** (auditoria de acesso). Atende **RNF-001** (segurança via TLS/JWT, mesmo para visitantes limitados) e **RNF-002** (desempenho ao carregar coleções).
+
+---
+
