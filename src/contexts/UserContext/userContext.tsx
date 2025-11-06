@@ -56,8 +56,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       const newUser: UserProfile = {
         id: data.user.id,
         profile_name: uniqueProfileName, // valor único e não sensível
-        avatar_url: '',   // valor padrão string
-        bio: '',         // valor padrão string
+        avatar_url: null,   // valor padrão null
+        bio: null,         // valor padrão null
         created_at: new Date().toISOString(), // ou deixe o banco preencher
         updated_at: new Date().toISOString(), // ou deixe o banco preencher
       };
