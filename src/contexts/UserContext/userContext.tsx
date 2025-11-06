@@ -52,7 +52,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     if (data.user) {
       // Gera um identificador único e não sensível para profile_name
-      const uniqueProfileName = `user_${Math.random().toString(36).substring(2, 10)}`;
+      const uniqueProfileName = `user_${crypto.randomUUID()}`;
       const newUser: UserProfile = {
         id: data.user.id,
         profile_name: uniqueProfileName, // valor único e não sensível
