@@ -1,15 +1,22 @@
-export interface User {
+// userTypes.ts
+export interface UserProfile {
   id: string;
-  email: string | null;
-  // adicionar campos necessários aqui
+  profile_name: string;
+  avatar_url: string | null;
+  bio: string | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export interface State {
-  users: User[];
+  users: UserProfile[];
+  loading: boolean;
+  error: string | null;
 }
 
 export type Action =
-  | { type: 'SET_USERS'; payload: User[] }
-  | { type: 'ADD_USER'; payload: User }
-  | { type: 'UPDATE_USER'; payload: User }
-  | { type: 'DELETE_USER'; payload: User['id'] };
+  | { type: 'SET_USERS'; payload: UserProfile[] }
+  | { type: 'ADD_USER'; payload: UserProfile }
+  | { type: 'UPDATE_USER'; payload: UserProfile }
+  | { type: 'DELETE_USER'; payload: UserProfile['id'] };
+

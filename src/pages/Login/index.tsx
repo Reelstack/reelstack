@@ -4,11 +4,11 @@ import { SignUpForm } from '../../components/SignUpForm';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { AnimatePresence, motion } from 'motion/react';
-import type { User } from '../../contexts/UserContext/userTypes';
+import type { UserProfile } from '../../contexts/UserContext/userTypes';
 
 export function Login() {
   const [isSigning, setIsSigning] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserProfile[]>([]);
 
   // pega usuarios pro log
   useEffect(() => {
@@ -16,13 +16,13 @@ export function Login() {
   }, []);
 
   async function getUsers() {
-    const { data } = await supabase.from('users').select();
-    setUsers((data ?? []) as User[]);
+    const { data } = await supabase.from('profiles').select();
+    setUsers((data ?? []) as UserProfile[]);
   }
 
   // mostra usuarios no log
   useEffect(() => {
-    console.log(users.map(user => user.email));
+    console.log(users.map(user => user.profile_name));
   }, [users]);
 
   return (

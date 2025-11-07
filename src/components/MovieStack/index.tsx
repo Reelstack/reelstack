@@ -1,57 +1,118 @@
 import styles from './styles.module.css';
-import type { OMDBMovie } from '../../services/api/types';
-import { omdb } from '../../services/ombdClient';
+import { MoviesService, type Movie } from '../../services/api/supa-api/movies';
 import { useEffect, useRef, useState } from 'react';
+import { supabase } from '../../lib/supabaseClient';
+import toast from 'react-hot-toast';
 
 const MOVIES_PER_PAGE = 18;
 
-interface CollectionProps {
+interface MovieStackProps {
   title: string;
-  movies: OMDBMovie[];
-  setMovies: React.Dispatch<React.SetStateAction<OMDBMovie[]>>;
+  movies: Movie[];
+  setMovies: React.Dispatch<React.SetStateAction<Movie[]>>;
   color?: string;
+  interactionType?: 'like' | 'dislike';
 }
 
-export function Collection({
+export function MovieStack({
   title,
   movies,
   setMovies,
   color = 'var(--success)',
-}: CollectionProps) {
+  interactionType = 'like',
+}: MovieStackProps) {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
   const historyRef = useRef<HTMLDivElement | null>(null);
   const shouldScroll = useRef(false);
   const [isHover, setHover] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadUserMovies() {
+      setLoading(true);
+
+      try {
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+        if (sessionError || !session) throw toast.error('User not logged in');
+
+        const profileId = session.user.id;
+
+        const userMovies = await MoviesService.getUserMovies(
+          profileId,
+          interactionType,
+        );
+        if (userMovies && userMovies.length > 0) {
+          setMovies(userMovies);
+        }
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : 'Failed to load movies.',
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadUserMovies();
+  }, [interactionType, setMovies]);
 
   async function handleAddMovie() {
     const titlePrompt = prompt('Movie name?');
     if (!titlePrompt) return;
 
     setLoading(true);
-    setError(null);
 
     try {
-      const movie = await omdb.getMovieByTitle(titlePrompt);
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+      if (sessionError || !session) throw toast.error('User not logged in');
 
-      // checa por posteres
-      if (!movie.Poster || movie.Poster === 'N/A') {
-        setError('Poster not available.');
+      const profileId = session.user.id; // Supabase ID
+      // Busca filmes com o título digitado
+      const { data, error } = await MoviesService.searchMovies(
+        {
+          title: titlePrompt,
+        },
+        1,
+      ); // limita a 1 resultado
+
+      // TODO: Implement poster validation when available
+      // if (!movie.posterUrl || movie.posterUrl === 'N/A') {
+      //   setError('Poster not available.');
+      //   return;
+      // }
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        toast.error('Movie not found.');
         return;
       }
 
-      // checa duplicata
+      const movie = data[0];
+
+      // Checa duplicata
       setMovies(prev => {
-        if (prev.some(m => m.imdbID === movie.imdbID)) {
-          setError('Movie already added.');
+        if (prev.some(m => m.tconst === movie.tconst)) {
+          toast.error('Movie already added.');
           return prev;
         }
-        setPage(0);
         return [movie, ...prev];
       });
+      // atualiza a pagina
+      setPage(0);
+      //salva os filmes interagidos do usuario
+      await MoviesService.addUserMovieInteraction({
+        profileId,
+        movieId: movie.tconst,
+        interactionType,
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      toast.error(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
@@ -82,26 +143,39 @@ export function Collection({
           {/* trocar svg no futuro */}
           <h3 style={{ color: 'var(--contrast)' }}>Edit</h3>
         </button>
-        {error && <p className={styles.error}>{error}</p>}
       </div>
+
+      {loading && (
+        <div className={styles.loading}>
+          <p>Searching for movies...</p>
+        </div>
+      )}
+
       <div className={styles.historySpace} ref={historyRef}>
-        {current.length === 0 && (
+        {current.length === 0 && !loading && (
           <div className={styles.empty}>
             <p>No movies yet. Click edit and add some, will you?</p>
           </div>
         )}
         {current.map(m => (
           <div
-            key={m.imdbID}
+            key={m.tconst}
             className={styles.moviePoster}
-            onMouseEnter={() => setHover(m.imdbID)} // passa o id
+            onMouseEnter={() => setHover(m.tconst)} // passa o id
             onMouseLeave={() => setHover(null)} // reseta
           >
-            <img src={m.Poster} alt={m.Title} />
-            {isHover === m.imdbID && ( // checa o id
+            <img
+              /* src={m.posterUrl || '/placeholder-poster.jpg'} */
+              src={'/goncha.jpg'}
+              alt={m.primary_title ?? 'Movie poster'}
+              onError={e => {
+                (e.target as HTMLImageElement).src = '/placeholder-poster.jpg';
+              }}
+            />
+            {isHover === m.tconst && ( // checa o id
               <div className={styles.movieName}>
-                <p>{m.Title}</p>
-                <p>({m.Year})</p>
+                <p>{m.primary_title ?? 'Unknown Title'}</p>
+                <p>({m.start_year ?? 'Unknown Year'})</p>
               </div>
             )}
           </div>
