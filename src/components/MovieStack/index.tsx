@@ -83,8 +83,8 @@ export function MovieStack({
       ); // limita a 1 resultado
 
       // TODO: Implement poster validation when available
-      // if (!movie.posterUrl || movie.posterUrl === 'N/A') {
-      //   setError('Poster not available.');
+      // if (!movie.banner || movie.banner === 'N/A') {
+      //   toast.error('Poster not available.');
       //   return;
       // }
       if (error) throw error;
@@ -165,8 +165,8 @@ export function MovieStack({
             onMouseLeave={() => setHover(null)} // reseta
           >
             <img
-              /* src={m.posterUrl || '/placeholder-poster.jpg'} */
-              src={'/goncha.jpg'}
+              src={m.banner || '/placeholder-poster.jpg'} 
+             
               alt={m.primary_title ?? 'Movie poster'}
               onError={e => {
                 (e.target as HTMLImageElement).src = '/placeholder-poster.jpg';
