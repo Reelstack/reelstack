@@ -105,30 +105,46 @@ function buildFeatureLists(movies: Movie[]) {
     new Set(movies.flatMap(m => m.genres.map(g => g.name))),
   );
 
-  const allDirectors = Array.from(
-    new Set(
-      movies
-        .map(m => (m.director ? m.director.trim() : null))
-        .filter((d): d is string => !!d),
-    ),
-  );
+  // Conta frequência de diretores
+  const directorCount = new Map<string, number>();
+  movies.forEach(m => {
+    if (m.director) {
+      const dir = m.director.trim();
+      directorCount.set(dir, (directorCount.get(dir) || 0) + 1);
+    }
+  });
 
-  const allActors = Array.from(
-    new Set(
-      movies.flatMap(m => {
-        if (!m.actors) return [];
-        if (typeof m.actors === 'string') {
-          return m.actors
+  // Só diretores com 2+ filmes
+  const allDirectors = Array.from(directorCount.entries())
+    .filter(([_, count]) => count >= 2)
+    .map(([dir]) => dir);
+
+  // Conta frequência de atores
+  const actorCount = new Map<string, number>();
+  movies.forEach(m => {
+    if (!m.actors) return;
+    const actors =
+      typeof m.actors === 'string'
+        ? m.actors
             .split(',')
             .map(a => a.trim())
-            .filter(Boolean);
-        }
-        if (Array.isArray(m.actors)) {
-          return m.actors.map(a => a.trim()).filter(Boolean);
-        }
-        return [];
-      }),
-    ),
+            .filter(Boolean)
+        : Array.isArray(m.actors)
+          ? m.actors.map(a => a.trim()).filter(Boolean)
+          : [];
+
+    actors.forEach(a => {
+      actorCount.set(a, (actorCount.get(a) || 0) + 1);
+    });
+  });
+
+  // Só atores com 3+ filmes
+  const allActors = Array.from(actorCount.entries())
+    .filter(([_, count]) => count >= 3)
+    .map(([actor]) => actor);
+
+  console.log(
+    `📊 Features: ${allGenres.length} gêneros, ${allDirectors.length} diretores, ${allActors.length} atores = ${allGenres.length + allDirectors.length + allActors.length} dimensões totais`,
   );
 
   return { allGenres, allDirectors, allActors };
@@ -174,19 +190,24 @@ export async function prepareLocalMovieCache() {
   console.log(`Fetched ${movies.length} movies`);
 
   const { allGenres, allDirectors, allActors } = buildFeatureLists(movies);
+  // em batches de 2000
+  const BATCH_SIZE = 2000;
+  for (let i = 0; i < movies.length; i += BATCH_SIZE) {
+    const batch = movies.slice(i, i + BATCH_SIZE);
+    const vectorizedBatch: CachedMovie[] = batch.map(movie => ({
+      id: movie.tconst,
+      title: movie.primary_title,
+      vector: movieToVector(movie, allGenres, allDirectors, allActors),
+      genres: movie.genres,
+      average_rating: movie.average_rating,
+      director: movie.director,
+    }));
 
-  console.log('Computing vectors...');
-  const vectorizedMovies: CachedMovie[] = movies.map(movie => ({
-    id: movie.tconst,
-    title: movie.primary_title,
-    vector: movieToVector(movie, allGenres, allDirectors, allActors),
-    genres: movie.genres,
-    average_rating: movie.average_rating,
-    director: movie.director,
-  }));
-
-  console.log('Storing movies in IndexedDB...');
-  await storeMoviesBatch(vectorizedMovies);
+    await storeMoviesBatch(vectorizedBatch);
+    console.log(
+      `✅ Processed ${Math.min(i + BATCH_SIZE, movies.length)}/${movies.length} movies`,
+    );
+  }
 
   console.log('✅ Local cache populated with vectors!');
 }

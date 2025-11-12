@@ -235,13 +235,15 @@ export async function recommendMovies(
       const compactMovieVector = relevantIndices.map(i => movieVector[i]);
 
       // Calcula similaridade só nas features relevantes
-      const similarity =
-        cosineSimilarity(compactUserProfile, compactMovieVector) * 1.5; // leve boost na função
+      const similarity = Math.min(
+        1.0,
+        cosineSimilarity(compactUserProfile, compactMovieVector) * 1.5,
+      ); // leve boost na função
 
       const ratingScore = movie.average_rating
         ? movie.average_rating / 10
         : 0.5;
-      const finalScore = 0.95 * Math.pow(similarity, 2) + 0.05 * ratingScore;
+      const finalScore = 0.9 * Math.pow(similarity, 2) + 0.1 * ratingScore;
       return { ...movie, similarity, finalScore };
     })
     .filter(Boolean)
