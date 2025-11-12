@@ -547,13 +547,14 @@ O modelo contempla todas as entidades do sistema, incluindo:
 
 ---
 
-## 8. Diagrama de Fluxo de Dados (DFD)
+## 8. Arquitetura da Solução
 
 ### Descrição
 
 O Diagrama de Fluxo de Dados (DFD) representa o caminho percorrido pelas
 informações desde sua origem até o destino final, ilustrando os processos
 internos, entidades externas e repositórios de dados envolvidos.
+> Corrigir a descrição vide nova nomeclatura, referência Miltom Pombo da Paz
 
 ### DFD - Nível 0
 
