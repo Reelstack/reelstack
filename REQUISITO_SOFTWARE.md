@@ -5,6 +5,8 @@
 **Data:** 2025-10-13  
 
 ---
+> 
+
 ## Introdução  
 ### Propósito do documento  
 Este documento tem como objetivo definir e consolidar os requisitos do sistema **ReelStack**, servindo como base para as fases de projeto, desenvolvimento, testes e manutenção do software.  
@@ -439,6 +441,9 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **Fonte/autoridade:** Diretriz de usabilidade e feedback visual do sistema.
 - **Impacto:** Em todas as histórias de usuário.
 ---
+
+> Elaborar template de Requisitos Não Funcionais, assim como ás regras de negócio vide tabela do backlog de US
+
 ## Lista de Requisitos Não Funcionais  
 
 ### RNF 001 – Desempenho: Tempo de Resposta ao Swipe
@@ -510,6 +515,8 @@ As seções que receberam suporte automatizado incluem:
 - Revisão técnica e estilística do conteúdo.
   
 **Toda a produção gerada por IA foi revisada criticamente pelos membros do grupo**, que permanecem integralmente responsáveis pela exatidão, completude, clareza e conformidade acadêmica do conteúdo final apresentado.
+
+>Essa seção deveria fazer parte de um documento separado
 
 ---
 <p align="center">  
