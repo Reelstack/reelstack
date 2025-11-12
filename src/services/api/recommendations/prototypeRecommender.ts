@@ -91,9 +91,17 @@ export async function fetchUserMovies(
 }
 
 // logica de recomendação
-export async function recommendMovies(profileId: string, limit = 10) {
-  const likedMovies = await fetchUserMovies(profileId, 'like');
-  const dislikedMovies = await fetchUserMovies(profileId, 'dislike');
+export async function recommendMovies(
+  profileId: string,
+  limit = 10,
+  likedMoviesId?: Movie[],
+  dislikedMoviesId?: Movie[],
+) {
+  // Se recebeu do worker, usa. caso contrario busca do supa
+  const likedMovies =
+    likedMoviesId ?? (await fetchUserMovies(profileId, 'like'));
+  const dislikedMovies =
+    dislikedMoviesId ?? (await fetchUserMovies(profileId, 'dislike'));
 
   if (likedMovies.length === 0 && dislikedMovies.length === 0) {
     console.log('User has no interactions yet.');
@@ -119,6 +127,15 @@ export async function recommendMovies(profileId: string, limit = 10) {
     new Set(allCachedMovies.flatMap(m => m.genres.map(g => g.name))),
   );
 
+  console.log('🔍 likedMovies[0] structure:', {
+    id: likedMovies[0]?.id,
+    hasGenres: !!likedMovies[0]?.genres,
+    genresLength: likedMovies[0]?.genres?.length,
+    genres: likedMovies[0]?.genres,
+    director: likedMovies[0]?.director,
+    actors: likedMovies[0]?.actors,
+    actorsType: typeof likedMovies[0]?.actors,
+  });
   // Precomputa o usuario
   const likedVectors = likedMovies
     .map(m => allVectors.get(m.id))
@@ -127,7 +144,25 @@ export async function recommendMovies(profileId: string, limit = 10) {
   const dislikedVectors = dislikedMovies
     .map(m => allVectors.get(m.id))
     .filter((v): v is number[] => !!v); // determina o peso dos generos baseados em frequencia
-  // usa allMoviesForScoring
+
+  console.log(
+    '📊 likedVectors encontrados:',
+    likedVectors.length,
+    'de',
+    likedMovies.length,
+  );
+  console.log(
+    '📊 dislikedVectors encontrados:',
+    dislikedVectors.length,
+    'de',
+    dislikedMovies.length,
+  );
+  console.log(
+    '📊 Sample likedVector (primeiros 10 valores):',
+    likedVectors[0]?.slice(0, 10),
+  );
+  console.log('📊 Tamanho do vetor:', likedVectors[0]?.length);
+  console.log('📊 Total de gêneros:', allGenres.length);
 
   // frequencia para equalizar generos de alta ocorrência com os de rara ocorrência
   const genreFrequency = allGenres.map(
@@ -136,7 +171,8 @@ export async function recommendMovies(profileId: string, limit = 10) {
       Math.log(
         1 +
           allMoviesForScoring.filter(m => m.genres.some(gg => gg.name === g))
-            .length,
+            .length *
+            0.3,
       ),
   );
 
@@ -155,7 +191,7 @@ export async function recommendMovies(profileId: string, limit = 10) {
 
   // Beta controla a sensibilidade dos dislikes
   // aplica a frequencia de generos nos likes e dislikes
-  const beta = 0.8 - 0.3 * Math.min(1, D / (L + 1)); // o coeficiente diminui quanto mais ratio de like para dislike, até 0.5
+  const beta = 0.8 - 0.3 * Math.min(1, D / (2 * L + 1)); // o coeficiente diminui quanto mais ratio de like para 2x dislike, até 0.5
 
   for (let i = 0; i < allGenres.length; i++) {
     likedProfile[i] *= genreFrequency[i];
@@ -166,6 +202,21 @@ export async function recommendMovies(profileId: string, limit = 10) {
   const userProfile = likedProfile.map(
     (val, i) => wLike * val - beta * wDislike * dislikedProfile[i],
   );
+
+  const relevantIndices = userProfile
+    .map((val, idx) => ({ idx, val: Math.abs(val) }))
+    .filter(item => item.val > 0.005) // Só mantém features com peso > 0.005
+    .map(item => item.idx);
+
+  console.log(
+    `🎯 Features relevantes: ${relevantIndices.length} de ${userProfile.length}`,
+  );
+
+  // Cria versão reduzida do userProfile
+  const compactUserProfile = relevantIndices.map(i => userProfile[i]);
+
+  console.log('📊 L (likes):', L, 'D (dislikes):', D);
+  console.log('📊 wLike:', wLike, 'wDislike:', wDislike, 'beta:', beta);
 
   const interactedIds = new Set([
     ...likedMovies.map(m => m.id),
@@ -178,12 +229,19 @@ export async function recommendMovies(profileId: string, limit = 10) {
     .filter(m => !interactedIds.has(m.id))
     .map(movie => {
       const movieVector = allVectors.get(movie.id);
-      if (!movieVector) return null; // pula se não estiver no cache
-      const similarity = cosineSimilarity(userProfile, movieVector);
-      const ratingScore = movie.average_rating // Puxa do cache
+      if (!movieVector) return null;
+
+      // Cria versão compacta do vetor do filme
+      const compactMovieVector = relevantIndices.map(i => movieVector[i]);
+
+      // Calcula similaridade só nas features relevantes
+      const similarity =
+        cosineSimilarity(compactUserProfile, compactMovieVector) * 1.5; // leve boost na função
+
+      const ratingScore = movie.average_rating
         ? movie.average_rating / 10
-        : 0.5; // aplica os ratings pós similaridade
-      const finalScore = 0.7 * Math.pow(similarity, 1.5) + 0.3 * ratingScore;
+        : 0.5;
+      const finalScore = 0.95 * Math.pow(similarity, 2) + 0.05 * ratingScore;
       return { ...movie, similarity, finalScore };
     })
     .filter(Boolean)

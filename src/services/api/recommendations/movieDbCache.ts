@@ -12,7 +12,7 @@ type Movie = {
 };
 
 // pesos das variaveis
-const weights = { genre: 0.4, director: 0.8, actor: 0.6 };
+const weights = { genre: 8, director: 3, actor: 1.5 };
 
 // organizador dos vetores e separador para evitar nesting
 function buildFeatureLists(movies: Movie[]) {
