@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import TestAuth from './tests/TestAuth';
 import { useEffect, useRef } from 'react';
 import { testUserRecommendations } from './tests/TestAlgoritm';
+import { prepareLocalMovieCache } from './services/api/recommendations/movieLocalStorage';
 
 export default function App() {
   const ranOnce = useRef(false);
@@ -14,8 +15,14 @@ export default function App() {
     if (ranOnce.current) return;
     ranOnce.current = true;
 
-    // your code that should run only once
-    testUserRecommendations();
+    async function prepareAndRun() {
+      console.log('Preparando cache de filmes...');
+      await prepareLocalMovieCache(); // Espera o cache
+      console.log('Cache pronto. Rodando recomendações...');
+      testUserRecommendations(); // 2. Roda o algoritmo em segundo plano
+    }
+
+    prepareAndRun();
   }, []);
   return (
     <>
