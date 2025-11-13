@@ -27,7 +27,7 @@ type Movie = {
 };
 
 // pesos
-const weights = { genre: 8, director: 3, actor: 1.5 };
+const weights = { genre: 10, director: 8, actor: 6 };
 
 // ---------------- IndexedDB ----------------
 async function getDB() {
