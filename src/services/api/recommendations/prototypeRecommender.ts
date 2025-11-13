@@ -262,7 +262,6 @@ export async function recommendMovies(
       const ratingScore = movie.average_rating
         ? movie.average_rating / 10
         : 0.5;
-      // troccar por boostedsimilarity se usar o snippet acima
       const finalScore =
         0.9 * Math.pow(boostedSimilarity, 2) + 0.1 * ratingScore;
       return { ...movie, similarity, finalScore };
