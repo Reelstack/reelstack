@@ -19,7 +19,7 @@ export default function App() {
       console.log('Preparando cache de filmes...');
       await prepareLocalMovieCache(); // Espera o cache
       console.log('Cache pronto. Rodando recomendações...');
-      testUserRecommendations(); // 2. Roda o algoritmo em segundo plano
+      testUserRecommendations(); // roda o algoritmo em segundo plano
     }
 
     prepareAndRun();

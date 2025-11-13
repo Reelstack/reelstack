@@ -237,19 +237,92 @@ export async function recommendMovies(
       // Calcula similaridade só nas features relevantes
       const similarity = Math.min(
         1.0,
-        cosineSimilarity(compactUserProfile, compactMovieVector) * 1.5,
-      ); // leve boost na função
+        cosineSimilarity(compactUserProfile, compactMovieVector),
+      );
+
+      let comboBoost = 1.0;
+
+      // Verifica se compartilha gênero com algum like
+      const sharesGenre = likedMovies.some(liked =>
+        liked.genres.some(lg => movie.genres.some(mg => mg.name === lg.name)),
+      );
+
+      // Verifica se compartilha diretor com algum like
+      const sharesDirector = likedMovies.some(
+        liked =>
+          liked.director && movie.director && liked.director === movie.director,
+      );
+
+      // Aplica boost incremental
+      if (sharesGenre) comboBoost += 0.05; // +5% por gênero compartilhado
+      if (sharesDirector) comboBoost += 0.2; // +20% por diretor compartilhado
+
+      const boostedSimilarity = similarity * comboBoost;
 
       const ratingScore = movie.average_rating
         ? movie.average_rating / 10
         : 0.5;
-      const finalScore = 0.9 * Math.pow(similarity, 2) + 0.1 * ratingScore;
+      // troccar por boostedsimilarity se usar o snippet acima
+      const finalScore =
+        0.9 * Math.pow(boostedSimilarity, 2) + 0.1 * ratingScore;
       return { ...movie, similarity, finalScore };
     })
     .filter(Boolean)
-    .sort((a, b) => (b?.finalScore ?? 0) - (a?.finalScore ?? 0))
-    .slice(0, limit);
-  console.timeEnd('Scoring movies');
+    .sort((a, b) => (b?.finalScore ?? 0) - (a?.finalScore ?? 0));
 
-  return scored;
+  console.log(
+    `🔢 Processando ${scored.length} filmes para diversificação (limit=${limit})`,
+  );
+
+  // Diversificação
+  const diversified = [];
+  const directorCount = new Map<string, number>();
+  const genreCountInResults = new Map<string, number>(); // Conta no resultado final
+  const maxPerGenre = 4; // Máximo de filmes por gênero no top 10
+
+  for (const movie of scored) {
+    if (!movie) continue;
+
+    // Verifica se algum gênero do filme já atingiu o limite
+    let genreLimitReached = false;
+    for (const genre of movie.genres) {
+      const count = genreCountInResults.get(genre.name) || 0;
+      if (count >= maxPerGenre) {
+        genreLimitReached = true;
+        break;
+      }
+    }
+
+    // Pula se algum gênero já está saturado
+    if (genreLimitReached) continue;
+
+    const director = movie.director || 'unknown';
+    const directorOccurrences = directorCount.get(director) || 0;
+
+    // Penaliza só por diretor repetido
+    const directorPenalty = Math.pow(0.85, directorOccurrences); // 15% de penalização por filme repetido
+    const diversifiedScore = movie.finalScore * directorPenalty;
+
+    diversified.push({ ...movie, finalScore: diversifiedScore });
+
+    // Atualiza contadores
+    directorCount.set(director, directorOccurrences + 1);
+    for (const genre of movie.genres) {
+      genreCountInResults.set(
+        genre.name,
+        (genreCountInResults.get(genre.name) || 0) + 1,
+      );
+    }
+
+    // Para quando tiver filmes suficientes
+    if (diversified.length >= limit) break;
+  }
+
+  // Re-ordena com diversificação aplicada
+  const final = diversified
+    .sort((a, b) => b.finalScore - a.finalScore)
+    .slice(0, limit);
+
+  console.timeEnd('Scoring movies');
+  return final;
 }
