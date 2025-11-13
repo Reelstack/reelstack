@@ -277,7 +277,7 @@ export async function recommendMovies(
   const diversified = [];
   const directorCount = new Map<string, number>();
   const genreCountInResults = new Map<string, number>(); // Conta no resultado final
-  const maxPerGenre = 4; // Máximo de filmes por gênero no top 10
+  const maxPerGenre = 4; // Máximo de filmes por gênero nos resultados recomendados
 
   for (const movie of scored) {
     if (!movie) continue;
