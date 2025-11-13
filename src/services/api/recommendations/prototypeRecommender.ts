@@ -295,17 +295,23 @@ export async function recommendMovies(
     // Pula se algum gênero já está saturado
     if (genreLimitReached) continue;
 
-    const director = movie.director || 'unknown';
-    const directorOccurrences = directorCount.get(director) || 0;
-
-    // Penaliza só por diretor repetido
-    const directorPenalty = Math.pow(0.85, directorOccurrences); // 15% de penalização por filme repetido
+    let directorPenalty = 1;
+    if (movie.director) {
+      const director = movie.director;
+      const directorOccurrences = directorCount.get(director) || 0;
+      // Penaliza só por diretor repetido
+      directorPenalty = Math.pow(0.85, directorOccurrences); // 15% de penalização por filme repetido
+    }
     const diversifiedScore = movie.finalScore * directorPenalty;
 
     diversified.push({ ...movie, finalScore: diversifiedScore });
 
     // Atualiza contadores
-    directorCount.set(director, directorOccurrences + 1);
+    if (movie.director) {
+      const director = movie.director;
+      const directorOccurrences = directorCount.get(director) || 0;
+      directorCount.set(director, directorOccurrences + 1);
+    }
     for (const genre of movie.genres) {
       genreCountInResults.set(
         genre.name,
