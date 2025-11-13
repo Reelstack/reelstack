@@ -264,7 +264,7 @@ export async function recommendMovies(
         : 0.5;
       const finalScore =
         0.9 * Math.pow(boostedSimilarity, 2) + 0.1 * ratingScore;
-      return { ...movie, similarity, finalScore };
+      return { ...movie, similarity, boostedSimilarity, finalScore };
     })
     .filter(Boolean)
     .sort((a, b) => (b?.finalScore ?? 0) - (a?.finalScore ?? 0));
