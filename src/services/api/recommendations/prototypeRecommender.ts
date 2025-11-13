@@ -254,8 +254,8 @@ export async function recommendMovies(
       );
 
       // Aplica boost incremental
-      if (sharesGenre) comboBoost += 0.05; // +5% por gênero compartilhado
-      if (sharesDirector) comboBoost += 0.2; // +20% por diretor compartilhado
+      if (sharesGenre) comboBoost += GENRE_COMBO_BOOST; // +5% por gênero compartilhado
+      if (sharesDirector) comboBoost += DIRECTOR_COMBO_BOOST; // +20% por diretor compartilhado
 
       const boostedSimilarity = similarity * comboBoost;
 
