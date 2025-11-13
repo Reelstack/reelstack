@@ -282,18 +282,18 @@ export async function recommendMovies(
   for (const movie of scored) {
     if (!movie) continue;
 
-    // Verifica se algum gênero do filme já atingiu o limite
-    let genreLimitReached = false;
+    // Verifica se adicionar este filme excederia o limite de algum gênero
+    let wouldExceedGenreLimit = false;
     for (const genre of movie.genres) {
       const count = genreCountInResults.get(genre.name) || 0;
-      if (count >= maxPerGenre) {
-        genreLimitReached = true;
+      if (count + 1 > maxPerGenre) {
+        wouldExceedGenreLimit = true;
         break;
       }
     }
 
-    // Pula se algum gênero já está saturado
-    if (genreLimitReached) continue;
+    // Pula se adicionar este filme excederia o limite de algum gênero
+    if (wouldExceedGenreLimit) continue;
 
     let directorPenalty = 1;
     if (movie.director) {
