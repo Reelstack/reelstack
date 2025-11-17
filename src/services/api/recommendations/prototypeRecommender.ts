@@ -193,15 +193,14 @@ export async function recommendMovies(
   // aplica a frequencia de generos nos likes e dislikes
   const beta = 0.8 - 0.3 * Math.min(1, D / (2 * L + 1)); // o coeficiente diminui quanto mais ratio de like para 2x dislike, até 0.5
 
-  for (let i = 0; i < allGenres.length; i++) {
-    likedProfile[i] *= genreFrequency[i];
-    dislikedProfile[i] *= genreFrequency[i];
-  }
-
   // constroi o perfil
   const userProfile = likedProfile.map(
     (val, i) => wLike * val - beta * wDislike * dislikedProfile[i],
   );
+
+  for (let i = 0; i < allGenres.length; i++) {
+    userProfile[i] *= genreFrequency[i];
+  }
 
   const relevantIndices = userProfile
     .map((val, idx) => ({ idx, val: Math.abs(val) }))
@@ -273,13 +272,18 @@ export async function recommendMovies(
     `🔢 Processando ${scored.length} filmes para diversificação (limit=${limit})`,
   );
 
+  const filteredScored = scored.filter(
+    (item): item is NonNullable<typeof item> =>
+      item !== null && item.finalScore > 0.01,
+  );
+
   // Diversificação
   const diversified = [];
   const directorCount = new Map<string, number>();
   const genreCountInResults = new Map<string, number>(); // Conta no resultado final
   const maxPerGenre = 4; // Máximo de filmes por gênero nos resultados recomendados
 
-  for (const movie of scored) {
+  for (const movie of filteredScored) {
     if (!movie) continue;
 
     // Verifica se adicionar este filme excederia o limite de algum gênero
