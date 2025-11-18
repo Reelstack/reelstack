@@ -154,10 +154,15 @@ export class MoviesService {
       }
 
       // Aplicar filtros de título
+      // Melhorar busca para encontrar por primary_title OU original_title
       if (filters.title) {
-        query = query.ilike('primary_title', `%${filters.title}%`);
+        // Busca em ambos os campos usando OR para melhor matching
+        query = query.or(
+          `primary_title.ilike.%${filters.title}%,original_title.ilike.%${filters.title}%`
+        );
       }
-      if (filters.original_title) {
+      if (filters.original_title && !filters.title) {
+        // Se apenas original_title foi fornecido, busca apenas nele
         query = query.ilike('original_title', `%${filters.original_title}%`);
       }
 
