@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './style.module.css';
 import {
   AnimatePresence,
@@ -41,47 +41,59 @@ export function Home() {
   const [isHover, setHover] = useState(false);
   const [isExpanded, setExpanded] = useState(false);
 
-  const swipeThreshold = window.innerWidth * 0.3; // 30% da tela
+  const R = 150;
+  const [halfWidth, setHalfWidth] = useState(window.innerWidth / 2);
+
+  useEffect(() => {
+    const onResize = () => setHalfWidth(window.innerWidth / 2);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // const do clamp
+  const MAX_DRAG = halfWidth * 0.75;
+
+  const swipeThreshold = window.innerWidth * 0.28;
   const movie = movies[index % movies.length];
 
-  // Motion
   const x = useMotionValue(0);
-  const y = useMotionValue(0);
   const rotate = useMotionValue(0);
 
-  // VValores derivados pro full-screen swipe
-  const rotateDerived = useTransform(
-    x,
-    [-window.innerWidth, window.innerWidth],
-    [-25, 25],
-  );
-  const yDerived = useTransform(
-    x,
-    [-window.innerWidth, 0, window.innerWidth],
-    [100, 0, 100],
-  );
+  const rotateDerived = useTransform(x, [-halfWidth, halfWidth], [-15, 15]);
+
+  // equação pro meio circulo y = R * (1 - sqrt(1 - t^2))
+  const yDerived = useTransform(x, (latestX: number) => {
+    const tRaw = latestX / halfWidth;
+    const t = Math.max(-1, Math.min(1, tRaw));
+
+    const inside = Math.max(0, 1 - t * t);
+    const y = R * (1 - Math.sqrt(inside));
+    return y;
+  });
+
+  // clamp pra evitar o buraco de formula
+  const handleDrag = (_: any, info: { offset: { x: number } }) => {
+    const clamped = Math.max(-MAX_DRAG, Math.min(MAX_DRAG, info.offset.x));
+    x.set(clamped);
+  };
 
   const handleDragEnd = (_: any, info: { offset: { x: number } }) => {
     const offsetX = info.offset.x;
+
     if (Math.abs(offsetX) > swipeThreshold) {
       const direction = offsetX > 0 ? 1 : -1;
 
-      // Animação off-screen
-      animate(x, direction * window.innerWidth, { duration: 0.35 });
-      animate(y, 150, { duration: 0.35 }); // curve down
-      animate(rotate, direction * 20, { duration: 0.35 });
+      animate(x, direction * window.innerWidth, { duration: 0.36 });
+      animate(rotate, direction * 20, { duration: 0.36 });
 
       setTimeout(() => {
         x.set(0);
-        y.set(0);
-        rotate.set(-4);
+        rotate.set(0);
         setIndex(prev => prev + 1);
-      }, 350);
+      }, 360);
     } else {
-      // Snap back
-      animate(x, 0, { type: 'spring', stiffness: 300, damping: 20 });
-      animate(y, 0, { type: 'spring', stiffness: 300, damping: 20 });
-      animate(rotate, 0, { type: 'spring', stiffness: 300, damping: 20 });
+      animate(x, 0, { type: 'spring', stiffness: 300, damping: 24 });
+      animate(rotate, 0, { type: 'spring', stiffness: 300, damping: 24 });
     }
   };
 
@@ -107,10 +119,11 @@ export function Home() {
                 key={movie.id}
                 className={styles.poster}
                 drag='x'
+                onDrag={handleDrag}
+                onDragEnd={handleDragEnd}
                 style={{ x, y: yDerived, rotate: rotateDerived }}
                 onMouseEnter={() => setHover(true)}
                 onMouseLeave={() => setHover(false)}
-                onDragEnd={handleDragEnd}
                 initial={{ y: 150, rotate: -4, opacity: 0 }}
                 animate={{ y: 0, rotate: 0, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 120, damping: 18 }}
