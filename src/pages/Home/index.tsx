@@ -38,9 +38,10 @@ const movies = [
 
 export function Home() {
   const [index, setIndex] = useState(0);
+  const [previewIndex, setPreviewIndex] = useState(1);
   const [isHover, setHover] = useState(false);
   const [isExpanded, setExpanded] = useState(false);
-  const [previewIndex, setPreviewIndex] = useState(1); // initially the next movie
+  const [swipeDirection, setSwipeDirection] = useState(1); // 1 = direita, -1 = esquerda
 
   const R = 150;
   const [halfWidth, setHalfWidth] = useState(window.innerWidth / 2);
@@ -57,80 +58,67 @@ export function Home() {
   const movie = movies[index % movies.length];
   const nextMovie = movies[previewIndex % movies.length];
 
-  const x = useMotionValue(0);
-  const rotate = useMotionValue(0);
+  // ----------------------------------MAIN CARD valores do motion---------------------------------------------------
+  const mainX = useMotionValue(0);
+  const mainRotate = useMotionValue(0);
+  const mainRotateDerived = useTransform(
+    mainX,
+    [-halfWidth, halfWidth],
+    [-15, 15],
+  );
+  const mainYDerived = useTransform(mainX, latest => {
+    const t = Math.max(-1, Math.min(1, latest / halfWidth));
+    return R * (1 - Math.sqrt(Math.max(0, 1 - t * t)));
+  });
 
-  // MAIN CARD
-  const yDerived = useTransform(x, latestX => {
+  // --------------------------------------PREVIEW CARD--------------------------------
+  const previewX = useMotionValue(0);
+  const previewY = useMotionValue(R);
+  const previewRotate = useMotionValue(0);
+  const FADE_DELAY = MAX_DRAG * 0.75;
+  const FADE_END = MAX_DRAG;
+
+  const previewYDerived = useTransform(previewX, latestX => {
     const t = Math.max(-1, Math.min(1, latestX / halfWidth));
-    const inside = Math.max(0, 1 - t * t);
-    return R * (1 - Math.sqrt(inside));
+    return R * (1 - Math.sqrt(Math.max(0, 1 - t * t)));
   });
 
-  const rotateDerived = useTransform(x, latestX => {
-    const t = Math.max(-1, Math.min(1, latestX / halfWidth));
-    return t * 15;
-  });
-
-  // PARAMETERS
-  const PREVIEW_START = MAX_DRAG * 0.65; // start moving the preview
-  const FADE_DELAY = MAX_DRAG * 0.77; // start fading later
-  const FADE_END = MAX_DRAG; // fully visible at max drag
-
-  // PREVIEW CARD
-  const previewX = useTransform(x, latestX => {
-    const absX = Math.abs(latestX);
-    const direction = latestX > 0 ? -1 : 1; // enter opposite side
-    const startX = direction * (halfWidth + 200);
-
-    if (absX < PREVIEW_START) return startX;
-
-    // progress along curve
-    const tProgress = (absX - PREVIEW_START) / (MAX_DRAG - PREVIEW_START);
-    const circleT = -latestX / halfWidth;
-    const targetX = circleT * halfWidth;
-
-    return startX + (targetX - startX) * tProgress;
-  });
-
-  const previewY = useTransform(previewX, latestX => {
-    const t = Math.max(-1, Math.min(1, latestX / halfWidth));
-    const inside = Math.max(0, 1 - t * t);
-    return R * (1 - Math.sqrt(inside));
-  });
-
-  const previewRotate = useTransform(previewX, latestX => {
+  const previewRotateDerived = useTransform(previewX, latestX => {
     const t = Math.max(-1, Math.min(1, latestX / halfWidth));
     return t * 15;
   });
 
-  const previewOpacity = useTransform(x, latestX => {
+  const previewOpacity = useTransform(mainX, latestX => {
     const absX = Math.abs(latestX);
-    if (absX < FADE_DELAY) return 0; // wait longer before fade
+    if (absX < FADE_DELAY) return 0;
     if (absX >= FADE_END) return 1;
-
     return (absX - FADE_DELAY) / (FADE_END - FADE_DELAY);
   });
 
-  // clamp suave usando tanh()
   const handleDrag = (_: any, info: { offset: { x: number } }) => {
     const raw = info.offset.x;
     const soft = MAX_DRAG * Math.tanh(raw / MAX_DRAG);
-    x.set(soft);
+    mainX.set(soft);
   };
 
   const handleDragEnd = (_: any, info: { offset: { x: number } }) => {
     const offsetX = info.offset.x;
     const shouldSwipe = Math.abs(offsetX) > swipeThreshold;
-    const direction = offsetX > 0 ? 1 : -1;
-
     if (shouldSwipe) {
-      // 1️⃣ Animate main card offscreen
-      animate(x, direction * window.innerWidth, { duration: 0.36 });
-      animate(rotate, direction * 20, { duration: 0.36 });
+      const direction = offsetX > 0 ? 1 : -1;
+      setSwipeDirection(direction);
 
-      // 2️⃣ Animate preview card to center along curve
-      // previewX/previewY/previewRotate are motion values; we can animate them directly
+      // offscreen do preview card (espelhado do main)
+      previewX.set(direction > 0 ? -halfWidth - 200 : halfWidth + 200);
+      previewY.set(R);
+      previewRotate.set(direction > 0 ? -15 : 15); // tilt espelhado também
+      previewOpacity.set(0);
+
+      // Animate no offscreen
+      animate(mainX, direction * window.innerWidth, { duration: 0.36 });
+      animate(mainRotate, direction * 20, { duration: 0.36 });
+
+      // Animate preview pra centralizar junto com a curva
       animate(previewX, 0, { type: 'spring', stiffness: 150, damping: 20 });
       animate(previewY, 0, { type: 'spring', stiffness: 150, damping: 20 });
       animate(previewRotate, 0, {
@@ -144,25 +132,20 @@ export function Home() {
         damping: 20,
       });
 
-      // 3️⃣ After animation, swap indexes
       setTimeout(() => {
-        // reset main card motion values
-        x.set(0);
-        rotate.set(0);
+        // troca de preview pra main
+        mainX.set(previewX.get());
+        mainRotate.set(previewRotate.get());
 
-        // promote preview to main
         setIndex(prev => prev + 1);
         setPreviewIndex(prev => prev + 1);
-
-        // reset preview offscreen for next movie
-        previewOpacity.set(0);
       }, 360);
     } else {
-      // If not swiped far enough, reset main card as usual
-      animate(x, 0, { type: 'spring', stiffness: 300, damping: 24 });
-      animate(rotate, 0, { type: 'spring', stiffness: 300, damping: 24 });
+      // Reseta a main card
+      animate(mainX, 0, { type: 'spring', stiffness: 300, damping: 24 });
+      animate(mainRotate, 0, { type: 'spring', stiffness: 300, damping: 24 });
 
-      // reset preview offscreen
+      // Reseta o preview
       animate(previewX, previewX.get(), {
         type: 'spring',
         stiffness: 150,
@@ -205,13 +188,14 @@ export function Home() {
           <AnimatePresence>
             {movie && (
               <>
-                {/*                   PREVIEW CARD                      */}
+                {/* PREVIEW CARD */}
                 <motion.div
+                  key={`preview-${nextMovie.id}-${swipeDirection}`} // garante uma nova entrada no swipe
                   className={styles.poster}
                   style={{
                     x: previewX,
-                    y: previewY,
-                    rotate: previewRotate,
+                    y: previewYDerived,
+                    rotate: previewRotateDerived,
                     opacity: previewOpacity,
                     scale: 0.92,
                     position: 'absolute',
@@ -227,17 +211,17 @@ export function Home() {
                   </div>
                 </motion.div>
 
-                {/*                       MAIN CARD                       */}
+                {/* MAIN CARD */}
                 <motion.div
-                  key={movie.id}
+                  key={`main-${movie.id}`}
                   className={styles.poster}
                   drag='x'
                   onDrag={handleDrag}
                   onDragEnd={handleDragEnd}
                   style={{
-                    x,
-                    y: yDerived,
-                    rotate: rotateDerived,
+                    x: mainX,
+                    y: mainYDerived,
+                    rotate: mainRotateDerived,
                     zIndex: 1,
                   }}
                   onMouseEnter={() => setHover(true)}
