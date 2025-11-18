@@ -42,6 +42,7 @@ export function Home() {
   const [isHover, setHover] = useState(false);
   const [isExpanded, setExpanded] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState(1); // 1 = direita, -1 = esquerda
+  const [isSwiping, setIsSwiping] = useState(false);
 
   const R = 150;
   const [halfWidth, setHalfWidth] = useState(window.innerWidth / 2);
@@ -95,6 +96,40 @@ export function Home() {
     return (absX - FADE_DELAY) / (FADE_END - FADE_DELAY);
   });
 
+  // TESTE ----------------
+  // Preview moves along the same curve and tilts dynamically, starts offscreen
+  const edgeOffset = halfWidth * 1.1; // start farther offscreen
+
+  const previewXDrag = useTransform(mainX, latestX => {
+    const direction = latestX > 0 ? 1 : -1; // opposite side
+    const absX = Math.abs(latestX);
+    const curvePit = 50; // the "pit" of the curve before fade
+
+    // start preview far offscreen
+    if (absX < curvePit) return direction * -edgeOffset;
+
+    // move along curve proportionally
+    const progress = Math.min((absX - curvePit) / (halfWidth - curvePit), 1);
+    return direction * (-edgeOffset + progress * edgeOffset * 0.4);
+  });
+
+  const previewYDrag = useTransform(previewXDrag, latestX => {
+    const t = Math.max(-1, Math.min(1, latestX / halfWidth));
+    return R * (1 - Math.sqrt(Math.max(0, 1 - t * t)));
+  });
+
+  const previewRotateDrag = useTransform(previewXDrag, latestX => {
+    const t = Math.max(-1, Math.min(1, latestX / halfWidth));
+    return t * 15;
+  });
+
+  const previewOpacityDrag = useTransform(mainX, latestX => {
+    const curvePit = 50; // fade starts after this
+    const absX = Math.abs(latestX);
+    if (absX < curvePit) return 0;
+    return Math.min((absX - curvePit) / (halfWidth - curvePit), 1);
+  });
+
   const handleDrag = (_: any, info: { offset: { x: number } }) => {
     const raw = info.offset.x;
     const soft = MAX_DRAG * Math.tanh(raw / MAX_DRAG);
@@ -104,21 +139,24 @@ export function Home() {
   const handleDragEnd = (_: any, info: { offset: { x: number } }) => {
     const offsetX = info.offset.x;
     const shouldSwipe = Math.abs(offsetX) > swipeThreshold;
+
     if (shouldSwipe) {
       const direction = offsetX > 0 ? 1 : -1;
       setSwipeDirection(direction);
+      setIsSwiping(true);
 
-      // offscreen do preview card (espelhado do main)
-      previewX.set(direction > 0 ? -halfWidth - 200 : halfWidth + 200);
+      // Preview offscreen opposite to swipe
+      const offscreenX = direction > 0 ? -halfWidth * 1.4 : halfWidth * 1.4;
+      previewX.set(offscreenX);
       previewY.set(R);
-      previewRotate.set(direction > 0 ? -15 : 15); // tilt espelhado também
+      previewRotate.set(direction > 0 ? -15 : 15);
       previewOpacity.set(0);
 
-      // Animate no offscreen
+      // Animate main card out
       animate(mainX, direction * window.innerWidth, { duration: 0.36 });
       animate(mainRotate, direction * 20, { duration: 0.36 });
 
-      // Animate preview pra centralizar junto com a curva
+      // Animate preview to center along curve & tilt
       animate(previewX, 0, { type: 'spring', stiffness: 150, damping: 20 });
       animate(previewY, 0, { type: 'spring', stiffness: 150, damping: 20 });
       animate(previewRotate, 0, {
@@ -130,37 +168,24 @@ export function Home() {
         type: 'spring',
         stiffness: 150,
         damping: 20,
+        onComplete: () => {
+          // Swap cards after preview reaches center
+          setIndex(prev => prev + 1);
+          setPreviewIndex(prev => prev + 1);
+
+          // Reset motion values for next drag
+          mainX.set(0);
+          mainRotate.set(0);
+
+          setIsSwiping(false);
+        },
       });
-
-      setTimeout(() => {
-        // troca de preview pra main
-        mainX.set(previewX.get());
-        mainRotate.set(previewRotate.get());
-
-        setIndex(prev => prev + 1);
-        setPreviewIndex(prev => prev + 1);
-      }, 360);
     } else {
-      // Reseta a main card
+      // Snap back main card
       animate(mainX, 0, { type: 'spring', stiffness: 300, damping: 24 });
       animate(mainRotate, 0, { type: 'spring', stiffness: 300, damping: 24 });
 
-      // Reseta o preview
-      animate(previewX, previewX.get(), {
-        type: 'spring',
-        stiffness: 150,
-        damping: 20,
-      });
-      animate(previewY, previewY.get(), {
-        type: 'spring',
-        stiffness: 150,
-        damping: 20,
-      });
-      animate(previewRotate, previewRotate.get(), {
-        type: 'spring',
-        stiffness: 150,
-        damping: 20,
-      });
+      // Fade out preview
       animate(previewOpacity, 0, {
         type: 'spring',
         stiffness: 150,
@@ -190,13 +215,13 @@ export function Home() {
               <>
                 {/* PREVIEW CARD */}
                 <motion.div
-                  key={`preview-${nextMovie.id}-${swipeDirection}`} // garante uma nova entrada no swipe
+                  key={`preview-${nextMovie.id}-${swipeDirection}`}
                   className={styles.poster}
                   style={{
-                    x: previewX,
-                    y: previewYDerived,
-                    rotate: previewRotateDerived,
-                    opacity: previewOpacity,
+                    x: previewXDrag,
+                    y: previewYDrag,
+                    rotate: previewRotateDrag,
+                    opacity: previewOpacityDrag,
                     scale: 0.92,
                     position: 'absolute',
                     top: 0,
@@ -213,7 +238,9 @@ export function Home() {
 
                 {/* MAIN CARD */}
                 <motion.div
-                  key={`main-${movie.id}`}
+                  key={
+                    isSwiping ? `main-${movie.id}-swiping` : `main-${movie.id}`
+                  }
                   className={styles.poster}
                   drag='x'
                   onDrag={handleDrag}
