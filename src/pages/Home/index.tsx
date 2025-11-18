@@ -41,38 +41,44 @@ export function Home() {
   const [isHover, setHover] = useState(false);
   const [isExpanded, setExpanded] = useState(false);
 
-  const swipeThreshold = 120;
+  const swipeThreshold = window.innerWidth * 0.3; // 30% da tela
   const movie = movies[index % movies.length];
 
-  // Motion values
+  // Motion
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotate = useMotionValue(0);
 
-  // Derived values for real-time drag effect
-  const rotateDerived = useTransform(x, [-300, 300], [-15, 15]);
-  const yDerived = useTransform(x, [-300, 0, 300], [50, 0, 50]);
+  // VValores derivados pro full-screen swipe
+  const rotateDerived = useTransform(
+    x,
+    [-window.innerWidth, window.innerWidth],
+    [-25, 25],
+  );
+  const yDerived = useTransform(
+    x,
+    [-window.innerWidth, 0, window.innerWidth],
+    [100, 0, 100],
+  );
 
   const handleDragEnd = (_: any, info: { offset: { x: number } }) => {
     const offsetX = info.offset.x;
     if (Math.abs(offsetX) > swipeThreshold) {
       const direction = offsetX > 0 ? 1 : -1;
 
-      // Animate from current position to off-screen
-      animate(x, direction * 800, { duration: 0.35 });
+      // Animação off-screen
+      animate(x, direction * window.innerWidth, { duration: 0.35 });
       animate(y, 150, { duration: 0.35 }); // curve down
       animate(rotate, direction * 20, { duration: 0.35 });
 
       setTimeout(() => {
-        // Reset values for next card
         x.set(0);
         y.set(0);
         rotate.set(-4);
-
         setIndex(prev => prev + 1);
       }, 350);
     } else {
-      // Snap back if not enough drag
+      // Snap back
       animate(x, 0, { type: 'spring', stiffness: 300, damping: 20 });
       animate(y, 0, { type: 'spring', stiffness: 300, damping: 20 });
       animate(rotate, 0, { type: 'spring', stiffness: 300, damping: 20 });
@@ -101,7 +107,6 @@ export function Home() {
                 key={movie.id}
                 className={styles.poster}
                 drag='x'
-                dragConstraints={{ left: 0, right: 0 }}
                 style={{ x, y: yDerived, rotate: rotateDerived }}
                 onMouseEnter={() => setHover(true)}
                 onMouseLeave={() => setHover(false)}
