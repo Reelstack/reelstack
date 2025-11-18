@@ -40,6 +40,7 @@ export function Home() {
   const [index, setIndex] = useState(0);
   const [isHover, setHover] = useState(false);
   const [isExpanded, setExpanded] = useState(false);
+  const [previewIndex, setPreviewIndex] = useState(1); // initially the next movie
 
   const R = 150;
   const [halfWidth, setHalfWidth] = useState(window.innerWidth / 2);
@@ -54,74 +55,61 @@ export function Home() {
   const swipeThreshold = window.innerWidth * 0.28;
 
   const movie = movies[index % movies.length];
-  const nextMovie = movies[(index + 1) % movies.length];
+  const nextMovie = movies[previewIndex % movies.length];
 
   const x = useMotionValue(0);
   const rotate = useMotionValue(0);
 
-  const rotateDerived = useTransform(x, [-halfWidth, halfWidth], [-15, 15]);
-
-  // formula de meio circulo
-  const yDerived = useTransform(x, (latestX: number) => {
-    const tRaw = latestX / halfWidth;
-    const t = Math.max(-1, Math.min(1, tRaw));
+  // MAIN CARD
+  const yDerived = useTransform(x, latestX => {
+    const t = Math.max(-1, Math.min(1, latestX / halfWidth));
     const inside = Math.max(0, 1 - t * t);
-    const y = R * (1 - Math.sqrt(inside));
-    return y;
+    return R * (1 - Math.sqrt(inside));
   });
 
-  // threshold pra mostrar preview
-  const PREVIEW_ACTIVATE = MAX_DRAG * 0.18;
-
-  // papo de nerd abaixo
-  // smooth preview X: starts off-screen and slides toward the clamp point as you drag;
-  // we compute a targetClamp (±MAX_DRAG) and then interpolate a softer position so it doesn't jump.
-  const previewX = useTransform(x, latest => {
-    if (latest > PREVIEW_ACTIVATE) {
-      // dragging right -> preview comes from left toward left clamp
-      // map drag range [PREVIEW_ACTIVATE..MAX_DRAG] -> [-MAX_DRAG..(-MAX_DRAG+40)]
-      const t = Math.min(
-        1,
-        (latest - PREVIEW_ACTIVATE) / (MAX_DRAG - PREVIEW_ACTIVATE),
-      );
-      return -MAX_DRAG + t * 40;
-    }
-    if (latest < -PREVIEW_ACTIVATE) {
-      // dragging left -> preview comes from right toward right clamp
-      const t = Math.min(
-        1,
-        (-latest - PREVIEW_ACTIVATE) / (MAX_DRAG - PREVIEW_ACTIVATE),
-      );
-      return MAX_DRAG - t * 40;
-    }
-    return 0;
+  const rotateDerived = useTransform(x, latestX => {
+    const t = Math.max(-1, Math.min(1, latestX / halfWidth));
+    return t * 15;
   });
 
-  // espelha o tilt pra fazer o preview
-  const previewRotate = useTransform(x, v => {
-    // espelha e usa o clamp
-    const norm = Math.max(-1, Math.min(1, v / halfWidth));
-    return -Math.max(-15, Math.min(15, norm * 15));
+  // PARAMETERS
+  const PREVIEW_START = MAX_DRAG * 0.65; // start moving the preview
+  const FADE_DELAY = MAX_DRAG * 0.77; // start fading later
+  const FADE_END = MAX_DRAG; // fully visible at max drag
+
+  // PREVIEW CARD
+  const previewX = useTransform(x, latestX => {
+    const absX = Math.abs(latestX);
+    const direction = latestX > 0 ? -1 : 1; // enter opposite side
+    const startX = direction * (halfWidth + 200);
+
+    if (absX < PREVIEW_START) return startX;
+
+    // progress along curve
+    const tProgress = (absX - PREVIEW_START) / (MAX_DRAG - PREVIEW_START);
+    const circleT = -latestX / halfWidth;
+    const targetX = circleT * halfWidth;
+
+    return startX + (targetX - startX) * tProgress;
   });
 
-  // preview Y copia o espelhamento
-  const previewY = useTransform(x, latest => {
-    // espelho do X
-    const tRaw = -latest / halfWidth;
-    const t = Math.max(-1, Math.min(1, tRaw));
+  const previewY = useTransform(previewX, latestX => {
+    const t = Math.max(-1, Math.min(1, latestX / halfWidth));
     const inside = Math.max(0, 1 - t * t);
-    return R * (1 - Math.sqrt(inside)) + 40;
+    return R * (1 - Math.sqrt(inside));
   });
 
-  // esconde no centro e aparece nas bordas
-  const previewOpacity = useTransform(x, latest => {
-    const abs = Math.abs(latest);
-    if (abs < PREVIEW_ACTIVATE) return 0;
-    // fade in quando aproxima das bordas
-    return Math.min(
-      1,
-      (abs - PREVIEW_ACTIVATE) / (MAX_DRAG - PREVIEW_ACTIVATE),
-    );
+  const previewRotate = useTransform(previewX, latestX => {
+    const t = Math.max(-1, Math.min(1, latestX / halfWidth));
+    return t * 15;
+  });
+
+  const previewOpacity = useTransform(x, latestX => {
+    const absX = Math.abs(latestX);
+    if (absX < FADE_DELAY) return 0; // wait longer before fade
+    if (absX >= FADE_END) return 1;
+
+    return (absX - FADE_DELAY) / (FADE_END - FADE_DELAY);
   });
 
   // clamp suave usando tanh()
@@ -134,23 +122,67 @@ export function Home() {
   const handleDragEnd = (_: any, info: { offset: { x: number } }) => {
     const offsetX = info.offset.x;
     const shouldSwipe = Math.abs(offsetX) > swipeThreshold;
+    const direction = offsetX > 0 ? 1 : -1;
 
     if (shouldSwipe) {
-      const direction = offsetX > 0 ? 1 : -1;
-
-      // animate do cartão principal
+      // 1️⃣ Animate main card offscreen
       animate(x, direction * window.innerWidth, { duration: 0.36 });
       animate(rotate, direction * 20, { duration: 0.36 });
 
-      // testando
+      // 2️⃣ Animate preview card to center along curve
+      // previewX/previewY/previewRotate are motion values; we can animate them directly
+      animate(previewX, 0, { type: 'spring', stiffness: 150, damping: 20 });
+      animate(previewY, 0, { type: 'spring', stiffness: 150, damping: 20 });
+      animate(previewRotate, 0, {
+        type: 'spring',
+        stiffness: 150,
+        damping: 20,
+      });
+      animate(previewOpacity, 1, {
+        type: 'spring',
+        stiffness: 150,
+        damping: 20,
+      });
+
+      // 3️⃣ After animation, swap indexes
       setTimeout(() => {
+        // reset main card motion values
         x.set(0);
         rotate.set(0);
+
+        // promote preview to main
         setIndex(prev => prev + 1);
+        setPreviewIndex(prev => prev + 1);
+
+        // reset preview offscreen for next movie
+        previewOpacity.set(0);
       }, 360);
     } else {
+      // If not swiped far enough, reset main card as usual
       animate(x, 0, { type: 'spring', stiffness: 300, damping: 24 });
       animate(rotate, 0, { type: 'spring', stiffness: 300, damping: 24 });
+
+      // reset preview offscreen
+      animate(previewX, previewX.get(), {
+        type: 'spring',
+        stiffness: 150,
+        damping: 20,
+      });
+      animate(previewY, previewY.get(), {
+        type: 'spring',
+        stiffness: 150,
+        damping: 20,
+      });
+      animate(previewRotate, previewRotate.get(), {
+        type: 'spring',
+        stiffness: 150,
+        damping: 20,
+      });
+      animate(previewOpacity, 0, {
+        type: 'spring',
+        stiffness: 150,
+        damping: 20,
+      });
     }
   };
 
@@ -188,10 +220,6 @@ export function Home() {
                     zIndex: -1,
                     pointerEvents: 'none',
                   }}
-                  initial={{ opacity: 0, y: 100 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ type: 'spring', stiffness: 120, damping: 20 }}
                 >
                   <div className={styles.info}>
                     <h1>{nextMovie.title}</h1>
