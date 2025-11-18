@@ -73,8 +73,12 @@ export function Home() {
 
   // clamp pra evitar o buraco de formula
   const handleDrag = (_: any, info: { offset: { x: number } }) => {
-    const clamped = Math.max(-MAX_DRAG, Math.min(MAX_DRAG, info.offset.x));
-    x.set(clamped);
+    const raw = info.offset.x;
+
+    // soft-clamp usando tanh()
+    const soft = MAX_DRAG * Math.tanh(raw / MAX_DRAG);
+
+    x.set(soft);
   };
 
   const handleDragEnd = (_: any, info: { offset: { x: number } }) => {
