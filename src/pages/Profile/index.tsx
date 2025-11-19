@@ -1,17 +1,45 @@
 import { RouterLink } from '../../components/RouterLink';
 import settings from '../../assets/settings-svgrepo-com.svg';
 import styles from './style.module.css';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ProfileSpace } from '../../components/ProfileSpace';
 import { SettingSpace } from '../../components/SettingSpace';
 
 export function Profile() {
   const [showSettings, setShowSettings] = useState(false);
+  const [showFooter, setShowFooter] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    const handleScroll = () => {
+      // Check if user has reached the bottom of the page
+      const scrollTop = wrapper.scrollTop;
+      const scrollHeight = wrapper.scrollHeight;
+      const clientHeight = wrapper.clientHeight;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+
+      // Show footer only when within 50px of the bottom
+      const isAtBottom = distanceFromBottom <= 50;
+      setShowFooter(isAtBottom);
+    };
+
+    // Check initial position
+    handleScroll();
+
+    wrapper.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      wrapper.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
     <>
       <div className={styles.page}>
-        <div className={styles.wrapper}>
+        <div className={styles.wrapper} ref={wrapperRef}>
           <div className={styles.nav}>
             <RouterLink className={styles.navbar} href='/home/'>
               Home
@@ -27,6 +55,32 @@ export function Profile() {
           {showSettings ? <SettingSpace /> : <ProfileSpace />}
         </div>
       </div>
+      <footer className={`${styles.footer} ${showFooter ? styles.footerVisible : styles.footerHidden}`}>
+        <div className={styles.footerContent}>
+          <div className={styles.footerBrand}>
+            <h2 className={styles.footerTitle}>ReelStack</h2>
+            <p className={styles.footerTagline}>
+              Discover your next favorite film
+            </p>
+          </div>
+          <div className={styles.footerInfo}>
+            <p className={styles.footerText}>
+              Movie data powered by{' '}
+              <a
+                href="https://www.themoviedb.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.footerLink}
+              >
+                TMDB
+              </a>
+            </p>
+            <p className={styles.footerCopyright}>
+              © {new Date().getFullYear()} ReelStack. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </>
   );
 }

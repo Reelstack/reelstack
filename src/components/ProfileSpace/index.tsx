@@ -29,7 +29,7 @@ export function ProfileSpace() {
     <div className={styles.profileSpace}>
       <div className={styles.userSpace}>
         <div className={styles.userInfo}>
-          <h1 style={{ textAlign: 'center' }}>{displayName || 'nome ipsum'}</h1>
+          <h1>{displayName || 'nome ipsum'}</h1>
           <h3>{email || 'email ipsum dolor si amet'}</h3>
         </div>
         {/* componentizar no futuro*/}
@@ -69,8 +69,6 @@ export function ProfileSpace() {
         color='var(--error)'
         interactionType='dislike'
       />
-
-      <div className={styles.footer}>teste 4</div>
     </div>
   );
 }
