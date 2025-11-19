@@ -1,0 +1,238 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 5rem;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.modal {
+    background: var(--blue-standard);
+    border-radius: 1.2rem;
+    width: 90%;
+    max-width: 60rem;
+    max-height: 80vh;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    border-bottom: 1px solid var(--blue-light);
+}
+
+.header h2 {
+    color: var(--text-default);
+    font-size: 2rem;
+    margin: 0;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: var(--text-default);
+    font-size: 3rem;
+    cursor: pointer;
+    padding: 0;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.closeButton:hover {
+    background: var(--blue-light);
+}
+
+.searchContainer {
+    padding: 2rem;
+    border-bottom: 1px solid var(--blue-light);
+}
+
+.searchInput {
+    width: 100%;
+    padding: 1.2rem 1.5rem;
+    font-size: 1.6rem;
+    background: var(--blue-light);
+    border: 2px solid transparent;
+    border-radius: 0.8rem;
+    color: var(--text-default);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+    border-color: var(--contrast);
+}
+
+.searchInput:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.searchInput::placeholder {
+    color: var(--text-muted);
+}
+
+.loadingIndicator {
+    margin-top: 1rem;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+}
+
+.resultsContainer {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    min-height: 20rem;
+}
+
+.error {
+    padding: 1.5rem;
+    background: rgba(226, 15, 15, 0.1);
+    border: 1px solid var(--error);
+    border-radius: 0.8rem;
+    color: var(--error);
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.empty {
+    padding: 3rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.resultsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.resultItem {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    background: var(--blue-light);
+    border-radius: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    border: 2px solid transparent;
+}
+
+.resultItem:hover,
+.resultItem.selected {
+    background: var(--contrast);
+    transform: translateX(0.3rem);
+    border-color: var(--contrast);
+}
+
+.resultItem.selected .movieTitle,
+.resultItem.selected .originalTitle {
+    color: var(--blue-standard);
+}
+
+.resultItem.selected .metaItem {
+    background: rgba(38, 35, 53, 0.3);
+    color: var(--blue-standard);
+}
+
+.resultItem:active {
+    transform: translateX(0.1rem);
+}
+
+.resultContent {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.movieInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.movieTitle {
+    color: var(--text-default);
+    font-size: 1.8rem;
+    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+}
+
+.resultItem:hover .movieTitle {
+    color: var(--blue-standard);
+}
+
+.originalTitle {
+    color: var(--text-muted);
+    font-size: 1.4rem;
+    margin: 0 0 0.8rem 0;
+    font-style: italic;
+}
+
+.resultItem:hover .originalTitle {
+    color: var(--blue-standard);
+    opacity: 0.8;
+}
+
+.movieMeta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.metaItem {
+    color: var(--text-muted);
+    font-size: 1.3rem;
+    padding: 0.3rem 0.8rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0.4rem;
+}
+
+.resultItem:hover .metaItem {
+    background: rgba(38, 35, 53, 0.3);
+    color: var(--blue-standard);
+}
+
+.moviePoster {
+    width: 6rem;
+    height: 9rem;
+    object-fit: cover;
+    border-radius: 0.6rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.resultsContainer::-webkit-scrollbar {
+    width: 0.8rem;
+}
+
+.resultsContainer::-webkit-scrollbar-track {
+    background: var(--blue-light);
+    border-radius: 0.4rem;
+}
+
+.resultsContainer::-webkit-scrollbar-thumb {
+    background: var(--contrast);
+    border-radius: 0.4rem;
+}
+
+.resultsContainer::-webkit-scrollbar-thumb:hover {
+    background: var(--warning);
+}
