@@ -59,139 +59,174 @@ export function Home() {
   const movie = movies[index % movies.length];
   const nextMovie = movies[previewIndex % movies.length];
 
-  // ----------------------------------MAIN CARD valores do motion---------------------------------------------------
+  // smoothing helper usado pros transforms (sine easing -> macio nos cantos)
+  const smoothT = (x: number, hw: number) => {
+    const t = Math.max(-1, Math.min(1, x / hw));
+    return Math.sin(t * (Math.PI / 2)); // maps [-1,1] -> [-1,1] cantos macios
+  };
+
+  // valores motion do MAIN CARD
   const mainX = useMotionValue(0);
-  const mainRotate = useMotionValue(0);
   const mainRotateDerived = useTransform(
     mainX,
     [-halfWidth, halfWidth],
     [-15, 15],
   );
   const mainYDerived = useTransform(mainX, latest => {
-    const t = Math.max(-1, Math.min(1, latest / halfWidth));
+    const t = smoothT(latest, halfWidth);
+    // curva em formato de circulo com smoothTranform pra evitar bater na borda
     return R * (1 - Math.sqrt(Math.max(0, 1 - t * t)));
   });
 
-  // --------------------------------------PREVIEW CARD--------------------------------
+  // PREVIEW: opacidade animada baseada no X do preview
   const previewX = useMotionValue(0);
-  const previewY = useMotionValue(R);
-  const previewRotate = useMotionValue(0);
-  const FADE_DELAY = MAX_DRAG * 0.75;
-  const FADE_END = MAX_DRAG;
+  const previewOpacity = useMotionValue(0);
 
+  // PREVIEW: derivada do Y baseada no X do preview pra fazer o efeito de reel
   const previewYDerived = useTransform(previewX, latestX => {
-    const t = Math.max(-1, Math.min(1, latestX / halfWidth));
+    const t = smoothT(latestX, halfWidth);
     return R * (1 - Math.sqrt(Math.max(0, 1 - t * t)));
   });
-
   const previewRotateDerived = useTransform(previewX, latestX => {
-    const t = Math.max(-1, Math.min(1, latestX / halfWidth));
+    const t = smoothT(latestX, halfWidth);
     return t * 15;
   });
 
-  const previewOpacity = useTransform(mainX, latestX => {
-    const absX = Math.abs(latestX);
-    if (absX < FADE_DELAY) return 0;
-    if (absX >= FADE_END) return 1;
-    return (absX - FADE_DELAY) / (FADE_END - FADE_DELAY);
-  });
+  // PREVIEW:  manter o mesmo tamanho do cartão e animação suave ao entrar
+  const previewScale = useTransform(
+    previewX,
+    [-halfWidth, 0, halfWidth],
+    [0.96, 1, 0.96],
+  );
 
-  // TESTE ----------------
-  // Preview moves along the same curve and tilts dynamically, starts offscreen
-  const edgeOffset = halfWidth * 1.1; // start farther offscreen
-
+  // comportamento da derivada do drag
+  const edgeOffset = halfWidth * 1.1;
   const previewXDrag = useTransform(mainX, latestX => {
-    const direction = latestX > 0 ? 1 : -1; // opposite side
+    const direction = latestX >= 0 ? 1 : -1;
     const absX = Math.abs(latestX);
-    const curvePit = 50; // the "pit" of the curve before fade
-
-    // start preview far offscreen
+    const curvePit = 80; // demora do fade pra evitar aparecer no "bump" da curva
     if (absX < curvePit) return direction * -edgeOffset;
-
-    // move along curve proportionally
     const progress = Math.min((absX - curvePit) / (halfWidth - curvePit), 1);
-    return direction * (-edgeOffset + progress * edgeOffset * 0.4);
+    // interpolação de progresso pro preview entrar na curva
+    const eased = Math.sin(progress * (Math.PI / 2));
+    return direction * (-edgeOffset + eased * edgeOffset * 0.45);
   });
 
-  const previewYDrag = useTransform(previewXDrag, latestX => {
-    const t = Math.max(-1, Math.min(1, latestX / halfWidth));
-    return R * (1 - Math.sqrt(Math.max(0, 1 - t * t)));
-  });
-
-  const previewRotateDrag = useTransform(previewXDrag, latestX => {
-    const t = Math.max(-1, Math.min(1, latestX / halfWidth));
-    return t * 15;
-  });
-
+  // cont pra segurar o fade pra n passar no "bump"
   const previewOpacityDrag = useTransform(mainX, latestX => {
-    const curvePit = 50; // fade starts after this
     const absX = Math.abs(latestX);
-    if (absX < curvePit) return 0;
-    return Math.min((absX - curvePit) / (halfWidth - curvePit), 1);
+    const fadeStart = Math.max(80, halfWidth * 0.14); // delay pra telas maiores
+    const fadeEnd = halfWidth * 0.6;
+    if (absX < fadeStart) return 0;
+    if (absX >= fadeEnd) return 1;
+    return (absX - fadeStart) / (fadeEnd - fadeStart);
   });
+
+  // progresso crossfade pra misturar animação preview com changing
+  const contentSwapProgress = useMotionValue(0);
+  const mainInnerOpacity = useTransform(contentSwapProgress, v => 1 - v);
+
+  // Set sincronizado ajuda a evitar problemas
+  useEffect(() => {
+    // inicia offscreen
+    previewX.set(-edgeOffset);
+    previewOpacity.set(0);
+
+    const unsub = mainX.on('change', () => {
+      // enquanto o usuario estiver no drag, mantém seguino o X
+      previewX.set(previewXDrag.get());
+      previewOpacity.set(previewOpacityDrag.get());
+    });
+
+    return () => unsub();
+  }, [
+    mainX,
+    previewX,
+    previewOpacity,
+    previewXDrag,
+    previewOpacityDrag,
+    edgeOffset,
+  ]);
 
   const handleDrag = (_: any, info: { offset: { x: number } }) => {
+    if (isSwiping) return; // ignora inputs enquanto trocando cards
     const raw = info.offset.x;
     const soft = MAX_DRAG * Math.tanh(raw / MAX_DRAG);
     mainX.set(soft);
   };
 
   const handleDragEnd = (_: any, info: { offset: { x: number } }) => {
+    if (isSwiping) return;
     const offsetX = info.offset.x;
     const shouldSwipe = Math.abs(offsetX) > swipeThreshold;
 
-    if (shouldSwipe) {
-      const direction = offsetX > 0 ? 1 : -1;
-      setSwipeDirection(direction);
-      setIsSwiping(true);
-
-      // Preview offscreen opposite to swipe
-      const offscreenX = direction > 0 ? -halfWidth * 1.4 : halfWidth * 1.4;
-      previewX.set(offscreenX);
-      previewY.set(R);
-      previewRotate.set(direction > 0 ? -15 : 15);
-      previewOpacity.set(0);
-
-      // Animate main card out
-      animate(mainX, direction * window.innerWidth, { duration: 0.36 });
-      animate(mainRotate, direction * 20, { duration: 0.36 });
-
-      // Animate preview to center along curve & tilt
-      animate(previewX, 0, { type: 'spring', stiffness: 150, damping: 20 });
-      animate(previewY, 0, { type: 'spring', stiffness: 150, damping: 20 });
-      animate(previewRotate, 0, {
-        type: 'spring',
-        stiffness: 150,
-        damping: 20,
-      });
-      animate(previewOpacity, 1, {
-        type: 'spring',
-        stiffness: 150,
-        damping: 20,
-        onComplete: () => {
-          // Swap cards after preview reaches center
-          setIndex(prev => prev + 1);
-          setPreviewIndex(prev => prev + 1);
-
-          // Reset motion values for next drag
-          mainX.set(0);
-          mainRotate.set(0);
-
-          setIsSwiping(false);
-        },
-      });
-    } else {
-      // Snap back main card
+    if (!shouldSwipe) {
+      // snap back do main card e um fade out do preview
       animate(mainX, 0, { type: 'spring', stiffness: 300, damping: 24 });
-      animate(mainRotate, 0, { type: 'spring', stiffness: 300, damping: 24 });
-
-      // Fade out preview
       animate(previewOpacity, 0, {
         type: 'spring',
         stiffness: 150,
         damping: 20,
       });
+      return;
     }
+
+    // animação de changing pra ir de preview pra main card
+    const direction = offsetX > 0 ? 1 : -1;
+    setSwipeDirection(direction);
+    setIsSwiping(true);
+
+    // stabilizador pra evitar valores estranhos
+    mainX.set(mainX.get());
+    previewX.set(previewX.get());
+    previewOpacity.set(previewOpacity.get());
+    contentSwapProgress.set(0);
+
+    // dicas pegas da internet
+    // DON'T jump previewX to a fixed offscreen start. Instead, continue from its current value
+    // (which is being driven by previewXDrag), then animate it to center. This yields a seamless flow.
+
+    // animação de saida do main card
+    animate(mainX, direction * window.innerWidth, { duration: 0.36 });
+
+    // animação do preview pra entrar na curva e fazer o crossfade
+    animate(previewX, 0, {
+      type: 'spring',
+      stiffness: 150,
+      damping: 20,
+      onComplete: () => {
+        // crossfade dos conteúdos
+        animate(contentSwapProgress, 1, {
+          duration: 0.14,
+          onComplete: () => {
+            // fade rápido do preview pra evitar bugs de entrada
+            animate(previewOpacity, 0, {
+              duration: 0.12,
+              onComplete: () => {
+                // reseta o mainX pro prox card
+                mainX.set(0);
+
+                // reseta o preview offscreeen pro prox Card
+                previewX.set(-edgeOffset);
+                previewOpacity.set(0);
+
+                // atualização dos indices(MUDAR PRO ALGORITMO QUANDO POSSIVEL)
+                setIndex(prev => prev + 1);
+                setPreviewIndex(prev => prev + 1);
+
+                // reseta o progresso do crossfade
+                contentSwapProgress.set(0);
+
+                setIsSwiping(false);
+              },
+            });
+          },
+        });
+      },
+    });
+
+    // fade do preview quanto mais se aproxima do centro
+    animate(previewOpacity, 1, { type: 'spring', stiffness: 150, damping: 18 });
   };
 
   return (
@@ -213,34 +248,27 @@ export function Home() {
           <AnimatePresence>
             {movie && (
               <>
-                {/* PREVIEW CARD */}
+                {/*-------------------------------------------- PREVIEW --------------------------------------------------- */}
                 <motion.div
                   key={`preview-${nextMovie.id}-${swipeDirection}`}
                   className={styles.poster}
                   style={{
-                    x: previewXDrag,
-                    y: previewYDrag,
-                    rotate: previewRotateDrag,
-                    opacity: previewOpacityDrag,
-                    scale: 0.92,
+                    x: previewX,
+                    y: previewYDerived,
+                    rotate: previewRotateDerived,
+                    opacity: previewOpacity,
+                    scale: previewScale, // combina os tamanhos com MAIN
                     position: 'absolute',
                     top: 0,
                     left: 0,
-                    zIndex: -1,
+                    zIndex: 3, // acima do main quando aproximado
                     pointerEvents: 'none',
                   }}
-                >
-                  <div className={styles.info}>
-                    <h1>{nextMovie.title}</h1>
-                    <h2>{nextMovie.genres}</h2>
-                  </div>
-                </motion.div>
+                />
 
-                {/* MAIN CARD */}
+                {/*-------------------------------------------- MAIN ---------------------------------------------*/}
                 <motion.div
-                  key={
-                    isSwiping ? `main-${movie.id}-swiping` : `main-${movie.id}`
-                  }
+                  key={'main-card'}
                   className={styles.poster}
                   drag='x'
                   onDrag={handleDrag}
@@ -250,27 +278,25 @@ export function Home() {
                     y: mainYDerived,
                     rotate: mainRotateDerived,
                     zIndex: 1,
+                    pointerEvents: isSwiping ? 'none' : 'auto',
                   }}
-                  onMouseEnter={() => setHover(true)}
+                  onMouseEnter={() => !isSwiping && setHover(true)}
                   onMouseLeave={() => setHover(false)}
                   initial={{ y: 150, rotate: -4, opacity: 0 }}
                   animate={{ y: 0, rotate: 0, opacity: 1 }}
                   transition={{ type: 'spring', stiffness: 120, damping: 18 }}
                 >
-                  <AnimatePresence>
-                    {isHover && (
-                      <motion.div
-                        key='info'
-                        initial={{ opacity: 0, y: 200 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 200 }}
-                        transition={{ duration: 0.45, ease: 'easeInOut' }}
-                      >
-                        <div className={styles.info}>
-                          <div style={{ textAlign: 'center' }}>
-                            <h1>{movie.title}</h1>
-                            <h2>{movie.genres}</h2>
-                          </div>
+                  {/* conteudo faz um crossfade co mo preview via contentSwapProgress*/}
+                  <div className={styles.info}>
+                    <motion.div style={{ opacity: mainInnerOpacity }}>
+                      <div style={{ textAlign: 'center' }}>
+                        <h1>{movie.title}</h1>
+                        <h2>{movie.genres}</h2>
+                      </div>
+
+                      {/* mostra  ainfo extra no hover */}
+                      {isHover && (
+                        <>
                           <h2>Director: {movie.director}</h2>
                           <h3>Main Cast: {movie.cast}</h3>
 
@@ -325,10 +351,10 @@ export function Home() {
                               />
                             </AnimatePresence>
                           </a>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                        </>
+                      )}
+                    </motion.div>
+                  </div>
                 </motion.div>
               </>
             )}
