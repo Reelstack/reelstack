@@ -54,7 +54,7 @@
 .arrow {
   height: 2rem;
   display: inline-block;
-  flex-shrink: 0; /* don't let flex collapse it */
+  flex-shrink: 0;
   background-image: url('../../assets/arrow-right-circle.svg');
   background-size: contain;
   background-repeat: no-repeat;
@@ -74,30 +74,46 @@
 }
 
 .wrapper {
+  position: relative;
   display: inline-block;
-  filter: drop-shadow(0.2rem 0.2rem 2rem var(--blue-standard));
+  /* consertar dimensões caso posteres tenham limites */
+  width: 55rem;
+  height: 80rem;
+  /* filter: drop-shadow(0.2rem 0.2rem 2rem var(--blue-standard)); */
 }
 
 .poster {
   display: flex;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
   --height: 100rem;
   margin: 0 auto;
-  width: 55rem;
-  height: 80rem;
+  width: 100%;
+  height: 100%;
   background-image: var(--poster-image, url('/goncha.jpg'));
-  background-size: cover; /* covers beyond original poster, change if posters are not standardized */
+  background-size: cover; /* cobre além do poster, muda se nã oestiver padrão */
   background-repeat: no-repeat;
   background-position: center;
   filter: brightness(90%);
   clip-path: inset(0 round 5rem);
   overflow: hidden;
+
+  /* redução de flicker */
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  transform-style: preserve-3d;
+
+  box-shadow: 0 0.8rem 2.6rem rgba(0, 60, 120, 0.18);
 }
 
-/* possibly add a button to extend component */
 .info {
   display: flex;
   flex-direction: column;
@@ -111,6 +127,8 @@
   color: var(--text-default);
   box-shadow: 0 -0.8rem 3rem var(--blue-standard);
   filter: none;
+  /* garante que o conteudo n vai dar trigger de layout */
+  will-change: opacity;
 }
 
 .seeMore {
@@ -121,7 +139,11 @@
   width: fit-content;
   align-items: center;
   cursor: pointer;
-  transition: all 0.5s ease-in-out;
+  /* restringe o que vai mudar */
+  transition:
+    border-bottom 0.2s ease,
+    filter 0.2s ease,
+    opacity 0.2s ease;
   gap: 0.5rem;
 }
 

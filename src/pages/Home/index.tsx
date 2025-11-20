@@ -126,14 +126,18 @@ export function Home() {
   const contentSwapProgress = useMotionValue(0);
   const mainInnerOpacity = useTransform(contentSwapProgress, v => 1 - v);
 
+  // opacidade da faux card
+  const fauxOpacity = useMotionValue(0);
+
   // Set sincronizado ajuda a evitar problemas
   useEffect(() => {
     // inicia offscreen
     previewX.set(-edgeOffset);
     previewOpacity.set(0);
+    fauxOpacity.set(0);
 
     const unsub = mainX.on('change', () => {
-      // enquanto o usuario estiver no drag, mantém seguino o X
+      // enquanto o usuario estiver no drag, mantém siguiendo o X
       previewX.set(previewXDrag.get());
       previewOpacity.set(previewOpacityDrag.get());
     });
@@ -182,10 +186,6 @@ export function Home() {
     previewOpacity.set(previewOpacity.get());
     contentSwapProgress.set(0);
 
-    // dicas pegas da internet
-    // DON'T jump previewX to a fixed offscreen start. Instead, continue from its current value
-    // (which is being driven by previewXDrag), then animate it to center. This yields a seamless flow.
-
     // animação de saida do main card
     animate(mainX, direction * window.innerWidth, { duration: 0.36 });
 
@@ -199,25 +199,34 @@ export function Home() {
         animate(contentSwapProgress, 1, {
           duration: 0.14,
           onComplete: () => {
-            // fade rápido do preview pra evitar bugs de entrada
+            // --- FAUX CARD (existe até o flicker ocorrer, depois some) ---
+            fauxOpacity.set(1); // mostra de imediato
+
+            // fade preview rapido pro faux ser o unico
             animate(previewOpacity, 0, {
               duration: 0.12,
               onComplete: () => {
-                // reseta o mainX pro prox card
-                mainX.set(0);
+                // DOM swap enquanto tiver o faux
+                requestAnimationFrame(() => {
+                  setTimeout(() => {
+                    // atualiza os indices enquanto o faux existir
+                    setIndex(prev => prev + 1);
+                    setPreviewIndex(prev => prev + 1);
 
-                // reseta o preview offscreeen pro prox Card
-                previewX.set(-edgeOffset);
-                previewOpacity.set(0);
+                    // reseta o crossfade e mainX pro inicio
+                    contentSwapProgress.set(0);
+                    mainX.set(0);
 
-                // atualização dos indices(MUDAR PRO ALGORITMO QUANDO POSSIVEL)
-                setIndex(prev => prev + 1);
-                setPreviewIndex(prev => prev + 1);
+                    // esconde o faux
+                    fauxOpacity.set(0);
 
-                // reseta o progresso do crossfade
-                contentSwapProgress.set(0);
+                    // preview reset pronto
+                    previewX.set(-edgeOffset);
+                    previewOpacity.set(0);
 
-                setIsSwiping(false);
+                    setIsSwiping(false);
+                  }, 0);
+                });
               },
             });
           },
@@ -244,7 +253,10 @@ export function Home() {
       </div>
 
       <div className={styles.page}>
-        <div className={styles.wrapper}>
+        <div
+          className={styles.wrapper}
+          style={{ position: 'relative', width: '55rem', height: '80rem' }}
+        >
           <AnimatePresence>
             {movie && (
               <>
@@ -261,8 +273,28 @@ export function Home() {
                     position: 'absolute',
                     top: 0,
                     left: 0,
-                    zIndex: 3, // acima do main quando aproximado
+                    zIndex: 60, // preview acima do main enquanto tiver chegando
                     pointerEvents: 'none',
+                    willChange: 'transform, opacity',
+                  }}
+                />
+
+                {/*-------------------------------------------- FAUX (cortina até as coisas ficarem boas) ------------------------------*/}
+                <motion.div
+                  key={`faux-${nextMovie.id}`}
+                  className={styles.poster}
+                  style={{
+                    x: 0,
+                    y: 0,
+                    rotate: 0,
+                    opacity: fauxOpacity,
+                    scale: 1,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 50, // atrás do main e preview
+                    pointerEvents: 'none',
+                    willChange: 'opacity',
                   }}
                 />
 
@@ -277,8 +309,13 @@ export function Home() {
                     x: mainX,
                     y: mainYDerived,
                     rotate: mainRotateDerived,
-                    zIndex: 1,
+                    zIndex: 70,
                     pointerEvents: isSwiping ? 'none' : 'auto',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    willChange: 'transform, opacity',
+                    backfaceVisibility: 'hidden',
                   }}
                   onMouseEnter={() => !isSwiping && setHover(true)}
                   onMouseLeave={() => setHover(false)}
@@ -294,7 +331,7 @@ export function Home() {
                         <h2>{movie.genres}</h2>
                       </div>
 
-                      {/* mostra  ainfo extra no hover */}
+                      {/* mostra  a info extra no hover */}
                       {isHover && (
                         <>
                           <h2>Director: {movie.director}</h2>
