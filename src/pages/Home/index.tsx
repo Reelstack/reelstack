@@ -7,8 +7,8 @@ import {
   useTransform,
   animate,
 } from 'motion/react';
-import expand from '../../assets/arrow-increase.svg';
-import shrink from '../../assets/arrow-decrease.svg';
+// import expand from '../../assets/arrow-increase.svg';
+// import shrink from '../../assets/arrow-decrease.svg';
 import filter from '../../assets/filter.svg';
 import { RouterLink } from '../../components/RouterLink';
 
@@ -40,7 +40,7 @@ export function Home() {
   const [index, setIndex] = useState(0);
   const [previewIndex, setPreviewIndex] = useState(1);
   const [isHover, setHover] = useState(false);
-  const [isExpanded, setExpanded] = useState(false);
+  // const [isExpanded, setExpanded] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState(1); // 1 = direita, -1 = esquerda
   const [isSwiping, setIsSwiping] = useState(false);
 
@@ -337,7 +337,7 @@ export function Home() {
                           <h2>Director: {movie.director}</h2>
                           <h3>Main Cast: {movie.cast}</h3>
 
-                          <motion.div layout>
+                          {/* <motion.div layout>
                             <AnimatePresence>
                               {isExpanded && (
                                 <motion.p
@@ -355,9 +355,9 @@ export function Home() {
                                 </motion.p>
                               )}
                             </AnimatePresence>
-                          </motion.div>
+                          </motion.div> */}
 
-                          <a
+                          {/* <a
                             onClick={() => setExpanded(!isExpanded)}
                             className={styles.seeMore}
                           >
@@ -387,7 +387,7 @@ export function Home() {
                                 }
                               />
                             </AnimatePresence>
-                          </a>
+                          </a> */}
                         </>
                       )}
                     </motion.div>
