@@ -323,6 +323,7 @@ export function Home() {
                   transition={{ type: 'spring', stiffness: 120, damping: 18 }}
                 >
                   <motion.div
+                    key={movie.id}
                     className={styles.infoPanel}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -346,8 +347,10 @@ export function Home() {
                       {/* INFO EXTRA - HOVER */}
                       <motion.div
                         className={styles.extraInfo}
+                        initial={{ opacity: 0, height: 0 }}
                         animate={{
                           opacity: isHover ? 1 : 0,
+                          height: isHover ? 'auto' : 0,
                         }}
                         transition={{ duration: 0.2 }}
                       >
