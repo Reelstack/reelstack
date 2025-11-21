@@ -114,21 +114,33 @@
   box-shadow: 0 0.8rem 2.6rem rgba(0, 60, 120, 0.18);
 }
 
-.info {
+.infoPanel {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  margin-bottom: 0;
-  height: auto;
-  width: auto;
-  gap: 0.5rem;
-  padding: 2rem 4rem;
+  width: 100%;
   background-color: var(--blue-standard);
+  padding: 2rem 4rem;
   color: var(--text-default);
   box-shadow: 0 -0.8rem 3rem var(--blue-standard);
-  filter: none;
-  /* garante que o conteudo n vai dar trigger de layout */
-  will-change: opacity;
+}
+
+.infoInner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.basicInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.extraInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  pointer-events: none;
 }
 
 .seeMore {

@@ -124,7 +124,6 @@ export function Home() {
 
   // progresso crossfade pra misturar animação preview com changing
   const contentSwapProgress = useMotionValue(0);
-  const mainInnerOpacity = useTransform(contentSwapProgress, v => 1 - v);
 
   // opacidade da faux card
   const fauxOpacity = useMotionValue(0);
@@ -323,75 +322,40 @@ export function Home() {
                   animate={{ y: 0, rotate: 0, opacity: 1 }}
                   transition={{ type: 'spring', stiffness: 120, damping: 18 }}
                 >
-                  {/* conteudo faz um crossfade co mo preview via contentSwapProgress*/}
-                  <div className={styles.info}>
-                    <motion.div style={{ opacity: mainInnerOpacity }}>
-                      <div style={{ textAlign: 'center' }}>
+                  <motion.div
+                    className={styles.infoPanel}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    {/* INNER WRAPPER EXPANDE NO HOVER */}
+                    <motion.div
+                      className={styles.infoInner}
+                      animate={{
+                        height: isHover ? 'auto' : '8rem',
+                      }}
+                      transition={{ duration: 0.25, ease: 'easeOut' }}
+                      style={{ overflow: 'hidden' }}
+                    >
+                      {/* INFORMAÇÃO 100% VISIVEL */}
+                      <div className={styles.basicInfo}>
                         <h1>{movie.title}</h1>
                         <h2>{movie.genres}</h2>
                       </div>
 
-                      {/* mostra  a info extra no hover */}
-                      {isHover && (
-                        <>
-                          <h2>Director: {movie.director}</h2>
-                          <h3>Main Cast: {movie.cast}</h3>
-
-                          {/* <motion.div layout>
-                            <AnimatePresence>
-                              {isExpanded && (
-                                <motion.p
-                                  key='synopsis'
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: 'auto', opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  transition={{
-                                    duration: 0.4,
-                                    ease: 'easeInOut',
-                                  }}
-                                  style={{ overflow: 'hidden' }}
-                                >
-                                  Placeholder synopsis for animation testing.
-                                </motion.p>
-                              )}
-                            </AnimatePresence>
-                          </motion.div> */}
-
-                          {/* <a
-                            onClick={() => setExpanded(!isExpanded)}
-                            className={styles.seeMore}
-                          >
-                            <AnimatePresence>
-                              <motion.p
-                                key={isExpanded ? 'hide' : 'see'}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                {isExpanded ? 'hide synopsis' : 'see synopsis'}
-                              </motion.p>
-                            </AnimatePresence>
-
-                            <AnimatePresence>
-                              <motion.img
-                                key={isExpanded ? 'shrink' : 'expand'}
-                                className={styles.expand}
-                                src={isExpanded ? shrink : expand}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                                alt={
-                                  isExpanded ? 'hide synopsis' : 'show synopsis'
-                                }
-                              />
-                            </AnimatePresence>
-                          </a> */}
-                        </>
-                      )}
+                      {/* INFO EXTRA - HOVER */}
+                      <motion.div
+                        className={styles.extraInfo}
+                        animate={{
+                          opacity: isHover ? 1 : 0,
+                        }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <h2>Director: {movie.director}</h2>
+                        <h3>Main Cast: {movie.cast}</h3>
+                      </motion.div>
                     </motion.div>
-                  </div>
+                  </motion.div>
                 </motion.div>
               </>
             )}
