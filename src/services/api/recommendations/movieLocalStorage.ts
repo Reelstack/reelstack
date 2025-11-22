@@ -11,6 +11,8 @@ export type CachedMovie = {
   id: string;
   title: string;
   vector: number[];
+  banner: string | null;
+  cast: string[];
   genres: Genre[]; // para cálculo de frequência
   average_rating: number; // para pontuação final
   director: string | null; // para exibição no log/home depois
@@ -21,6 +23,8 @@ type Movie = {
   tconst: string;
   primary_title: string;
   genres: Genre[];
+  banner: string | null;
+  cast: string[];
   director: string;
   actors: string | string[];
   average_rating: number;
@@ -61,6 +65,8 @@ export async function getAllCachedMovies(): Promise<CachedMovie[]> {
     id: movie.id,
     title: movie.title,
     vector: movie.vector,
+    banner: movie.banner ?? null, // ⭐ NEW
+    cast: movie.cast ?? [],
     genres: movie.genres || [],
     average_rating: movie.average_rating || 0,
     director: movie.director || null,
@@ -74,6 +80,7 @@ async function fetchMoviesFromSupabase(): Promise<Movie[]> {
     primary_title,
     director,
     actors,
+    banner, 
     average_rating,
     movie_genres:movie_genres(
       genre_id,
@@ -88,6 +95,16 @@ async function fetchMoviesFromSupabase(): Promise<Movie[]> {
     primary_title: movie.primary_title,
     director: movie.director,
     actors: movie.actors,
+    banner: movie.banner ?? null,
+    cast:
+      typeof movie.actors === 'string'
+        ? movie.actors
+            .split(',')
+            .map(a => a.trim())
+            .slice(0, 5) // ⭐ max 5
+        : Array.isArray(movie.actors)
+          ? movie.actors.map(a => a.trim()).slice(0, 5)
+          : [],
     average_rating: movie.average_rating,
     genres:
       movie.movie_genres?.map((g: any) => ({
@@ -197,6 +214,8 @@ export async function prepareLocalMovieCache() {
     const vectorizedBatch: CachedMovie[] = batch.map(movie => ({
       id: movie.tconst,
       title: movie.primary_title,
+      banner: movie.banner ?? null,
+      cast: movie.cast ?? [],
       vector: movieToVector(movie, allGenres, allDirectors, allActors),
       genres: movie.genres,
       average_rating: movie.average_rating,

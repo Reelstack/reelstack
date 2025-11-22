@@ -11,30 +11,7 @@ import {
 // import shrink from '../../assets/arrow-decrease.svg';
 import filter from '../../assets/filter.svg';
 import { RouterLink } from '../../components/RouterLink';
-
-const movies = [
-  {
-    id: 1,
-    title: 'Test Movie 1',
-    genres: 'Action, Thriller',
-    director: 'Director One',
-    cast: 'Actor A, B, C',
-  },
-  {
-    id: 2,
-    title: 'Test Movie 2',
-    genres: 'Drama, Romance',
-    director: 'Director Two',
-    cast: 'Actor X, Y',
-  },
-  {
-    id: 3,
-    title: 'Test Movie 3',
-    genres: 'Sci-Fi, Horror',
-    director: 'Director Three',
-    cast: 'Actor R, S',
-  },
-];
+import { fetchRecommendationsViaWorker } from '../../services/api/recommendations/recommendationFetcher';
 
 export function Home() {
   const [index, setIndex] = useState(0);
@@ -43,6 +20,8 @@ export function Home() {
   // const [isExpanded, setExpanded] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState(1); // 1 = direita, -1 = esquerda
   const [isSwiping, setIsSwiping] = useState(false);
+  const [movies, setMovies] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const R = 150;
   const [halfWidth, setHalfWidth] = useState(window.innerWidth / 2);
@@ -53,11 +32,43 @@ export function Home() {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  useEffect(() => {
+    async function loadMovies() {
+      try {
+        const profileId = 'e3a29547-1e55-4d07-8f7d-c75a6ff8b896';
+
+        const rec = await fetchRecommendationsViaWorker(profileId, 10);
+
+        const normalized = rec.map((m: any, i: number) => ({
+          id: i + 1,
+          title: m.title,
+          director: m.director ?? 'Unknown',
+          genres:
+            m.genres?.map((g: { name: any }) => g.name).join(', ') ?? 'Unknown',
+          cast: Array.isArray(m.cast) ? m.cast.join(', ') : 'Unknown',
+          banner: m.banner ?? '',
+        }));
+
+        setMovies(normalized);
+        setLoading(false);
+      } catch (err) {
+        console.error('Recommendation load failed:', err);
+        setLoading(false);
+      }
+    }
+
+    loadMovies();
+  }, []);
+
+  useEffect(() => {
+    if (movies.length > 0) {
+      setIndex(0);
+      setPreviewIndex(1);
+    }
+  }, [movies]);
+
   const MAX_DRAG = halfWidth * 0.75;
   const swipeThreshold = window.innerWidth * 0.28;
-
-  const movie = movies[index % movies.length];
-  const nextMovie = movies[previewIndex % movies.length];
 
   // smoothing helper usado pros transforms (sine easing -> macio nos cantos)
   const smoothT = (x: number, hw: number) => {
@@ -237,6 +248,18 @@ export function Home() {
     animate(previewOpacity, 1, { type: 'spring', stiffness: 150, damping: 18 });
   };
 
+  const movie = movies[index % movies.length];
+  const nextMovie = movies[previewIndex % movies.length];
+  if (!movie || !nextMovie) return null;
+
+  if (loading) {
+    return <div className={styles.loading}>Loading recommendations...</div>;
+  }
+
+  if (movies.length === 0) {
+    return <div className={styles.loading}>No movies available.</div>;
+  }
+
   return (
     <>
       <div className={styles.header}>
@@ -264,6 +287,9 @@ export function Home() {
                   key={`preview-${nextMovie.id}-${swipeDirection}`}
                   className={styles.poster}
                   style={{
+                    backgroundImage: `url(${nextMovie.banner})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
                     x: previewX,
                     y: previewYDerived,
                     rotate: previewRotateDerived,
@@ -283,6 +309,9 @@ export function Home() {
                   key={`faux-${nextMovie.id}`}
                   className={styles.poster}
                   style={{
+                    backgroundImage: `url(${nextMovie.banner})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
                     x: 0,
                     y: 0,
                     rotate: 0,
@@ -305,6 +334,9 @@ export function Home() {
                   onDrag={handleDrag}
                   onDragEnd={handleDragEnd}
                   style={{
+                    backgroundImage: `url(${movie.banner})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
                     x: mainX,
                     y: mainYDerived,
                     rotate: mainRotateDerived,
