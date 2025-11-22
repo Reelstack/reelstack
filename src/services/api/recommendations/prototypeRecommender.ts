@@ -119,8 +119,9 @@ export async function recommendMovies(
     title: m.title,
     average_rating: m.average_rating,
     genres: m.genres,
-    director: m.director, // Opcional: caso precisar no futuro
-    actors: null, // Não é usado
+    director: m.director,
+    actors: m.actors,
+    banner: m.banner,
   })); // pega gêneros e frequência do CACHE, eliminando a lentidão do supa
 
   const allGenres = Array.from(

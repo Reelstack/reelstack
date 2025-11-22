@@ -12,7 +12,7 @@ export type CachedMovie = {
   title: string;
   vector: number[];
   banner: string | null;
-  cast: string[];
+  actors: string | string[];
   genres: Genre[]; // para cálculo de frequência
   average_rating: number; // para pontuação final
   director: string | null; // para exibição no log/home depois
@@ -24,7 +24,6 @@ type Movie = {
   primary_title: string;
   genres: Genre[];
   banner: string | null;
-  cast: string[];
   director: string;
   actors: string | string[];
   average_rating: number;
@@ -65,8 +64,8 @@ export async function getAllCachedMovies(): Promise<CachedMovie[]> {
     id: movie.id,
     title: movie.title,
     vector: movie.vector,
-    banner: movie.banner ?? null, // ⭐ NEW
-    cast: movie.cast ?? [],
+    banner: movie.banner ?? null,
+    actors: movie.actors,
     genres: movie.genres || [],
     average_rating: movie.average_rating || 0,
     director: movie.director || null,
@@ -96,15 +95,6 @@ async function fetchMoviesFromSupabase(): Promise<Movie[]> {
     director: movie.director,
     actors: movie.actors,
     banner: movie.banner ?? null,
-    cast:
-      typeof movie.actors === 'string'
-        ? movie.actors
-            .split(',')
-            .map(a => a.trim())
-            .slice(0, 5) // ⭐ max 5
-        : Array.isArray(movie.actors)
-          ? movie.actors.map(a => a.trim()).slice(0, 5)
-          : [],
     average_rating: movie.average_rating,
     genres:
       movie.movie_genres?.map((g: any) => ({
@@ -215,7 +205,7 @@ export async function prepareLocalMovieCache() {
       id: movie.tconst,
       title: movie.primary_title,
       banner: movie.banner ?? null,
-      cast: movie.cast ?? [],
+      actors: movie.actors,
       vector: movieToVector(movie, allGenres, allDirectors, allActors),
       genres: movie.genres,
       average_rating: movie.average_rating,

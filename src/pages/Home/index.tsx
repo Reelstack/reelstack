@@ -45,7 +45,11 @@ export function Home() {
           director: m.director ?? 'Unknown',
           genres:
             m.genres?.map((g: { name: any }) => g.name).join(', ') ?? 'Unknown',
-          cast: Array.isArray(m.cast) ? m.cast.join(', ') : 'Unknown',
+          actors: Array.isArray(m.actors)
+            ? m.actors.join(', ')
+            : typeof m.actors === 'string'
+              ? m.actors
+              : 'Unknown',
           banner: m.banner ?? '',
         }));
 
@@ -387,7 +391,7 @@ export function Home() {
                         transition={{ duration: 0.2 }}
                       >
                         <h2>Director: {movie.director}</h2>
-                        <h3>Main Cast: {movie.cast}</h3>
+                        <h3>Main Cast: {movie.actors}</h3>
                       </motion.div>
                     </motion.div>
                   </motion.div>
