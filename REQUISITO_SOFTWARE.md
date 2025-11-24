@@ -442,7 +442,17 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **Impacto:** Em todas as histórias de usuário.
 ---
 
-> Elaborar template de Requisitos Não Funcionais, assim como ás regras de negócio vide tabela do backlog de US
+## Tabela Resumo RNFs
+
+
+| ID      | Título                                      | Classificação       | Critério de Aceitação                          |
+|---------|---------------------------------------------|----------------------|-----------------------------------------------|
+| RNF001  | Desempenho: Tempo de Resposta ao Swipe     | Eficiência           | Percentil 90 ≤ 1s em teste de carga          |
+| RNF002  | Segurança: Criptografia em Trânsito        | Segurança            | OWASP ZAP sem falhas críticas                |
+| RNF003  | Usabilidade: Fluxo de Onboarding           | Usabilidade          | ≥ 85% concluem cadastro + 1ª interação ≤ 5min|
+| RNF004  | Compatibilidade: Suporte a Navegadores     | Compatibilidade      | 100% das funções operam nos navegadores      |
+| RNF005  | Usabilidade: Mensagens de Erro             | Usabilidade          | 100% dos casos exibem mensagem adequada      |
+
 
 ## Lista de Requisitos Não Funcionais  
 
