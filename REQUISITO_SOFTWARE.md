@@ -5,8 +5,6 @@
 **Data:** 2025-10-13  
 
 ---
-> 
-
 ## Introdução  
 ### Propósito do documento  
 Este documento tem como objetivo definir e consolidar os requisitos do sistema **ReelStack**, servindo como base para as fases de projeto, desenvolvimento, testes e manutenção do software.  
