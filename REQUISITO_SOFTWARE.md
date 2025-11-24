@@ -442,6 +442,24 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **Impacto:** Em todas as histórias de usuário.
 ---
 
+
+## Anexo 01 – Mensagens do Sistema
+
+| Código | Mensagem                                                                 |
+|--------|--------------------------------------------------------------------------|
+| M001   | Usuário ou senha digitados está inválido! Tente novamente               |
+| M002   | E-mail informado inválido, verifique a digitação do seu e-mail          |
+| M003   | Erro ao redirecionar à página selecionada. Favor entrar em contato com o administrador do sistema |
+| M004   | Erro inesperado. Favor entrar em contato com o administrador do sistema |
+| M005   | Campos obrigatórios não preenchidos. Verifique e tente novamente.       |
+| M006   | Não foi possível adicionar o filme à coleção: filme já existente.       |
+| M007   | Nome da coleção já está em uso. Escolha outro nome.                     |
+| M008   | Sinopse não disponível para este título.                                |
+| M009   | Ação inválida. Verifique se o item selecionado existe.                  |
+
+
+---
+
 ## Tabela Resumo RNFs
 
 
