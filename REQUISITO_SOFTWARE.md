@@ -446,7 +446,7 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 | Código | Mensagem                                                                 |
 |--------|--------------------------------------------------------------------------|
 | M001   | Usuário ou senha digitados estão inválidos! Tente novamente               |
-| M002   | E-mail informado inválido, verifique a digitação do seu e-mail          |
+| M002   | E-mail informado é inválido, verifique a digitação do seu e-mail        |
 | M003   | Erro ao redirecionar à página selecionada. Favor entrar em contato com o administrador do sistema |
 | M004   | Erro inesperado. Favor entrar em contato com o administrador do sistema |
 | M005   | Campos obrigatórios não preenchidos. Verifique e tente novamente.       |
