@@ -513,22 +513,6 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **Impacto na arquitetura:** Padrões de codificação e boas práticas devem ser seguidos desde a primeira sprint
 
 ---
-
-## Declaração de uso ético e responsável de IA  
-O grupo declara que utilizou ferramentas de inteligência artificial generativa, especificamente o modelo **[ChatGPT-4 (OpenAI)](https://openai.com/pt-BR/index/chatgpt/)**, para auxiliar na estruturação e revisão deste documento (maio de 2025 - setembro de 2025).  
-
-As seções que receberam suporte automatizado incluem:
-- Introdução (estrutura e revisão textual),
-- Visão geral dos requisitos funcionais,
-- Lista de regras de negócio,
-- Requisitos não funcionais,
-- Revisão técnica e estilística do conteúdo.
-  
-**Toda a produção gerada por IA foi revisada criticamente pelos membros do grupo**, que permanecem integralmente responsáveis pela exatidão, completude, clareza e conformidade acadêmica do conteúdo final apresentado.
-
->Essa seção deveria fazer parte de um documento separado
-
----
 <p align="center">  
 <img src="https://ucb.catolica.edu.br/hs-fs/hubfs/Logo%20Cat%C3%B3lica-01%201.png?width=200&height=40" alt="UCB" width="300">  
 </p>
