@@ -551,10 +551,18 @@ O modelo contempla todas as entidades do sistema, incluindo:
 
 ### Descrição
 
-O Diagrama de Fluxo de Dados (DFD) representa o caminho percorrido pelas
-informações desde sua origem até o destino final, ilustrando os processos
-internos, entidades externas e repositórios de dados envolvidos.
-> Corrigir a descrição vide nova nomeclatura, referência Miltom Pombo da Paz
+
+O **Diagrama de Fluxo de Dados (DFD)** é uma representação gráfica que descreve
+como os dados circulam dentro do sistema, evidenciando:
+
+- **Fontes externas** (entidades que interagem com o sistema),
+- **Processos internos** (transformações que os dados sofrem),
+- **Armazenamentos** (repositórios de dados),
+- **Fluxos de informação** (movimento dos dados entre processos e entidades).
+
+Essa abordagem segue a nomenclatura e diretrizes propostas por Milton Pombo da Paz,
+garantindo clareza na identificação dos componentes e suas interações.
+
 
 ### DFD - Nível 0
 
