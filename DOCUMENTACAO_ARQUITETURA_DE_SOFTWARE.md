@@ -356,7 +356,7 @@ As convenções de código incluem:
 
 # 8. Visão de Dados
 
-## 8.1 Diagrama Entidade-Relacionamento ER
+## 8.1 Modelo Entidade-Relacionamento (MER)
 
 ```mermaid
 erDiagram

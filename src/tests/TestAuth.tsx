@@ -1,5 +1,5 @@
-import { useAuth } from './contexts/AuthContext/authContext';
-import { supabase } from './lib/supabaseClient';
+import { useAuth } from '../contexts/AuthContext/authContext';
+import { supabase } from '../lib/supabaseClient';
 
 export default function TestAuth() {
   const { user, loading } = useAuth();

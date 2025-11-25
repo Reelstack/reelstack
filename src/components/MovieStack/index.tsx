@@ -3,6 +3,7 @@ import { MoviesService, type Movie } from '../../services/api/supa-api/movies';
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import toast from 'react-hot-toast';
+import { MovieSearchModal } from '../MovieSearchModal';
 
 const MOVIES_PER_PAGE = 18;
 
@@ -23,6 +24,7 @@ export function MovieStack({
 }: MovieStackProps) {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   const historyRef = useRef<HTMLDivElement | null>(null);
   const shouldScroll = useRef(false);
@@ -60,10 +62,7 @@ export function MovieStack({
     loadUserMovies();
   }, [interactionType, setMovies]);
 
-  async function handleAddMovie() {
-    const titlePrompt = prompt('Movie name?');
-    if (!titlePrompt) return;
-
+  async function handleSelectMovie(movie: Movie) {
     setLoading(true);
 
     try {
@@ -71,29 +70,12 @@ export function MovieStack({
         data: { session },
         error: sessionError,
       } = await supabase.auth.getSession();
-      if (sessionError || !session) throw toast.error('User not logged in');
-
-      const profileId = session.user.id; // Supabase ID
-      // Busca filmes com o título digitado
-      const { data, error } = await MoviesService.searchMovies(
-        {
-          title: titlePrompt,
-        },
-        1,
-      ); // limita a 1 resultado
-
-      // TODO: Implement poster validation when available
-      // if (!movie.posterUrl || movie.posterUrl === 'N/A') {
-      //   setError('Poster not available.');
-      //   return;
-      // }
-      if (error) throw error;
-      if (!data || data.length === 0) {
-        toast.error('Movie not found.');
+      if (sessionError || !session) {
+        toast.error('User not logged in');
         return;
       }
 
-      const movie = data[0];
+      const profileId = session.user.id;
 
       // Checa duplicata
       setMovies(prev => {
@@ -103,19 +85,27 @@ export function MovieStack({
         }
         return [movie, ...prev];
       });
+
       // atualiza a pagina
       setPage(0);
+
       //salva os filmes interagidos do usuario
       await MoviesService.addUserMovieInteraction({
         profileId,
         movieId: movie.tconst,
         interactionType,
       });
+
+      toast.success('Movie added successfully!');
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleAddMovie() {
+    setIsSearchModalOpen(true);
   }
 
   // logica do indice das páginas, mudar movies per page caso mudança de design
@@ -145,9 +135,16 @@ export function MovieStack({
         </button>
       </div>
 
+      <MovieSearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        onSelectMovie={handleSelectMovie}
+        loading={loading}
+      />
+
       {loading && (
         <div className={styles.loading}>
-          <p>Searching for movies...</p>
+          <p>Adding movie...</p>
         </div>
       )}
 
@@ -165,8 +162,8 @@ export function MovieStack({
             onMouseLeave={() => setHover(null)} // reseta
           >
             <img
-              /* src={m.posterUrl || '/placeholder-poster.jpg'} */
-              src={'/goncha.jpg'}
+              src={m.banner || '/placeholder-poster.jpg'}
+             
               alt={m.primary_title ?? 'Movie poster'}
               onError={e => {
                 (e.target as HTMLImageElement).src = '/placeholder-poster.jpg';

@@ -13,6 +13,9 @@ export interface Movie {
   genres: string | null;
   average_rating: number | null;
   num_votes: number | null;
+  director: string | null;
+  actors: string | null;
+  banner: string | null;
 }
 
 // Essential fields only
@@ -151,10 +154,18 @@ export class MoviesService {
       }
 
       // Aplicar filtros de título
+      // Melhorar busca para encontrar por primary_title OU original_title:
+      // Usuários podem buscar filmes tanto pelo título principal quanto pelo título original.
+      // Antes, a busca podia perder resultados relevantes se apenas um campo fosse considerado.
+      // Agora, a busca retorna filmes que correspondem ao termo em qualquer um dos campos, aumentando a precisão e a experiência do usuário.
       if (filters.title) {
-        query = query.ilike('primary_title', `%${filters.title}%`);
+        // Busca em ambos os campos usando OR para melhor matching
+        query = query.or(
+          `primary_title.ilike.%${filters.title}%,original_title.ilike.%${filters.title}%`
+        );
       }
-      if (filters.original_title) {
+      if (filters.original_title && !filters.title) {
+        // Se apenas original_title foi fornecido, busca apenas nele
         query = query.ilike('original_title', `%${filters.original_title}%`);
       }
 
