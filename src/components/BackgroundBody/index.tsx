@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useBackground } from '../../contexts/BackgroundContext/backgroundContext';
 
 const staticImages = {
   '/profile/': '/profile.png',
   '/': '/profile.png',
-  // rotas
 };
 
 export function BackgroundBody() {
@@ -15,6 +15,7 @@ export function BackgroundBody() {
     const body = document.body;
     body.classList.add('blur-background');
 
+    // Remove home-background class to prevent conflict
     body.classList.remove('home-background');
 
     let bgImg: string | null = null;

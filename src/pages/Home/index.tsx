@@ -12,7 +12,7 @@ import {
 import filter from '../../assets/filter.svg';
 import { RouterLink } from '../../components/RouterLink';
 import { fetchRecommendationsViaWorker } from '../../services/api/recommendations/recommendationFetcher';
-import { useBackground } from '../../contexts/BackgroundContext/BackgroundContext';
+import { useBackground } from '../../contexts/BackgroundContext/backgroundContext';
 
 export function Home() {
   const [index, setIndex] = useState(0);
