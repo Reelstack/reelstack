@@ -22,7 +22,12 @@ export default function App() {
       testUserRecommendations(); // roda o algoritmo em segundo plano
     }
 
-    prepareAndRun();
+    // Defer cache preparation to avoid blocking initial render
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(prepareAndRun);
+    } else {
+      setTimeout(prepareAndRun, 0);
+    }
   }, []);
   return (
     <>
