@@ -82,7 +82,7 @@ async function runWorkerRecommendation(profileId: string, limit: number) {
  */
 export async function testUserRecommendations() {
   // Coloque um id de usuário válido
-  const testUserId = 'e3a29547-1e55-4d07-8f7d-c75a6ff8b896';
+  const testUserId = process.env.TEST_USER_ID || 'e3a29547-1e55-4d07-8f7d-c75a6ff8b896';
 
   // //TESTE DIRETO SEM WORKER
   // console.log('Testando SEM worker...');
