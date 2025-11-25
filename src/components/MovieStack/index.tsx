@@ -162,7 +162,7 @@ export function MovieStack({
             onMouseLeave={() => setHover(null)} // reseta
           >
             <img
-              src={m.banner || '/placeholder-poster.jpg'} 
+              src={m.banner || '/placeholder-poster.jpg'}
              
               alt={m.primary_title ?? 'Movie poster'}
               onError={e => {
