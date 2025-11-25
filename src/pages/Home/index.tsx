@@ -12,6 +12,7 @@ import {
 import filter from '../../assets/filter.svg';
 import { RouterLink } from '../../components/RouterLink';
 import { fetchRecommendationsViaWorker } from '../../services/api/recommendations/recommendationFetcher';
+import { useBackground } from '../../contexts/BackgroundContext/BackgroundContext';
 
 export function Home() {
   const [index, setIndex] = useState(0);
@@ -22,6 +23,7 @@ export function Home() {
   const [isSwiping, setIsSwiping] = useState(false);
   const [movies, setMovies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { setDynamicBg } = useBackground();
 
   const R = 150;
   const [halfWidth, setHalfWidth] = useState(window.innerWidth / 2);
@@ -350,6 +352,11 @@ export function Home() {
 
   const movie = movies[index % movies.length];
   const nextMovie = movies[previewIndex % movies.length];
+  useEffect(() => {
+    if (movie?.banner) {
+      setDynamicBg(movie.banner);
+    }
+  }, [movie]);
   if (!movie || !nextMovie) return null;
 
   if (loading) {

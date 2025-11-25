@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-const backgroundImages = {
-  '/home/': '/goncha.jpg',
+const staticImages = {
   '/profile/': '/profile.png',
   '/': '/profile.png',
   // rotas
@@ -10,26 +9,28 @@ const backgroundImages = {
 
 export function BackgroundBody() {
   const location = useLocation();
+  const { dynamicBg } = useBackground();
 
   useEffect(() => {
     const body = document.body;
     body.classList.add('blur-background');
 
-    // Clear class to avoid conflicts
     body.classList.remove('home-background');
 
-    const bgImg =
-      backgroundImages[location.pathname as keyof typeof backgroundImages];
+    let bgImg: string | null = null;
+
+    if (location.pathname === '/home/') {
+      bgImg = dynamicBg; // dynamic background from Home
+      body.classList.add('home-background');
+    } else {
+      bgImg =
+        staticImages[location.pathname as keyof typeof staticImages] || null;
+    }
 
     if (bgImg) {
       body.style.setProperty('--bg-image', `url(${bgImg})`);
     }
-
-    // If on the home page
-    if (location.pathname === '/home/') {
-      body.classList.add('home-background');
-    }
-  }, [location.pathname]);
+  }, [location.pathname, dynamicBg]);
 
   return null;
 }

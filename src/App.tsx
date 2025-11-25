@@ -7,6 +7,7 @@ import TestAuth from './tests/TestAuth';
 import { useEffect, useRef } from 'react';
 // import { testUserRecommendations } from './tests/TestAlgoritm';
 import { prepareLocalMovieCache } from './services/api/recommendations/movieLocalStorage';
+import { BackgroundProvider } from './contexts/BackgroundContext/BackgroundContext';
 
 export default function App() {
   const ranOnce = useRef(false);
@@ -28,7 +29,9 @@ export default function App() {
     <>
       <TestAuth />
 
-      <MainRouter />
+      <BackgroundProvider>
+        <MainRouter />
+      </BackgroundProvider>
       <Toaster position='top-center' toastOptions={{ duration: 3000 }} />
     </>
   );
