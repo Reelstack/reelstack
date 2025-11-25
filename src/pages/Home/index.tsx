@@ -39,20 +39,27 @@ export function Home() {
 
         const rec = await fetchRecommendationsViaWorker(profileId, 10);
 
-        const normalized = rec.map((m: any, i: number) => ({
-          id: i + 1,
-          title: m.title,
-          director: m.director ?? 'Unknown',
-          genres:
-            m.genres?.map((g: { name: any }) => g.name).join(', ') ?? 'Unknown',
-          actors: Array.isArray(m.actors)
-            ? m.actors.join(', ')
-            : typeof m.actors === 'string'
-              ? m.actors
-              : 'Unknown',
-          banner: m.banner ?? '',
-        }));
+        const normalized = await Promise.all(
+          rec.map(async (m: any, i: number) => {
+            // caso erro retorna original
+            const banner = await upgradeImageUrlSafe(m.banner ?? '');
 
+            return {
+              id: i + 1,
+              title: m.title,
+              director: m.director ?? 'Unknown',
+              genres:
+                m.genres?.map((g: { name: any }) => g.name).join(', ') ??
+                'Unknown',
+              actors: Array.isArray(m.actors)
+                ? m.actors.join(', ')
+                : typeof m.actors === 'string'
+                  ? m.actors
+                  : 'Unknown',
+              banner,
+            };
+          }),
+        );
         setMovies(normalized);
         setLoading(false);
       } catch (err) {
@@ -251,6 +258,95 @@ export function Home() {
     // fade do preview quanto mais se aproxima do centro
     animate(previewOpacity, 1, { type: 'spring', stiffness: 150, damping: 18 });
   };
+
+  async function upgradeImageUrlSafe(originalUrl: string): Promise<string> {
+    try {
+      // se der errado manter original
+      if (!originalUrl) return originalUrl;
+
+      // tentativas apenas pro m.media-amazon.com (safe guard)
+      if (!/m\.media-amazon\.com/i.test(originalUrl)) return originalUrl;
+
+      // checa o _V1 token
+      // fallback: retornar original
+      const match = originalUrl.match(/^(.*@)?(.*_V1_).*\.jpg/i);
+      if (!match) return originalUrl;
+
+      // constroi os candidatos a upgrade
+      const candidates = [
+        originalUrl.replace(/_V1_.*\.jpg/i, '_V1_SX1600.jpg'),
+        originalUrl.replace(/_V1_.*\.jpg/i, '_V1_SY1600.jpg'),
+        originalUrl.replace(/_V1_.*\.jpg/i, '_V1_SX1200.jpg'),
+        originalUrl.replace(/_V1_.*\.jpg/i, '_V1_SL1500.jpg'),
+        originalUrl.replace(/_V1_.*\.jpg/i, '_V1_SX1080.jpg'),
+      ];
+
+      // truques da internet:
+      // simple LRU cache in-memory to avoid re-checking same url on same session
+      (upgradeImageUrlSafe as any)._cache =
+        (upgradeImageUrlSafe as any)._cache || new Map();
+      const cache = (upgradeImageUrlSafe as any)._cache as Map<
+        string,
+        string | false
+      >;
+      if (cache.has(originalUrl)) {
+        const cached = cache.get(originalUrl);
+        return cached === false ? originalUrl : (cached as string);
+      }
+
+      // helper
+      const checkImage = (src: string, timeoutMs = 2600) =>
+        new Promise<boolean>(resolve => {
+          const img = new Image();
+          let done = false;
+          let finish = (ok: boolean) => {
+            if (done) return;
+            done = true;
+            // handlers
+            img.onload = img.onerror = null;
+            resolve(ok);
+          };
+          img.onload = () => finish(true);
+          img.onerror = () => finish(false);
+          // safety timeout
+          const t = setTimeout(() => {
+            finish(false);
+          }, timeoutMs);
+          // src depois dos handlers
+          img.src = src;
+
+          // limpa o timer no trigger
+          const originalFinish = finish;
+          finish = (ok: boolean) => {
+            clearTimeout(t);
+            originalFinish(ok);
+          };
+        });
+
+      // Tenta os candidatos em sequência (evitar paralelo)
+      for (const c of candidates) {
+        if (!c || c === originalUrl) continue;
+        try {
+          const ok = await checkImage(c, 2200);
+          console.debug('[upgradeImageUrlSafe] tested', c, 'ok=', ok);
+          if (ok) {
+            cache.set(originalUrl, c);
+            return c;
+          }
+        } catch (e) {
+          console.warn('[upgradeImageUrlSafe] check failed', c, e);
+          // tenta o prox
+        }
+      }
+
+      // sem sucesso
+      cache.set(originalUrl, false);
+      return originalUrl;
+    } catch (err) {
+      console.error('[upgradeImageUrlSafe] unexpected error', err);
+      return originalUrl;
+    }
+  }
 
   const movie = movies[index % movies.length];
   const nextMovie = movies[previewIndex % movies.length];
