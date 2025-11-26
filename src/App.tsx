@@ -3,7 +3,7 @@ import './styles/theme.css';
 import { MainRouter } from './routers/MainRouter';
 
 import { Toaster } from 'react-hot-toast';
-import TestAuth from './tests/TestAuth';
+// import TestAuth from './tests/TestAuth';
 import { useEffect, useRef } from 'react';
 import { testUserRecommendations } from './tests/TestAlgoritm';
 import { prepareLocalMovieCache } from './services/api/recommendations/movieLocalStorage';
@@ -26,8 +26,7 @@ export default function App() {
   }, []);
   return (
     <>
-      <TestAuth />
-
+      {/* <TestAuth /> */}
       <MainRouter />
       <Toaster position='top-center' toastOptions={{ duration: 3000 }} />
     </>

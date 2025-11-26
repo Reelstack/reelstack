@@ -21,8 +21,8 @@ export function Profile() {
       const clientHeight = wrapper.clientHeight;
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
 
-      // Show footer only when within 50px of the bottom
-      const isAtBottom = distanceFromBottom <= 50;
+      // Show footer only when at the very end (within 10px threshold for smooth UX)
+      const isAtBottom = distanceFromBottom <= 10;
       setShowFooter(isAtBottom);
     };
 
