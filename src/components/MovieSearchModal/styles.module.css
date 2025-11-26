@@ -157,6 +157,27 @@
     transform: translateX(0.1rem);
 }
 
+.resultItem.alreadyAdded {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: rgba(120, 120, 120, 0.2);
+    border-color: rgba(120, 120, 120, 0.3);
+}
+
+.resultItem.alreadyAdded:hover {
+    background: rgba(120, 120, 120, 0.3);
+    transform: none;
+}
+
+.alreadyAddedLabel {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    padding: 0.3rem 0.8rem;
+    background: rgba(120, 120, 120, 0.2);
+    border-radius: 0.4rem;
+    font-weight: 500;
+}
+
 .resultContent {
     display: flex;
     gap: 1.5rem;

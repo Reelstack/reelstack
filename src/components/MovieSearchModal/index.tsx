@@ -7,6 +7,7 @@ interface MovieSearchModalProps {
     onClose: () => void;
     onSelectMovie: (movie: Movie) => void;
     loading?: boolean;
+    excludedMovieIds?: string[]; // Movie IDs that are already in user's list
 }
 
 export function MovieSearchModal({
@@ -14,6 +15,7 @@ export function MovieSearchModal({
     onClose,
     onSelectMovie,
     loading: externalLoading = false,
+    excludedMovieIds = [],
 }: MovieSearchModalProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [results, setResults] = useState<Movie[]>([]);
@@ -150,11 +152,15 @@ export function MovieSearchModal({
     }, [searchQuery, isOpen]);
 
     const handleSelectMovie = useCallback((movie: Movie) => {
+        // Prevent selecting already added movies
+        if (excludedMovieIds.includes(movie.tconst)) {
+            return;
+        }
         onSelectMovie(movie);
         onClose();
         setSearchQuery('');
         setResults([]);
-    }, [onSelectMovie, onClose]);
+    }, [onSelectMovie, onClose, excludedMovieIds]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -230,14 +236,17 @@ export function MovieSearchModal({
 
                     {!loading && !error && searchQuery.trim() && results.length > 0 && (
                         <ul className={styles.resultsList} role="listbox">
-                            {results.map((movie, index) => (
+                            {results.map((movie, index) => {
+                                const isAlreadyAdded = excludedMovieIds.includes(movie.tconst);
+                                return (
                                 <li
                                     key={movie.tconst}
                                     ref={selectedIndex === index ? selectedItemRef : null}
-                                    className={`${styles.resultItem} ${selectedIndex === index ? styles.selected : ''}`}
-                                    onClick={() => handleSelectMovie(movie)}
+                                    className={`${styles.resultItem} ${selectedIndex === index ? styles.selected : ''} ${isAlreadyAdded ? styles.alreadyAdded : ''}`}
+                                    onClick={() => !isAlreadyAdded && handleSelectMovie(movie)}
                                     role="option"
                                     aria-selected={selectedIndex === index}
+                                    aria-disabled={isAlreadyAdded}
                                 >
                                     <div className={styles.resultContent}>
                                         <div className={styles.movieInfo}>
@@ -266,6 +275,11 @@ export function MovieSearchModal({
                                                         ⭐ {movie.average_rating.toFixed(1)}
                                                     </span>
                                                 )}
+                                                {isAlreadyAdded && (
+                                                    <span className={styles.alreadyAddedLabel}>
+                                                        Already added
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                         {movie.banner && movie.banner !== 'N/A' && (
@@ -280,7 +294,8 @@ export function MovieSearchModal({
                                         )}
                                     </div>
                                 </li>
-                            ))}
+                                );
+                            })}
                         </ul>
                     )}
 

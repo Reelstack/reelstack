@@ -557,7 +557,17 @@ export class MoviesService {
   ) {
     const { data, error } = await supabase
       .from('user_movie_interactions')
-      .select('movies(*)') // metodo relacional
+      .select(`
+        movies(
+          *,
+          movie_genres:movie_genres(
+            genre_id,
+            genres_name(
+              name
+            )
+          )
+        )
+      `)
       .eq('profile_id', profileId)
       .eq('interaction_type', interactionType)
       .order('created_at', { ascending: false }); // organiza em ordem do mais recente
@@ -565,7 +575,35 @@ export class MoviesService {
     if (error) throw error;
 
     const movies = data // muda o array de arrays em um array simples
-      .map((d: any) => d.movies)
+      .map((d: any) => {
+        const movie = d.movies;
+        if (!movie) return null;
+        
+        // Join genres from the relationship and format as comma-separated string
+        let genresString: string | null = null;
+        
+        if (movie.movie_genres && Array.isArray(movie.movie_genres)) {
+          const genresArray = movie.movie_genres
+            .map((mg: any) => {
+              if (!mg) return null;
+              const genre = Array.isArray(mg.genres_name)
+                ? mg.genres_name[0]?.name || ''
+                : mg.genres_name?.name || '';
+              return genre;
+            })
+            .filter(Boolean);
+          
+          genresString = genresArray.length > 0 ? genresArray.join(', ') : null;
+        }
+        
+        // Remove movie_genres from the spread since we've extracted genres
+        const { movie_genres, ...movieWithoutGenres } = movie;
+        
+        return {
+          ...movieWithoutGenres,
+          genres: genresString,
+        };
+      })
       .filter((m: any): m is Movie => !!m); // filtro para evitar problemas
     return movies;
   }
