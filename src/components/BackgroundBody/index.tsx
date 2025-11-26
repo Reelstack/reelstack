@@ -14,23 +14,30 @@ export function BackgroundBody() {
   useEffect(() => {
     const body = document.body;
     body.classList.add('blur-background');
-
-    // Remove home-background class to prevent conflict
     body.classList.remove('home-background');
 
-    let bgImg: string | null = null;
+    let newImg: string | null = null;
 
     if (location.pathname === '/home/') {
-      bgImg = dynamicBg; // dynamic background from Home
+      newImg = dynamicBg;
       body.classList.add('home-background');
     } else {
-      bgImg =
+      newImg =
         staticImages[location.pathname as keyof typeof staticImages] || null;
     }
 
-    if (bgImg) {
-      body.style.setProperty('--bg-image', `url(${bgImg})`);
-    }
+    if (!newImg) return;
+
+    // fade out
+    body.classList.add('bg-transition-hide');
+
+    //  fade-out, troca imagem
+    setTimeout(() => {
+      body.style.setProperty('--bg-image', `url(${newImg})`);
+
+      // fade in
+      body.classList.remove('bg-transition-hide');
+    }, 300); // um pouco menor que a duração da transição
   }, [location.pathname, dynamicBg]);
 
   return null;
