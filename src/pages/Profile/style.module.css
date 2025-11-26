@@ -167,10 +167,14 @@
 
 .footerVisible {
   transform: translateY(0);
+  pointer-events: auto;
+  visibility: visible;
 }
 
 .footerHidden {
   transform: translateY(100%);
+  pointer-events: none;
+  visibility: hidden;
 }
 
 .footerContent {

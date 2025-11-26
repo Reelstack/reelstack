@@ -15,26 +15,42 @@ export function Profile() {
     if (!wrapper) return;
 
     const handleScroll = () => {
-      // Check if user has reached the bottom of the page
       const scrollTop = wrapper.scrollTop;
       const scrollHeight = wrapper.scrollHeight;
       const clientHeight = wrapper.clientHeight;
+
+      // Only show footer if content is actually scrollable
+      const isScrollable = scrollHeight > clientHeight;
+
+      if (!isScrollable) {
+        setShowFooter(false);
+        return;
+      }
+
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
 
-      // Show footer only when at the very end (within 10px threshold for smooth UX)
+      // Show footer only when at the very end (within 10px threshold)
       const isAtBottom = distanceFromBottom <= 10;
       setShowFooter(isAtBottom);
     };
 
-    // Check initial position
-    handleScroll();
+    // Wait for content to load before checking scroll position
+    // Use a small delay to ensure DOM is fully rendered
+    const timeoutId = setTimeout(() => {
+      handleScroll();
+    }, 100);
 
     wrapper.addEventListener('scroll', handleScroll, { passive: true });
 
+    // Also check on resize in case content height changes
+    window.addEventListener('resize', handleScroll, { passive: true });
+
     return () => {
+      clearTimeout(timeoutId);
       wrapper.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
     };
-  }, []);
+  }, [showSettings]);
 
   return (
     <>
