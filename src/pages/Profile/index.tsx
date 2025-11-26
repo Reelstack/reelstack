@@ -64,17 +64,6 @@ export function Profile() {
             </p>
           </div>
           <div className={styles.footerInfo}>
-            <p className={styles.footerText}>
-              Movie data powered by{' '}
-              <a
-                href="https://www.themoviedb.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.footerLink}
-              >
-                TMDB
-              </a>
-            </p>
             <p className={styles.footerCopyright}>
               © {new Date().getFullYear()} ReelStack. All rights reserved.
             </p>
