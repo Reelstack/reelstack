@@ -154,7 +154,10 @@ export class MoviesService {
       }
 
       // Aplicar filtros de título
-      // Melhorar busca para encontrar por primary_title OU original_title
+      // Melhorar busca para encontrar por primary_title OU original_title:
+      // Usuários podem buscar filmes tanto pelo título principal quanto pelo título original.
+      // Antes, a busca podia perder resultados relevantes se apenas um campo fosse considerado.
+      // Agora, a busca retorna filmes que correspondem ao termo em qualquer um dos campos, aumentando a precisão e a experiência do usuário.
       if (filters.title) {
         // Busca em ambos os campos usando OR para melhor matching
         query = query.or(
