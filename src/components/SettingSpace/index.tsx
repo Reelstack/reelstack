@@ -70,7 +70,6 @@ export function SettingSpace() {
       return 'Profile name must be less than 50 characters';
     }
 
-    // Check for invalid characters (alphanumeric, spaces, underscores, hyphens only)
     if (!/^[a-zA-Z0-9\s_-]+$/.test(trimmed)) {
       return 'Profile name can only contain letters, numbers, spaces, underscores, and hyphens';
     }
@@ -90,34 +89,30 @@ export function SettingSpace() {
         .maybeSingle();
 
       if (error) throw error;
-      return !data; // Returns true if name is unique (no existing profile with this name)
+      return !data;
     } catch (err) {
       console.error('Error checking profile name uniqueness:', err);
-      return true; // Allow save if check fails (don't block user)
+      return true;
     }
   }
 
   async function handleSaveProfile() {
     if (!user) return;
 
-    // Clear previous errors
     setProfileNameError(null);
 
-    // Validate profile name
     const validationError = validateProfileName(profileName);
     if (validationError) {
       setProfileNameError(validationError);
       return;
     }
 
-    // Check if name changed
     const trimmedName = profileName.trim();
     if (trimmedName === originalProfileName) {
       toast.error('No changes to save');
       return;
     }
 
-    // Check uniqueness
     const isUnique = await checkProfileNameUniqueness(trimmedName);
     if (!isUnique) {
       setProfileNameError('This profile name is already taken. Please choose another one.');
@@ -137,9 +132,8 @@ export function SettingSpace() {
       if (error) throw error;
 
       toast.success('Profile updated successfully!');
-      setOriginalProfileName(trimmedName); // Update original name
+      setOriginalProfileName(trimmedName);
 
-      // Trigger a custom event for ProfileSpace to listen
       window.dispatchEvent(new CustomEvent('profileUpdated'));
     } catch (err: any) {
       console.error('Error updating profile:', err);
@@ -185,7 +179,6 @@ export function SettingSpace() {
     if (!user) return;
 
     try {
-      // Delete user profile first
       const { error: profileError } = await supabase
         .from('profiles')
         .delete()
@@ -193,7 +186,6 @@ export function SettingSpace() {
 
       if (profileError) throw profileError;
 
-      // Sign out the user
       await supabase.auth.signOut();
 
       toast.success('Account deleted successfully');
