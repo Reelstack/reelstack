@@ -90,6 +90,7 @@ export function ProfileSpace() {
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Calculate favorites based on liked movies
   const favoriteActor = useMemo(() => getFavoriteActor(likedMovies), [likedMovies]);
@@ -97,47 +98,98 @@ export function ProfileSpace() {
   const favoriteGenre = useMemo(() => getFavoriteGenre(likedMovies), [likedMovies]);
   const favoriteDecade = useMemo(() => getFavoriteDecade(likedMovies), [likedMovies]);
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        const { data: authData } = await supabase.auth.getUser();
-        const user = authData?.user;
-        if (!user) {
-          setLoading(false);
-          return;
-        }
-
-        setEmail(user.email ?? null);
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('profile_name')
-          .eq('id', user.id)
-          .single();
-        if (profile?.profile_name) setDisplayName(profile.profile_name);
-
-        // Load liked and disliked movies for stats
-        const [liked, disliked] = await Promise.all([
-          MoviesService.getUserMovies(user.id, 'like').catch(() => []),
-          MoviesService.getUserMovies(user.id, 'dislike').catch(() => []),
-        ]);
-
-        setLikedMovies(liked || []);
-        setDislikedMovies(disliked || []);
-      } catch (err) {
-        console.error('Error loading profile data:', err);
-      } finally {
+  async function loadProfileData() {
+    setLoading(true);
+    try {
+      const { data: authData } = await supabase.auth.getUser();
+      const user = authData?.user;
+      if (!user) {
         setLoading(false);
+        return;
       }
-    })();
+
+      setEmail(user.email ?? null);
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('profile_name')
+        .eq('id', user.id)
+        .single();
+      if (profile?.profile_name) setDisplayName(profile.profile_name);
+
+      // Load liked and disliked movies for stats
+      const [liked, disliked] = await Promise.all([
+        MoviesService.getUserMovies(user.id, 'like').catch(() => []),
+        MoviesService.getUserMovies(user.id, 'dislike').catch(() => []),
+      ]);
+
+      setLikedMovies(liked || []);
+      setDislikedMovies(disliked || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error loading profile data:', err);
+      setError('Failed to load profile data. Please try refreshing the page.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadProfileData();
+
+    // Refresh profile when window gains focus (handles returning from settings)
+    const handleFocus = () => {
+      loadProfileData();
+    };
+    window.addEventListener('focus', handleFocus);
+
+    // Also refresh on visibility change
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadProfileData();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Listen for profile update events from settings
+    const handleProfileUpdate = () => {
+      loadProfileData();
+    };
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+    };
   }, []);
+
+  if (loading) {
+    return (
+      <div className={styles.profileSpace}>
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingSpinner}></div>
+          <p>Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.profileSpace}>
+        <div className={styles.errorContainer}>
+          <p className={styles.errorMessage}>{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.profileSpace}>
       <div className={styles.userSpace}>
         <div className={styles.userInfo}>
-          <h1>{displayName || 'nome ipsum'}</h1>
-          <h3>{email || 'email ipsum dolor si amet'}</h3>
+          <h1>{displayName || 'No name set'}</h1>
+          <h3>{email || 'Loading email...'}</h3>
         </div>
         {/* componentizar no futuro*/}
         <div className={styles.userStats}>
@@ -149,15 +201,23 @@ export function ProfileSpace() {
           </div>
           <div className={styles.statsRow}>
             <h4>Favourite Actor:</h4>
-            <p className={styles.stats}>{favoriteActor || 'N/A'}</p>
+            <p className={styles.stats}>
+              {favoriteActor || (likedMovies.length === 0 ? 'Add movies to see your favorites' : 'Not enough data')}
+            </p>
             <h4>Favourite Director:</h4>
-            <p className={styles.stats}>{favoriteDirector || 'N/A'}</p>
+            <p className={styles.stats}>
+              {favoriteDirector || (likedMovies.length === 0 ? 'Add movies to see your favorites' : 'Not enough data')}
+            </p>
           </div>
           <div className={styles.statsRow}>
             <h4>Favourite Genre:</h4>
-            <p className={styles.stats}>{favoriteGenre || 'N/A'}</p>
+            <p className={styles.stats}>
+              {favoriteGenre || (likedMovies.length === 0 ? 'Add movies to see your favorites' : 'Not enough data')}
+            </p>
             <h4>Favourite Decade:</h4>
-            <p className={styles.stats}>{favoriteDecade || 'N/A'}</p>
+            <p className={styles.stats}>
+              {favoriteDecade || (likedMovies.length === 0 ? 'Add movies to see your favorites' : 'Not enough data')}
+            </p>
           </div>
         </div>
       </div>

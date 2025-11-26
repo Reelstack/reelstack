@@ -110,6 +110,23 @@
   margin-top: 0.5rem;
 }
 
+.inputError {
+  border-color: var(--error) !important;
+}
+
+.errorMessage {
+  font-size: 1.2rem;
+  color: var(--error);
+  margin-top: 0.5rem;
+}
+
+.helpText {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
 .saveButton {
   padding: 1rem 2rem;
   font-size: 1.4rem;
@@ -182,8 +199,31 @@
 }
 
 .loading {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   padding: 4rem;
+  gap: 2rem;
+  text-align: center;
+}
+
+.loadingSpinner {
+  width: 4rem;
+  height: 4rem;
+  border: 4px solid var(--blue-light);
+  border-top-color: var(--contrast);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading p {
   color: var(--text-muted);
   font-size: 1.6rem;
 }

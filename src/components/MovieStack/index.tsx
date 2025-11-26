@@ -35,6 +35,11 @@ export function MovieStack({
   const [newlyAddedMovieId, setNewlyAddedMovieId] = useState<string | null>(null);
 
   useEffect(() => {
+    // Skip loading if movies are already provided
+    if (movies.length > 0) {
+      return;
+    }
+
     async function loadUserMovies() {
       setLoading(true);
 
@@ -43,7 +48,10 @@ export function MovieStack({
           data: { session },
           error: sessionError,
         } = await supabase.auth.getSession();
-        if (sessionError || !session) throw toast.error('User not logged in');
+        if (sessionError || !session) {
+          toast.error('User not logged in');
+          return;
+        }
 
         const profileId = session.user.id;
 
@@ -53,6 +61,8 @@ export function MovieStack({
         );
         if (userMovies && userMovies.length > 0) {
           setMovies(userMovies);
+        } else {
+          setMovies([]); // Explicitly set empty array if no movies
         }
       } catch (err) {
         toast.error(
@@ -64,7 +74,7 @@ export function MovieStack({
     }
 
     loadUserMovies();
-  }, [interactionType, setMovies]);
+  }, [interactionType, setMovies, movies.length]);
 
   async function handleSelectMovie(movie: Movie) {
     setLoading(true);

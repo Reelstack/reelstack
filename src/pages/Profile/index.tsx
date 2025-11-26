@@ -52,7 +52,11 @@ export function Profile() {
               <img className={styles.configsvg} src={settings} alt="Settings" />
             </button>
           </div>
-          {showSettings ? <SettingSpace /> : <ProfileSpace />}
+          {showSettings ? (
+            <SettingSpace />
+          ) : (
+            <ProfileSpace />
+          )}
         </div>
       </div>
       <footer className={`${styles.footer} ${showFooter ? styles.footerVisible : styles.footerHidden}`}>
