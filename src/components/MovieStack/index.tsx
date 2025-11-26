@@ -13,6 +13,7 @@ interface MovieStackProps {
   setMovies: React.Dispatch<React.SetStateAction<Movie[]>>;
   color?: string;
   interactionType?: 'like' | 'dislike';
+  allUserMovies?: Movie[];
 }
 
 export function MovieStack({
@@ -21,6 +22,7 @@ export function MovieStack({
   setMovies,
   color = 'var(--success)',
   interactionType = 'like',
+  allUserMovies = [],
 }: MovieStackProps) {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -29,8 +31,15 @@ export function MovieStack({
   const historyRef = useRef<HTMLDivElement | null>(null);
   const shouldScroll = useRef(false);
   const [isHover, setHover] = useState<string | null>(null);
+  const [removingMovieId, setRemovingMovieId] = useState<string | null>(null);
+  const [newlyAddedMovieId, setNewlyAddedMovieId] = useState<string | null>(null);
 
   useEffect(() => {
+    // Skip loading if movies are already provided
+    if (movies.length > 0) {
+      return;
+    }
+
     async function loadUserMovies() {
       setLoading(true);
 
@@ -39,7 +48,10 @@ export function MovieStack({
           data: { session },
           error: sessionError,
         } = await supabase.auth.getSession();
-        if (sessionError || !session) throw toast.error('User not logged in');
+        if (sessionError || !session) {
+          toast.error('User not logged in');
+          return;
+        }
 
         const profileId = session.user.id;
 
@@ -49,6 +61,8 @@ export function MovieStack({
         );
         if (userMovies && userMovies.length > 0) {
           setMovies(userMovies);
+        } else {
+          setMovies([]); // Explicitly set empty array if no movies
         }
       } catch (err) {
         toast.error(
@@ -60,7 +74,7 @@ export function MovieStack({
     }
 
     loadUserMovies();
-  }, [interactionType, setMovies]);
+  }, [interactionType, setMovies, movies.length]);
 
   async function handleSelectMovie(movie: Movie) {
     setLoading(true);
@@ -77,31 +91,97 @@ export function MovieStack({
 
       const profileId = session.user.id;
 
-      // Checa duplicata
-      setMovies(prev => {
-        if (prev.some(m => m.tconst === movie.tconst)) {
-          toast.error('Movie already added.');
-          return prev;
-        }
-        return [movie, ...prev];
-      });
+      const allMoviesToCheck = allUserMovies.length > 0 ? allUserMovies : movies;
+      const isDuplicate = allMoviesToCheck.some(m => m.tconst === movie.tconst);
+      if (isDuplicate) {
+        const duplicateMovie = allMoviesToCheck.find(m => m.tconst === movie.tconst);
+        toast.error(`"${duplicateMovie?.primary_title || 'This movie'}" is already in your list.`);
+        setLoading(false);
+        return;
+      }
 
-      // atualiza a pagina
+      try {
+        const { data: existing } = await supabase
+          .from('user_movie_interactions')
+          .select('id, interaction_type')
+          .eq('profile_id', profileId)
+          .eq('movie_id', movie.tconst)
+          .maybeSingle();
+
+        if (existing) {
+          const interactionTypeText = existing.interaction_type === 'like' ? 'liked' : 'disliked';
+          toast.error(`This movie is already in your ${interactionTypeText} list.`);
+          setLoading(false);
+          return;
+        }
+      } catch (dbCheckError) {
+        console.warn('Failed to check duplicate in database:', dbCheckError);
+      }
+
+      setMovies(prev => [movie, ...prev]);
+      setNewlyAddedMovieId(movie.tconst);
+
       setPage(0);
 
-      //salva os filmes interagidos do usuario
       await MoviesService.addUserMovieInteraction({
         profileId,
         movieId: movie.tconst,
         interactionType,
       });
 
-      toast.success('Movie added successfully!');
+      setTimeout(() => {
+        setNewlyAddedMovieId(null);
+      }, 350);
+
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleRemoveMovie(movie: Movie, event: React.MouseEvent) {
+    event.stopPropagation();
+
+    setRemovingMovieId(movie.tconst);
+
+    setTimeout(async () => {
+      try {
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+        if (sessionError || !session) {
+          toast.error('User not logged in');
+          setRemovingMovieId(null);
+          return;
+        }
+
+        const profileId = session.user.id;
+
+        await MoviesService.removeUserMovieInteraction({
+          profileId,
+          movieId: movie.tconst,
+          interactionType,
+        });
+
+        const updatedMovies = movies.filter(m => m.tconst !== movie.tconst);
+
+        const newTotalPages = Math.ceil(updatedMovies.length / MOVIES_PER_PAGE);
+        if (newTotalPages === 0) {
+          setPage(0);
+        } else if (page >= newTotalPages) {
+          setPage(newTotalPages - 1);
+        }
+
+
+        setMovies(updatedMovies);
+        setRemovingMovieId(null);
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Failed to remove movie');
+        setRemovingMovieId(null);
+      }
+    }, 250);
   }
 
   function handleAddMovie() {
@@ -131,7 +211,7 @@ export function MovieStack({
           disabled={loading}
         >
           {/* trocar svg no futuro */}
-          <h3 style={{ color: 'var(--contrast)' }}>Edit</h3>
+          <h3 style={{ color: 'var(--contrast)' }}>Add</h3>
         </button>
       </div>
 
@@ -140,11 +220,12 @@ export function MovieStack({
         onClose={() => setIsSearchModalOpen(false)}
         onSelectMovie={handleSelectMovie}
         loading={loading}
+        excludedMovieIds={allUserMovies.length > 0 ? allUserMovies.map(m => m.tconst) : movies.map(m => m.tconst)}
       />
 
       {loading && (
         <div className={styles.loading}>
-          <p>Adding movie...</p>
+          <p>Processing...</p>
         </div>
       )}
 
@@ -157,20 +238,31 @@ export function MovieStack({
         {current.map(m => (
           <div
             key={m.tconst}
-            className={styles.moviePoster}
-            onMouseEnter={() => setHover(m.tconst)} // passa o id
+            className={`${styles.moviePoster} ${removingMovieId === m.tconst ? styles.removing : ''
+              } ${newlyAddedMovieId === m.tconst ? styles.adding : ''
+              }`}
+            onMouseEnter={() => !removingMovieId && setHover(m.tconst)} // passa o id
             onMouseLeave={() => setHover(null)} // reseta
           >
             <img
               src={m.banner || '/placeholder-poster.jpg'}
-             
+
               alt={m.primary_title ?? 'Movie poster'}
               onError={e => {
                 (e.target as HTMLImageElement).src = '/placeholder-poster.jpg';
               }}
             />
-            {isHover === m.tconst && ( // checa o id
+            {isHover === m.tconst && !removingMovieId && ( // checa o id
               <div className={styles.movieName}>
+                <button
+                  className={styles.deleteButton}
+                  onClick={(e) => handleRemoveMovie(m, e)}
+                  disabled={loading || removingMovieId !== null}
+                  aria-label={`Remove ${m.primary_title ?? 'movie'}`}
+                  title="Remove movie"
+                >
+                  ×
+                </button>
                 <p>{m.primary_title ?? 'Unknown Title'}</p>
                 <p>({m.start_year ?? 'Unknown Year'})</p>
               </div>
