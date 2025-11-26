@@ -569,4 +569,30 @@ export class MoviesService {
       .filter((m: any): m is Movie => !!m); // filtro para evitar problemas
     return movies;
   }
+
+  /**
+   * Remove a movie interaction (like/dislike) from the user's profile
+   * @param profileId User's profile ID
+   * @param movieId Movie ID (tconst)
+   * @param interactionType Type of interaction to remove
+   */
+  static async removeUserMovieInteraction({
+    profileId,
+    movieId,
+    interactionType,
+  }: {
+    profileId: string;
+    movieId: string;
+    interactionType: 'like' | 'dislike';
+  }) {
+    const { error } = await supabase
+      .from('user_movie_interactions')
+      .delete()
+      .eq('profile_id', profileId)
+      .eq('movie_id', movieId)
+      .eq('interaction_type', interactionType);
+
+    if (error) throw error;
+    return { success: true };
+  }
 }

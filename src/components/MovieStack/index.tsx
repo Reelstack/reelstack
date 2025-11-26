@@ -29,6 +29,8 @@ export function MovieStack({
   const historyRef = useRef<HTMLDivElement | null>(null);
   const shouldScroll = useRef(false);
   const [isHover, setHover] = useState<string | null>(null);
+  const [removingMovieId, setRemovingMovieId] = useState<string | null>(null);
+  const [newlyAddedMovieId, setNewlyAddedMovieId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadUserMovies() {
@@ -78,14 +80,17 @@ export function MovieStack({
       const profileId = session.user.id;
 
       // Checa duplicata
-      setMovies(prev => {
-        if (prev.some(m => m.tconst === movie.tconst)) {
-          toast.error('Movie already added.');
-          return prev;
-        }
-        return [movie, ...prev];
-      });
+      const isDuplicate = movies.some(m => m.tconst === movie.tconst);
+      if (isDuplicate) {
+        toast.error('Movie already added.');
+        setLoading(false);
+        return;
+      }
 
+      // Add movie to UI first for instant feedback
+      setMovies(prev => [movie, ...prev]);
+      setNewlyAddedMovieId(movie.tconst);
+      
       // atualiza a pagina
       setPage(0);
 
@@ -96,12 +101,65 @@ export function MovieStack({
         interactionType,
       });
 
-      toast.success('Movie added successfully!');
+      // Clear the animation flag after animation completes
+      setTimeout(() => {
+        setNewlyAddedMovieId(null);
+      }, 350);
+
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleRemoveMovie(movie: Movie, event: React.MouseEvent) {
+    event.stopPropagation(); // Prevent any parent click handlers
+    
+    // Start removal animation
+    setRemovingMovieId(movie.tconst);
+
+    // Wait for animation to complete before removing from DOM
+    setTimeout(async () => {
+      try {
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+        if (sessionError || !session) {
+          toast.error('User not logged in');
+          setRemovingMovieId(null);
+          return;
+        }
+
+        const profileId = session.user.id;
+
+        // Remove from Supabase
+        await MoviesService.removeUserMovieInteraction({
+          profileId,
+          movieId: movie.tconst,
+          interactionType,
+        });
+
+        // Calculate updated movies list
+        const updatedMovies = movies.filter(m => m.tconst !== movie.tconst);
+        
+        // Adjust page if needed (if current page becomes empty)
+        const newTotalPages = Math.ceil(updatedMovies.length / MOVIES_PER_PAGE);
+        if (newTotalPages === 0) {
+          setPage(0);
+        } else if (page >= newTotalPages) {
+          setPage(newTotalPages - 1);
+        }
+
+        // Remove from UI
+        setMovies(updatedMovies);
+        setRemovingMovieId(null);
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Failed to remove movie');
+        setRemovingMovieId(null);
+      }
+    }, 250); // Match animation duration
   }
 
   function handleAddMovie() {
@@ -144,7 +202,7 @@ export function MovieStack({
 
       {loading && (
         <div className={styles.loading}>
-          <p>Adding movie...</p>
+          <p>Processing...</p>
         </div>
       )}
 
@@ -157,8 +215,12 @@ export function MovieStack({
         {current.map(m => (
           <div
             key={m.tconst}
-            className={styles.moviePoster}
-            onMouseEnter={() => setHover(m.tconst)} // passa o id
+            className={`${styles.moviePoster} ${
+              removingMovieId === m.tconst ? styles.removing : ''
+            } ${
+              newlyAddedMovieId === m.tconst ? styles.adding : ''
+            }`}
+            onMouseEnter={() => !removingMovieId && setHover(m.tconst)} // passa o id
             onMouseLeave={() => setHover(null)} // reseta
           >
             <img
@@ -169,8 +231,17 @@ export function MovieStack({
                 (e.target as HTMLImageElement).src = '/placeholder-poster.jpg';
               }}
             />
-            {isHover === m.tconst && ( // checa o id
+            {isHover === m.tconst && !removingMovieId && ( // checa o id
               <div className={styles.movieName}>
+                <button
+                  className={styles.deleteButton}
+                  onClick={(e) => handleRemoveMovie(m, e)}
+                  disabled={loading || removingMovieId !== null}
+                  aria-label={`Remove ${m.primary_title ?? 'movie'}`}
+                  title="Remove movie"
+                >
+                  ×
+                </button>
                 <p>{m.primary_title ?? 'Unknown Title'}</p>
                 <p>({m.start_year ?? 'Unknown Year'})</p>
               </div>
