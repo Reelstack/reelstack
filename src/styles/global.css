@@ -40,6 +40,16 @@ body {
   height: 100%;
   min-height: 100vh;
 }
+
+body.blur-background.home-no-image::before {
+  background: linear-gradient(360deg, #262335 0%, rgba(38, 35, 53, 0.95) 100%);
+  background-size: cover;
+  filter: blur(8px);
+  background-color: var(--blue-standard);
+  opacity: 1;
+  transition: none;
+}
+
 body.blur-background::before {
   content: '';
   position: fixed;
@@ -51,7 +61,7 @@ body.blur-background::before {
   filter: blur(2px);
   z-index: -1;
   opacity: 1;
-  transition: opacity 0.5s ease; /* smooth fade */
+  transition: opacity 0.5s ease;
 }
 
 body.blur-background.home-background::before {
@@ -78,4 +88,9 @@ body.blur-background::after {
 
 .bg-transition-hide::before {
   opacity: 0 !important;
+}
+
+/* remove transições quando NÃO é home */
+body:not(.home-background)::before {
+  transition: none !important;
 }

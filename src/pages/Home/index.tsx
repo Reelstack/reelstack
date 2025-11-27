@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import styles from './style.module.css';
 import {
   AnimatePresence,
@@ -25,6 +25,10 @@ export function Home() {
   const [loading, setLoading] = useState(true);
   const { setDynamicBg } = useBackground();
 
+  useLayoutEffect(() => {
+    setDynamicBg(null);
+  }, [setDynamicBg]);
+
   const R = 150;
   const [halfWidth, setHalfWidth] = useState(window.innerWidth / 2);
 
@@ -36,6 +40,8 @@ export function Home() {
 
   useEffect(() => {
     async function loadMovies() {
+      setDynamicBg(null);
+
       try {
         const profileId = 'e3a29547-1e55-4d07-8f7d-c75a6ff8b896';
 
@@ -352,20 +358,27 @@ export function Home() {
 
   const movie = movies[index % movies.length];
   const nextMovie = movies[previewIndex % movies.length];
+
   useEffect(() => {
     if (movie?.banner) {
       setDynamicBg(movie.banner);
     }
   }, [movie]);
-  if (!movie || !nextMovie) return null;
 
   if (loading) {
-    return <div className={styles.loading}>Loading recommendations...</div>;
+    return (
+      <div className={styles.loadingScreen}>
+        <div className={styles.spinner} />
+        <p>Loading recommendations...</p>
+      </div>
+    );
   }
 
   if (movies.length === 0) {
     return <div className={styles.loading}>No movies available.</div>;
   }
+
+  if (!movie || !nextMovie) return null;
 
   return (
     <>

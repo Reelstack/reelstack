@@ -9,36 +9,51 @@ const staticImages = {
 
 export function BackgroundBody() {
   const location = useLocation();
-  const { dynamicBg } = useBackground();
+  const { dynamicBg, setDynamicBg } = useBackground();
 
   useEffect(() => {
     const body = document.body;
-    body.classList.add('blur-background');
-    body.classList.remove('home-background');
+    const path = location.pathname;
+    const isHome = path === '/home/';
 
-    let newImg: string | null = null;
+    body.classList.remove('home-background', 'home-no-image');
+    body.classList.remove('bg-transition-hide');
 
-    if (location.pathname === '/home/') {
-      newImg = dynamicBg;
-      body.classList.add('home-background');
-    } else {
-      newImg =
-        staticImages[location.pathname as keyof typeof staticImages] || null;
+    if (!isHome) {
+      const img =
+        staticImages[path as keyof typeof staticImages] ?? '/profile.png';
+
+      body.style.transition = 'none';
+      body.style.setProperty('--bg-image', `url(${img})`);
+      body.classList.add('blur-background');
+
+      body.classList.remove('home-background', 'home-no-image');
+      return;
     }
 
-    if (!newImg) return;
+    // ---------- HOME ------------
 
-    // fade out
-    body.classList.add('bg-transition-hide');
+    if (dynamicBg === null) {
+      body.style.transition = 'none';
+      body.style.setProperty('--bg-image', 'none');
+      body.classList.add('blur-background', 'home-no-image');
+      setTimeout(() => {
+        body.style.transition = '';
+      }, 0);
+      return;
+    }
 
-    //  fade-out, troca imagem
-    setTimeout(() => {
-      body.style.setProperty('--bg-image', `url(${newImg})`);
+    if (dynamicBg) {
+      body.style.transition = '';
+      body.classList.add('blur-background', 'home-background');
 
-      // fade in
-      body.classList.remove('bg-transition-hide');
-    }, 300); // um pouco menor que a duração da transição
-  }, [location.pathname, dynamicBg]);
+      body.classList.add('bg-transition-hide');
+      setTimeout(() => {
+        body.style.setProperty('--bg-image', `url(${dynamicBg})`);
+        body.classList.remove('bg-transition-hide');
+      }, 300);
+    }
+  }, [location.pathname, dynamicBg, setDynamicBg]);
 
   return null;
 }

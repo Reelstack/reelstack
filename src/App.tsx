@@ -7,7 +7,7 @@ import TestAuth from './tests/TestAuth';
 import { useEffect, useRef } from 'react';
 // import { testUserRecommendations } from './tests/TestAlgoritm';
 import { prepareLocalMovieCache } from './services/api/recommendations/movieLocalStorage';
-import { BackgroundProvider } from './contexts/BackgroundContext/BackgroundContext';
+import { BackgroundProvider } from './contexts/BackgroundContext/backgroundContext';
 
 export default function App() {
   const ranOnce = useRef(false);
