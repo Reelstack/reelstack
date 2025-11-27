@@ -187,7 +187,7 @@ function movieToVector(
   return [...genreVector, ...directorVector, ...actorVector];
 }
 
-// ---------------- preparo pro cache----------------
+// ---------------- preparo para o cache----------------
 export async function prepareLocalMovieCache() {
   const populated = await isCachePopulated();
   if (populated) return; // saida rapida se ja tiver coisa

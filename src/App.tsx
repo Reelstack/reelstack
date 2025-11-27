@@ -3,7 +3,7 @@ import './styles/theme.css';
 import { MainRouter } from './routers/MainRouter';
 
 import { Toaster } from 'react-hot-toast';
-import TestAuth from './tests/TestAuth';
+// import TestAuth from './tests/TestAuth';
 import { useEffect, useRef } from 'react';
 // import { testUserRecommendations } from './tests/TestAlgoritm';
 import { prepareLocalMovieCache } from './services/api/recommendations/movieLocalStorage';
@@ -23,15 +23,19 @@ export default function App() {
       //testUserRecommendations(); // roda o algoritmo em segundo plano
     }
 
-    prepareAndRun();
+    // Defer cache preparation to avoid blocking initial render
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(prepareAndRun);
+    } else {
+      setTimeout(prepareAndRun, 0);
+    }
   }, []);
   return (
     <>
-      <TestAuth />
-
       <BackgroundProvider>
         <MainRouter />
       </BackgroundProvider>
+
       <Toaster position='top-center' toastOptions={{ duration: 3000 }} />
     </>
   );

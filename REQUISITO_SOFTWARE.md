@@ -439,6 +439,37 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **Fonte/autoridade:** Diretriz de usabilidade e feedback visual do sistema.
 - **Impacto:** Em todas as histórias de usuário.
 ---
+
+
+## Anexo 01 – Mensagens do Sistema
+
+| Código | Mensagem                                                                 |
+|--------|--------------------------------------------------------------------------|
+| M001   | Usuário ou senha digitados estão inválidos! Tente novamente               |
+| M002   | E-mail informado é inválido, verifique a digitação do seu e-mail        |
+| M003   | Erro ao redirecionar à página selecionada. Favor entrar em contato com o administrador do sistema |
+| M004   | Erro inesperado. Favor entrar em contato com o administrador do sistema |
+| M005   | Campos obrigatórios não preenchidos. Verifique e tente novamente.       |
+| M006   | Não foi possível adicionar o filme à coleção: filme já existente.       |
+| M007   | Nome da coleção já está em uso. Escolha outro nome.                     |
+| M008   | Sinopse não disponível para este título.                                |
+| M009   | Ação inválida. Verifique se o item selecionado existe.                  |
+
+
+---
+
+## Tabela Resumo RNFs
+
+
+| ID      | Título                                      | Classificação       | Critério de Aceitação                          |
+|---------|---------------------------------------------|----------------------|-----------------------------------------------|
+| RNF001  | Desempenho: Tempo de Resposta ao Swipe     | Eficiência           | Percentil 90 ≤ 1s em teste de carga          |
+| RNF002  | Segurança: Criptografia em Trânsito        | Segurança            | OWASP ZAP sem falhas críticas                |
+| RNF003  | Usabilidade: Fluxo de Onboarding           | Usabilidade          | ≥ 85% concluem cadastro + 1ª interação ≤ 5min|
+| RNF004  | Compatibilidade: Suporte a Navegadores     | Compatibilidade      | 100% das funções operam nos navegadores      |
+| RNF005  | Usabilidade: Mensagens de Erro             | Usabilidade          | 100% dos casos exibem mensagem adequada      |
+
+
 ## Lista de Requisitos Não Funcionais  
 
 ### RNF 001 – Desempenho: Tempo de Resposta ao Swipe
@@ -496,20 +527,6 @@ A priorização das histórias seguiu a técnica **MoSCoW** (Must, Should, Could
 - **Método de verificação:** Auditoria de código e checklist de conformidade
 - **Critério de aceitação:** Nenhuma função ou classe pública sem documentação até o fechamento do projeto
 - **Impacto na arquitetura:** Padrões de codificação e boas práticas devem ser seguidos desde a primeira sprint
-
----
-
-## Declaração de uso ético e responsável de IA  
-O grupo declara que utilizou ferramentas de inteligência artificial generativa, especificamente o modelo **[ChatGPT-4 (OpenAI)](https://openai.com/pt-BR/index/chatgpt/)**, para auxiliar na estruturação e revisão deste documento (maio de 2025 - setembro de 2025).  
-
-As seções que receberam suporte automatizado incluem:
-- Introdução (estrutura e revisão textual),
-- Visão geral dos requisitos funcionais,
-- Lista de regras de negócio,
-- Requisitos não funcionais,
-- Revisão técnica e estilística do conteúdo.
-  
-**Toda a produção gerada por IA foi revisada criticamente pelos membros do grupo**, que permanecem integralmente responsáveis pela exatidão, completude, clareza e conformidade acadêmica do conteúdo final apresentado.
 
 ---
 <p align="center">  
