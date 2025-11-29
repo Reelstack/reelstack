@@ -52,8 +52,14 @@ export function Home() {
 
         const normalized = await Promise.all(
           rec.map(async (m: any, i: number) => {
+            console.log(
+              '%c[U-UPGRADE TEST] original:',
+              'color: yellow',
+              m.banner,
+            );
             // caso erro retorna original
             const banner = await upgradeImageUrlSafe(m.banner ?? '');
+            console.log('%c[U-UPGRADE TEST] upgraded:', 'color: cyan', banner);
 
             return {
               id: i + 1,
