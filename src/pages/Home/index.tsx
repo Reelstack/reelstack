@@ -13,6 +13,7 @@ import filter from '../../assets/filter.svg';
 import { RouterLink } from '../../components/RouterLink';
 import { fetchRecommendationsViaWorker } from '../../services/api/recommendations/recommendationFetcher';
 import { useBackground } from '../../contexts/BackgroundContext/backgroundContext';
+import { useAuth } from '../../contexts/AuthContext/authContext';
 
 export function Home() {
   const [index, setIndex] = useState(0);
@@ -23,6 +24,7 @@ export function Home() {
   const [isSwiping, setIsSwiping] = useState(false);
   const [movies, setMovies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user, loading: authLoading } = useAuth();
   const { setDynamicBg } = useBackground();
 
   useLayoutEffect(() => {
@@ -39,11 +41,13 @@ export function Home() {
   }, []);
 
   useEffect(() => {
+    if (authLoading) return; // checagem de sessão
+    if (!user) return;
     async function loadMovies() {
       setDynamicBg(null);
 
       try {
-        const profileId = 'e3a29547-1e55-4d07-8f7d-c75a6ff8b896';
+        const profileId = user!.id;
 
         const rec = await fetchRecommendationsViaWorker(profileId, 10);
 
