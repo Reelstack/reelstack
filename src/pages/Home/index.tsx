@@ -213,6 +213,11 @@ export function Home() {
     setSwipeDirection(direction);
     setIsSwiping(true);
 
+    const nextBackgorundMovie = movies[(index + 1) % movies.length];
+    if (nextBackgorundMovie?.banner) {
+      setDynamicBg(nextBackgorundMovie.banner);
+    }
+
     // stabilizador pra evitar valores estranhos
     mainX.set(mainX.get());
     previewX.set(previewX.get());
@@ -243,7 +248,16 @@ export function Home() {
                 requestAnimationFrame(() => {
                   setTimeout(() => {
                     // atualiza os indices enquanto o faux existir
-                    setIndex(prev => prev + 1);
+                    setIndex(prev => {
+                      const newIndex = prev + 1;
+
+                      // atualiza o background
+                      const next = movies[newIndex % movies.length];
+                      if (next?.banner) setDynamicBg(next.banner);
+
+                      return newIndex;
+                    });
+
                     setPreviewIndex(prev => prev + 1);
 
                     // reseta o crossfade e mainX pro inicio
@@ -409,7 +423,7 @@ export function Home() {
                 {/*-------------------------------------------- PREVIEW --------------------------------------------------- */}
                 <motion.div
                   key={`preview-${nextMovie.id}-${swipeDirection}`}
-                  className={styles.poster}
+                  className={`${styles.poster} ${styles.noSelect}`}
                   style={{
                     backgroundImage: `url(${nextMovie.banner})`,
                     backgroundSize: 'cover',
@@ -431,7 +445,7 @@ export function Home() {
                 {/*-------------------------------------------- FAUX (cortina até as coisas ficarem boas) ------------------------------*/}
                 <motion.div
                   key={`faux-${nextMovie.id}`}
-                  className={styles.poster}
+                  className={`${styles.poster} ${styles.noSelect}`}
                   style={{
                     backgroundImage: `url(${nextMovie.banner})`,
                     backgroundSize: 'cover',
@@ -453,7 +467,7 @@ export function Home() {
                 {/*-------------------------------------------- MAIN ---------------------------------------------*/}
                 <motion.div
                   key={'main-card'}
-                  className={styles.poster}
+                  className={`${styles.poster} ${styles.noSelect}`}
                   drag='x'
                   onDrag={handleDrag}
                   onDragEnd={handleDragEnd}
