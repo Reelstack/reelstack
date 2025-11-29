@@ -4,12 +4,19 @@ import styles from './style.module.css';
 import { useState, useEffect, useRef } from 'react';
 import { ProfileSpace } from '../../components/ProfileSpace';
 import { SettingSpace } from '../../components/SettingSpace';
+import { useBackground } from '../../contexts/BackgroundContext/backgroundContext';
 
 export function Profile() {
   const [showSettings, setShowSettings] = useState(false);
   const [showFooter, setShowFooter] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const { setDynamicBg } = useBackground();
 
+  useEffect(() => {
+    return () => {
+      setDynamicBg(null); // limpar imagem apos sair da home
+    };
+  }, []);
   useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
@@ -65,17 +72,15 @@ export function Profile() {
               className={styles.settingsButton}
               onClick={() => setShowSettings(prev => !prev)}
             >
-              <img className={styles.configsvg} src={settings} alt="Settings" />
+              <img className={styles.configsvg} src={settings} alt='Settings' />
             </button>
           </div>
-          {showSettings ? (
-            <SettingSpace />
-          ) : (
-            <ProfileSpace />
-          )}
+          {showSettings ? <SettingSpace /> : <ProfileSpace />}
         </div>
       </div>
-      <footer className={`${styles.footer} ${showFooter ? styles.footerVisible : styles.footerHidden}`}>
+      <footer
+        className={`${styles.footer} ${showFooter ? styles.footerVisible : styles.footerHidden}`}
+      >
         <div className={styles.footerContent}>
           <div className={styles.footerBrand}>
             <h2 className={styles.footerTitle}>ReelStack</h2>

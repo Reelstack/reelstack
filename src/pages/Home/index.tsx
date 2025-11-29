@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './style.module.css';
 import {
   AnimatePresence,
@@ -27,9 +27,9 @@ export function Home() {
   const { user, loading: authLoading } = useAuth();
   const { setDynamicBg } = useBackground();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setDynamicBg(null);
-  }, [setDynamicBg]);
+  }, []);
 
   const R = 150;
   const [halfWidth, setHalfWidth] = useState(window.innerWidth / 2);
@@ -43,9 +43,8 @@ export function Home() {
   useEffect(() => {
     if (authLoading) return; // checagem de sessão
     if (!user) return;
+    setDynamicBg(null);
     async function loadMovies() {
-      setDynamicBg(null);
-
       try {
         const profileId = user!.id;
 
