@@ -278,6 +278,12 @@ export function Home() {
 
                     setPreviewIndex(prev => prev + 1);
 
+                    // --- logica de recarga ---
+                    const remaining = movies.length - (index + 1);
+                    if (remaining <= 5) {
+                      replenishMovies();
+                    }
+
                     // reseta o crossfade e mainX pro inicio
                     contentSwapProgress.set(0);
                     mainX.set(0);
@@ -302,6 +308,49 @@ export function Home() {
     // fade do preview quanto mais se aproxima do centro
     animate(previewOpacity, 1, { type: 'spring', stiffness: 150, damping: 18 });
   };
+
+  async function replenishMovies() {
+    if (!user?.id) return;
+
+    const profileId = user.id;
+    try {
+      const rec = await fetchRecommendationsViaWorker(profileId, 10);
+
+      const normalized = await Promise.all(
+        rec.map(async (m: any, i: number) => {
+          const banner = await upgradeImageUrlSafe(m.banner ?? '');
+          return {
+            id: m.id,
+            displayIndex: movies.length + i,
+            title: m.title,
+            director: m.director ?? 'Unknown',
+            genres:
+              m.genres?.map((g: { name: any }) => g.name).join(', ') ??
+              'Unknown',
+            actors: Array.isArray(m.actors)
+              ? m.actors.join(', ')
+              : typeof m.actors === 'string'
+                ? m.actors
+                : 'Unknown',
+            banner,
+          };
+        }),
+      );
+
+      setMovies(prev => {
+        const updated = [...prev, ...normalized];
+
+        // logica de cleanup
+        if (updated.length > 25) {
+          return updated.slice(-20); // mantém ultimos 20
+        }
+
+        return updated;
+      });
+    } catch (e) {
+      console.error('Replenish failed:', e);
+    }
+  }
 
   async function upgradeImageUrlSafe(originalUrl: string): Promise<string> {
     try {
