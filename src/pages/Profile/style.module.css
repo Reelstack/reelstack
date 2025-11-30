@@ -66,12 +66,29 @@
   border-radius: 1.4rem;
   text-decoration: none;
   cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
 }
 
 .navbar:hover {
   transform: scale(1.05);
   background-color: var(--blue-dark);
+}
+
+.arrow {
+  height: 2rem;
+  width: 2rem;
+  display: inline-block;
+  flex-shrink: 0;
+  background-image: url('../../assets/arrow-right-circle.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(0);
+}
+
+.navbar:hover .arrow {
+  background-image: url('../../assets/arrow-right-circle-filled.svg');
+  transform: translateX(0.3rem);
 }
 
 .settingsButton {
@@ -82,11 +99,11 @@
   background: none;
   cursor: pointer;
   padding: 0.5rem;
-  transition: transform 0.2s ease;
+  transition: transform 0.3s ease;
 }
 
 .settingsButton:hover {
-  transform: scale(1.1);
+  transform: rotate(90deg) scale(1.05);
 }
 
 .configsvg {

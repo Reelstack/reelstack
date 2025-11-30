@@ -6,7 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { ConfirmationModal } from '../ConfirmationModal';
 
-export function SettingSpace() {
+interface SettingSpaceProps {
+  onLoadingChange?: (loading: boolean) => void;
+}
+
+export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [profileName, setProfileName] = useState<string>('');
@@ -55,6 +59,13 @@ export function SettingSpace() {
     loadProfile();
   }, [user]);
 
+  useEffect(() => {
+    // Notify parent when loading state changes
+    if (onLoadingChange) {
+      onLoadingChange(loading);
+    }
+  }, [loading, onLoadingChange]);
+
   function validateProfileName(name: string): string | null {
     const trimmed = name.trim();
 
@@ -70,8 +81,11 @@ export function SettingSpace() {
       return 'Profile name must be less than 50 characters';
     }
 
-    if (!/^[a-zA-Z0-9\s_-]+$/.test(trimmed)) {
-      return 'Profile name can only contain letters, numbers, spaces, underscores, and hyphens';
+    // Allow letters (including accented/Unicode), numbers, spaces, and most special characters
+    // Only exclude null bytes and control characters that could be problematic
+    // This allows: letters (any language), numbers, spaces, punctuation, and symbols
+    if (/[\x00-\x1F\x7F]/.test(trimmed)) {
+      return 'Profile name contains invalid control characters';
     }
 
     return null;
@@ -254,10 +268,7 @@ export function SettingSpace() {
               <label>Email</label>
               <p>{user?.email || 'N/A'}</p>
             </div>
-            <div className={styles.infoItem}>
-              <label>User ID</label>
-              <p className={styles.userId}>{user?.id || 'N/A'}</p>
-            </div>
+            {/* User ID removed for security reasons - exposing UUIDs can be a privacy/security risk */}
             <div className={styles.infoItem}>
               <label>Account Created</label>
               <p>{accountCreated || 'N/A'}</p>
@@ -275,7 +286,7 @@ export function SettingSpace() {
               value={profileName}
               onChange={(e) => {
                 setProfileName(e.target.value);
-                setProfileNameError(null); // Clear error when user types
+                setProfileNameError(null);
               }}
               placeholder="Enter your profile name"
               className={`${styles.input} ${profileNameError ? styles.inputError : ''}`}
@@ -285,7 +296,7 @@ export function SettingSpace() {
               <span className={styles.errorMessage}>{profileNameError}</span>
             )}
             <span className={styles.helpText}>
-              Must be 3-50 characters. Letters, numbers, spaces, underscores, and hyphens only.
+              Must be 3-50 characters. Letters, numbers, spaces, and special characters are allowed.
             </span>
           </div>
           <button

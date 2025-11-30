@@ -7,6 +7,7 @@ import { SettingSpace } from '../../components/SettingSpace';
 
 export function Profile() {
   const [showSettings, setShowSettings] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   return (
     <div className={styles.page}>
@@ -14,6 +15,7 @@ export function Profile() {
         <div className={styles.nav}>
           <RouterLink className={styles.navbar} href='/home/'>
             Home
+            <div className={styles.arrow} />
           </RouterLink>
 
           <button
@@ -24,11 +26,12 @@ export function Profile() {
           </button>
         </div>
         {showSettings ? (
-          <SettingSpace />
+          <SettingSpace onLoadingChange={setIsLoading} />
         ) : (
-          <ProfileSpace />
+          <ProfileSpace onLoadingChange={setIsLoading} />
         )}
-        <footer className={styles.footer}>
+        {!isLoading && (
+          <footer className={styles.footer}>
           <div className={styles.footerContent}>
             <div className={styles.footerBrand}>
               <h2 className={styles.footerTitle}>ReelStack</h2>
@@ -43,6 +46,7 @@ export function Profile() {
             </div>
           </div>
         </footer>
+        )}
       </div>
     </div>
   );

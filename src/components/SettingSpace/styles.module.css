@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 80rem;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem 2rem 2rem 2rem;
 }
 
 .header {
@@ -206,6 +206,8 @@
   padding: 4rem;
   gap: 2rem;
   text-align: center;
+  min-height: 100vh;
+  width: 100%;
 }
 
 .loadingSpinner {
@@ -231,7 +233,7 @@
 /* Responsive design */
 @media (max-width: 768px) {
   .settingsContainer {
-    padding: 1.5rem;
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
   }
 
   .header h1 {
@@ -253,7 +255,7 @@
 
 @media (max-width: 480px) {
   .settingsContainer {
-    padding: 1rem;
+    padding: 0.5rem 1rem 1rem 1rem;
   }
 
   .header h1 {
