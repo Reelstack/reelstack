@@ -121,7 +121,8 @@ export function SettingSpace() {
 
     setSaving(true);
     try {
-      const { error } = await supabase
+      // Update profile_name in profiles table
+      const { error: profileError } = await supabase
         .from('profiles')
         .update({
           profile_name: trimmedName,
@@ -129,7 +130,17 @@ export function SettingSpace() {
         })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
+
+      // Update display_name in user metadata
+      const { error: authError } = await supabase.auth.updateUser({
+        data: { display_name: trimmedName }
+      });
+
+      if (authError) {
+        console.warn('Failed to update display_name in auth.users:', authError);
+        // Don't throw - profile_name was updated successfully
+      }
 
       toast.success('Profile updated successfully!');
       setOriginalProfileName(trimmedName);
