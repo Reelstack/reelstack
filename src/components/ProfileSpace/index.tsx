@@ -10,11 +10,11 @@ function getMostFrequent<T>(items: T[], extractor: (item: T) => string | string[
   if (items.length === 0) return null;
 
   const frequency = new Map<string, number>();
-  
+
   items.forEach(item => {
     const value = extractor(item);
     if (!value) return;
-    
+
     const values = Array.isArray(value) ? value : [value];
     values.forEach(v => {
       const trimmed = v.trim();
@@ -28,7 +28,7 @@ function getMostFrequent<T>(items: T[], extractor: (item: T) => string | string[
 
   let maxCount = 0;
   let mostFrequent: string | null = null;
-  
+
   frequency.forEach((count, item) => {
     if (count > maxCount) {
       maxCount = count;
@@ -61,7 +61,7 @@ function getFavoriteDecade(movies: Movie[]): string | null {
   if (movies.length === 0) return null;
 
   const decadeFrequency = new Map<string, number>();
-  
+
   movies.forEach(movie => {
     if (!movie.start_year) return;
     const decade = Math.floor(movie.start_year / 10) * 10;
@@ -73,7 +73,7 @@ function getFavoriteDecade(movies: Movie[]): string | null {
 
   let maxCount = 0;
   let favoriteDecade: string | null = null;
-  
+
   decadeFrequency.forEach((count, decade) => {
     if (count > maxCount) {
       maxCount = count;
@@ -84,13 +84,18 @@ function getFavoriteDecade(movies: Movie[]): string | null {
   return favoriteDecade;
 }
 
-export function ProfileSpace() {
+interface ProfileSpaceProps {
+  onLoadingChange?: (loading: boolean) => void;
+}
+
+export function ProfileSpace({ onLoadingChange }: ProfileSpaceProps) {
   const [likedMovies, setLikedMovies] = useState<Movie[]>([]);
   const [dislikedMovies, setDislikedMovies] = useState<Movie[]>([]);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   // Calculate favorites based on liked movies
   const favoriteActor = useMemo(() => getFavoriteActor(likedMovies), [likedMovies]);
@@ -98,13 +103,20 @@ export function ProfileSpace() {
   const favoriteGenre = useMemo(() => getFavoriteGenre(likedMovies), [likedMovies]);
   const favoriteDecade = useMemo(() => getFavoriteDecade(likedMovies), [likedMovies]);
 
-  async function loadProfileData() {
-    setLoading(true);
+  async function loadProfileData(showLoading = true) {
+    // Only show loading if we haven't loaded data before OR if explicitly requested
+    const shouldShowLoading = showLoading && !hasLoadedOnce;
+
+    if (shouldShowLoading) {
+      setLoading(true);
+    }
     try {
       const { data: authData } = await supabase.auth.getUser();
       const user = authData?.user;
       if (!user) {
-        setLoading(false);
+        if (shouldShowLoading) {
+          setLoading(false);
+        }
         return;
       }
 
@@ -125,45 +137,45 @@ export function ProfileSpace() {
       setLikedMovies(liked || []);
       setDislikedMovies(disliked || []);
       setError(null);
+      setHasLoadedOnce(true);
     } catch (err) {
       console.error('Error loading profile data:', err);
       setError('Failed to load profile data. Please try refreshing the page.');
     } finally {
-      setLoading(false);
+      if (shouldShowLoading) {
+        setLoading(false);
+      }
     }
   }
 
   useEffect(() => {
-    loadProfileData();
+    // Notify parent when loading state changes
+    if (onLoadingChange) {
+      const isCurrentlyLoading = loading && !hasLoadedOnce && !displayName && likedMovies.length === 0 && dislikedMovies.length === 0;
+      onLoadingChange(isCurrentlyLoading);
+    }
+  }, [loading, hasLoadedOnce, displayName, likedMovies.length, onLoadingChange]);
 
-    // Refresh profile when window gains focus (handles returning from settings)
-    const handleFocus = () => {
-      loadProfileData();
-    };
-    window.addEventListener('focus', handleFocus);
+  useEffect(() => {
+    // Only show loading on initial mount if we haven't loaded before
+    if (!hasLoadedOnce) {
+      loadProfileData(true);
+    }
 
-    // Also refresh on visibility change
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        loadProfileData();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // Listen for profile update events from settings
+    // Listen for profile update events from settings (silent update, no loading)
     const handleProfileUpdate = () => {
-      loadProfileData();
+      loadProfileData(false);
     };
     window.addEventListener('profileUpdated', handleProfileUpdate);
 
     return () => {
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('profileUpdated', handleProfileUpdate);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (loading) {
+
+  if (loading && !hasLoadedOnce && !displayName && likedMovies.length === 0 && dislikedMovies.length === 0) {
     return (
       <div className={styles.profileSpace}>
         <div className={styles.loadingContainer}>
