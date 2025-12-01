@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './style.module.css';
 import {
   AnimatePresence,
@@ -26,6 +26,17 @@ export function Home() {
   const [movies, setMovies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { user, loading: authLoading } = useAuth();
+  const indexRef = useRef(0);
+  const moviesRef = useRef<any[]>([]);
+
+  useEffect(() => {
+    indexRef.current = index;
+  }, [index]);
+
+  useEffect(() => {
+    moviesRef.current = movies;
+  }, [movies]);
+
   const { setDynamicBg } = useBackground();
 
   useEffect(() => {
@@ -90,10 +101,14 @@ export function Home() {
     loadMovies();
   }, []);
 
+  // Only reset index ON FIRST LOAD, not when movies append
+  const initialLoadRef = useRef(true);
+
   useEffect(() => {
-    if (movies.length > 0) {
+    if (movies.length > 0 && initialLoadRef.current) {
       setIndex(0);
       setPreviewIndex(1);
+      initialLoadRef.current = false; // prevent future resets
     }
   }, [movies]);
 
@@ -266,23 +281,20 @@ export function Home() {
                 requestAnimationFrame(() => {
                   setTimeout(() => {
                     // atualiza os indices enquanto o faux existir
-                    setIndex(prev => {
-                      const newIndex = prev + 1;
+                    const stableMovies = moviesRef.current;
+                    const stableIndex = indexRef.current;
 
-                      // atualiza o background
-                      const next = movies[newIndex % movies.length];
-                      if (next?.banner) setDynamicBg(next.banner);
+                    const newIndex = stableIndex + 1;
 
-                      return newIndex;
-                    });
-
-                    setPreviewIndex(prev => prev + 1);
-
-                    // --- logica de recarga ---
-                    const remaining = movies.length - (index + 1);
+                    // check remaining based on the stable snapshot
+                    const remaining = stableMovies.length - newIndex;
                     if (remaining <= 5) {
                       replenishMovies();
                     }
+
+                    // apply state
+                    setIndex(newIndex);
+                    setPreviewIndex(newIndex + 1);
 
                     // reseta o crossfade e mainX pro inicio
                     contentSwapProgress.set(0);
@@ -312,16 +324,16 @@ export function Home() {
   async function replenishMovies() {
     if (!user?.id) return;
 
-    const profileId = user.id;
     try {
+      const profileId = user.id;
       const rec = await fetchRecommendationsViaWorker(profileId, 10);
 
+      // Normalize new movies
       const normalized = await Promise.all(
-        rec.map(async (m: any, i: number) => {
+        rec.map(async (m: any) => {
           const banner = await upgradeImageUrlSafe(m.banner ?? '');
           return {
             id: m.id,
-            displayIndex: movies.length + i,
             title: m.title,
             director: m.director ?? 'Unknown',
             genres:
@@ -337,12 +349,31 @@ export function Home() {
         }),
       );
 
+      // -----------------------------------------
+      // 🔥 FILTER OUT MOVIES THE USER HAS ALREADY SWIPED OR SEEN
+      // -----------------------------------------
       setMovies(prev => {
-        const updated = [...prev, ...normalized];
+        // Filter out duplicates in new batch
+        const newUnique = normalized.filter(
+          m => !prev.some(p => p.id === m.id),
+        );
 
-        // logica de cleanup
-        if (updated.length > 25) {
-          return updated.slice(-20); // mantém ultimos 20
+        // Append new unique movies
+        let updated = [...prev, ...newUnique];
+
+        // Only trim movies that are *before* the current index
+        if (updated.length > 40) {
+          const excess = updated.length - 40;
+
+          if (excess > 0) {
+            // slice only the oldest movies, not the newly added
+            updated = updated.slice(excess);
+
+            // adjust index to match new array
+            indexRef.current = Math.max(0, indexRef.current - excess);
+            setIndex(indexRef.current);
+            setPreviewIndex(indexRef.current + 1);
+          }
         }
 
         return updated;
