@@ -101,14 +101,13 @@ export function Home() {
     loadMovies();
   }, []);
 
-  // Only reset index ON FIRST LOAD, not when movies append
   const initialLoadRef = useRef(true);
 
   useEffect(() => {
     if (movies.length > 0 && initialLoadRef.current) {
       setIndex(0);
       setPreviewIndex(1);
-      initialLoadRef.current = false; // prevent future resets
+      initialLoadRef.current = false;
     }
   }, [movies]);
 
@@ -281,20 +280,16 @@ export function Home() {
                 requestAnimationFrame(() => {
                   setTimeout(() => {
                     // atualiza os indices enquanto o faux existir
-                    const stableMovies = moviesRef.current;
-                    const stableIndex = indexRef.current;
 
-                    const newIndex = stableIndex + 1;
+                    const newIndex = index + 1;
+                    setIndex(newIndex);
+                    setPreviewIndex(newIndex + 1);
 
-                    // check remaining based on the stable snapshot
-                    const remaining = stableMovies.length - newIndex;
+                    // recarrega o indice qundo chegar nos ultimos 5 filmes
+                    const remaining = movies.length - newIndex;
                     if (remaining <= 5) {
                       replenishMovies();
                     }
-
-                    // apply state
-                    setIndex(newIndex);
-                    setPreviewIndex(newIndex + 1);
 
                     // reseta o crossfade e mainX pro inicio
                     contentSwapProgress.set(0);
@@ -328,7 +323,7 @@ export function Home() {
       const profileId = user.id;
       const rec = await fetchRecommendationsViaWorker(profileId, 10);
 
-      // Normalize new movies
+      // Normaliza filmes novos
       const normalized = await Promise.all(
         rec.map(async (m: any) => {
           const banner = await upgradeImageUrlSafe(m.banner ?? '');
@@ -348,35 +343,11 @@ export function Home() {
           };
         }),
       );
-
-      // -----------------------------------------
-      // 🔥 FILTER OUT MOVIES THE USER HAS ALREADY SWIPED OR SEEN
-      // -----------------------------------------
       setMovies(prev => {
-        // Filter out duplicates in new batch
         const newUnique = normalized.filter(
           m => !prev.some(p => p.id === m.id),
         );
-
-        // Append new unique movies
-        let updated = [...prev, ...newUnique];
-
-        // Only trim movies that are *before* the current index
-        if (updated.length > 40) {
-          const excess = updated.length - 40;
-
-          if (excess > 0) {
-            // slice only the oldest movies, not the newly added
-            updated = updated.slice(excess);
-
-            // adjust index to match new array
-            indexRef.current = Math.max(0, indexRef.current - excess);
-            setIndex(indexRef.current);
-            setPreviewIndex(indexRef.current + 1);
-          }
-        }
-
-        return updated;
+        return [...prev, ...newUnique]; // junta, não corta para evitar montagem errada
       });
     } catch (e) {
       console.error('Replenish failed:', e);
@@ -472,8 +443,8 @@ export function Home() {
     }
   }
 
-  const movie = movies[index % movies.length];
-  const nextMovie = movies[previewIndex % movies.length];
+  const movie = movies[index];
+  const nextMovie = movies[index + 1];
 
   useEffect(() => {
     if (movie?.banner) {
