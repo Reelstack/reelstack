@@ -5,8 +5,11 @@ import type { Movie } from '../../services/api/supa-api/movies';
 import { MoviesService } from '../../services/api/supa-api/movies';
 import { supabase } from '../../lib/supabaseClient';
 
-// Utility functions to calculate favorites
-function getMostFrequent<T>(items: T[], extractor: (item: T) => string | string[] | null): string | null {
+// calcular favoritos
+function getMostFrequent<T>(
+  items: T[],
+  extractor: (item: T) => string | string[] | null,
+): string | null {
   if (items.length === 0) return null;
 
   const frequency = new Map<string, number>();
@@ -40,20 +43,26 @@ function getMostFrequent<T>(items: T[], extractor: (item: T) => string | string[
 }
 
 function getFavoriteActor(movies: Movie[]): string | null {
-  return getMostFrequent(movies, (movie) => {
+  return getMostFrequent(movies, movie => {
     if (!movie.actors) return null;
-    return movie.actors.split(',').map(a => a.trim()).filter(Boolean);
+    return movie.actors
+      .split(',')
+      .map(a => a.trim())
+      .filter(Boolean);
   });
 }
 
 function getFavoriteDirector(movies: Movie[]): string | null {
-  return getMostFrequent(movies, (movie) => movie.director);
+  return getMostFrequent(movies, movie => movie.director);
 }
 
 function getFavoriteGenre(movies: Movie[]): string | null {
-  return getMostFrequent(movies, (movie) => {
+  return getMostFrequent(movies, movie => {
     if (!movie.genres) return null;
-    return movie.genres.split(',').map(g => g.trim()).filter(Boolean);
+    return movie.genres
+      .split(',')
+      .map(g => g.trim())
+      .filter(Boolean);
   });
 }
 
@@ -97,14 +106,25 @@ export function ProfileSpace({ onLoadingChange }: ProfileSpaceProps) {
   const [error, setError] = useState<string | null>(null);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
-  // Calculate favorites based on liked movies
-  const favoriteActor = useMemo(() => getFavoriteActor(likedMovies), [likedMovies]);
-  const favoriteDirector = useMemo(() => getFavoriteDirector(likedMovies), [likedMovies]);
-  const favoriteGenre = useMemo(() => getFavoriteGenre(likedMovies), [likedMovies]);
-  const favoriteDecade = useMemo(() => getFavoriteDecade(likedMovies), [likedMovies]);
+  // calcular favoritos baseados em like
+  const favoriteActor = useMemo(
+    () => getFavoriteActor(likedMovies),
+    [likedMovies],
+  );
+  const favoriteDirector = useMemo(
+    () => getFavoriteDirector(likedMovies),
+    [likedMovies],
+  );
+  const favoriteGenre = useMemo(
+    () => getFavoriteGenre(likedMovies),
+    [likedMovies],
+  );
+  const favoriteDecade = useMemo(
+    () => getFavoriteDecade(likedMovies),
+    [likedMovies],
+  );
 
   async function loadProfileData(showLoading = true) {
-    // Only show loading if we haven't loaded data before OR if explicitly requested
     const shouldShowLoading = showLoading && !hasLoadedOnce;
 
     if (shouldShowLoading) {
@@ -128,7 +148,7 @@ export function ProfileSpace({ onLoadingChange }: ProfileSpaceProps) {
         .single();
       if (profile?.profile_name) setDisplayName(profile.profile_name);
 
-      // Load liked and disliked movies for stats
+      // stats do liked e disliked
       const [liked, disliked] = await Promise.all([
         MoviesService.getUserMovies(user.id, 'like').catch(() => []),
         MoviesService.getUserMovies(user.id, 'dislike').catch(() => []),
@@ -149,20 +169,30 @@ export function ProfileSpace({ onLoadingChange }: ProfileSpaceProps) {
   }
 
   useEffect(() => {
-    // Notify parent when loading state changes
     if (onLoadingChange) {
-      const isCurrentlyLoading = loading && !hasLoadedOnce && !displayName && likedMovies.length === 0 && dislikedMovies.length === 0;
+      const isCurrentlyLoading =
+        loading &&
+        !hasLoadedOnce &&
+        !displayName &&
+        likedMovies.length === 0 &&
+        dislikedMovies.length === 0;
       onLoadingChange(isCurrentlyLoading);
     }
-  }, [loading, hasLoadedOnce, displayName, likedMovies.length, onLoadingChange]);
+  }, [
+    loading,
+    hasLoadedOnce,
+    displayName,
+    likedMovies.length,
+    onLoadingChange,
+  ]);
 
   useEffect(() => {
-    // Only show loading on initial mount if we haven't loaded before
+    // só mostra loading na montagem inicial
     if (!hasLoadedOnce) {
       loadProfileData(true);
     }
 
-    // Listen for profile update events from settings (silent update, no loading)
+    //listener de mudança nas settings
     const handleProfileUpdate = () => {
       loadProfileData(false);
     };
@@ -174,8 +204,13 @@ export function ProfileSpace({ onLoadingChange }: ProfileSpaceProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
-  if (loading && !hasLoadedOnce && !displayName && likedMovies.length === 0 && dislikedMovies.length === 0) {
+  if (
+    loading &&
+    !hasLoadedOnce &&
+    !displayName &&
+    likedMovies.length === 0 &&
+    dislikedMovies.length === 0
+  ) {
     return (
       <div className={styles.profileSpace}>
         <div className={styles.loadingContainer}>
@@ -214,21 +249,33 @@ export function ProfileSpace({ onLoadingChange }: ProfileSpaceProps) {
           <div className={styles.statsRow}>
             <h4>Favourite Actor:</h4>
             <p className={styles.stats}>
-              {favoriteActor || (likedMovies.length === 0 ? 'Add movies to see your favorites' : 'Not enough data')}
+              {favoriteActor ||
+                (likedMovies.length === 0
+                  ? 'Add movies to see your favorites'
+                  : 'Not enough data')}
             </p>
             <h4>Favourite Director:</h4>
             <p className={styles.stats}>
-              {favoriteDirector || (likedMovies.length === 0 ? 'Add movies to see your favorites' : 'Not enough data')}
+              {favoriteDirector ||
+                (likedMovies.length === 0
+                  ? 'Add movies to see your favorites'
+                  : 'Not enough data')}
             </p>
           </div>
           <div className={styles.statsRow}>
             <h4>Favourite Genre:</h4>
             <p className={styles.stats}>
-              {favoriteGenre || (likedMovies.length === 0 ? 'Add movies to see your favorites' : 'Not enough data')}
+              {favoriteGenre ||
+                (likedMovies.length === 0
+                  ? 'Add movies to see your favorites'
+                  : 'Not enough data')}
             </p>
             <h4>Favourite Decade:</h4>
             <p className={styles.stats}>
-              {favoriteDecade || (likedMovies.length === 0 ? 'Add movies to see your favorites' : 'Not enough data')}
+              {favoriteDecade ||
+                (likedMovies.length === 0
+                  ? 'Add movies to see your favorites'
+                  : 'Not enough data')}
             </p>
           </div>
         </div>

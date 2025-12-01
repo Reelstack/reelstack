@@ -161,7 +161,7 @@ export class MoviesService {
       if (filters.title) {
         // Busca em ambos os campos usando OR para melhor matching
         query = query.or(
-          `primary_title.ilike.%${filters.title}%,original_title.ilike.%${filters.title}%`
+          `primary_title.ilike.%${filters.title}%,original_title.ilike.%${filters.title}%`,
         );
       }
       if (filters.original_title && !filters.title) {
@@ -560,7 +560,8 @@ export class MoviesService {
   ) {
     const { data, error } = await supabase
       .from('user_movie_interactions')
-      .select(`
+      .select(
+        `
         movies(
           *,
           movie_genres:movie_genres(
@@ -570,7 +571,8 @@ export class MoviesService {
             )
           )
         )
-      `)
+      `,
+      )
       .eq('profile_id', profileId)
       .eq('interaction_type', interactionType)
       .order('created_at', { ascending: false }); // organiza em ordem do mais recente
@@ -581,10 +583,10 @@ export class MoviesService {
       .map((d: any) => {
         const movie = d.movies;
         if (!movie) return null;
-        
+
         // Join genres from the relationship and format as comma-separated string
         let genresString: string | null = null;
-        
+
         if (movie.movie_genres && Array.isArray(movie.movie_genres)) {
           const genresArray = movie.movie_genres
             .map((mg: any) => {
@@ -595,13 +597,13 @@ export class MoviesService {
               return genre;
             })
             .filter(Boolean);
-          
+
           genresString = genresArray.length > 0 ? genresArray.join(', ') : null;
         }
-        
+
         // Remove movie_genres from the spread since we've extracted genres
         const { movie_genres, ...movieWithoutGenres } = movie;
-        
+
         return {
           ...movieWithoutGenres,
           genres: genresString,

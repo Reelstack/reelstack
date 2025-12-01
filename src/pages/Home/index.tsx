@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './style.module.css';
 import {
   AnimatePresence,
@@ -13,6 +13,8 @@ import filter from '../../assets/filter.svg';
 import { RouterLink } from '../../components/RouterLink';
 import { fetchRecommendationsViaWorker } from '../../services/api/recommendations/recommendationFetcher';
 import { useBackground } from '../../contexts/BackgroundContext/backgroundContext';
+import { useAuth } from '../../contexts/AuthContext/authContext';
+import { registerSwipeInteraction } from '../../services/api/userInteractions/userMovieInteractions';
 
 export function Home() {
   const [index, setIndex] = useState(0);
@@ -23,11 +25,23 @@ export function Home() {
   const [isSwiping, setIsSwiping] = useState(false);
   const [movies, setMovies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user, loading: authLoading } = useAuth();
+  const indexRef = useRef(0);
+  const moviesRef = useRef<any[]>([]);
+
+  useEffect(() => {
+    indexRef.current = index;
+  }, [index]);
+
+  useEffect(() => {
+    moviesRef.current = movies;
+  }, [movies]);
+
   const { setDynamicBg } = useBackground();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setDynamicBg(null);
-  }, [setDynamicBg]);
+  }, []);
 
   const R = 150;
   const [halfWidth, setHalfWidth] = useState(window.innerWidth / 2);
@@ -39,21 +53,29 @@ export function Home() {
   }, []);
 
   useEffect(() => {
+    if (authLoading) return; // checagem de sessão
+    if (!user) return;
+    setDynamicBg(null);
     async function loadMovies() {
-      setDynamicBg(null);
-
       try {
-        const profileId = 'e3a29547-1e55-4d07-8f7d-c75a6ff8b896';
+        const profileId = user!.id;
 
         const rec = await fetchRecommendationsViaWorker(profileId, 10);
 
         const normalized = await Promise.all(
           rec.map(async (m: any, i: number) => {
+            // console.log(
+            //   '%c[U-UPGRADE TEST] original:',
+            //   'color: yellow',
+            //   m.banner,
+            // );
             // caso erro retorna original
             const banner = await upgradeImageUrlSafe(m.banner ?? '');
+            // console.log('%c[U-UPGRADE TEST] upgraded:', 'color: cyan', banner);
 
             return {
-              id: i + 1,
+              id: m.id,
+              displayIndex: i + 1, // index local pra ordenar os filmes
               title: m.title,
               director: m.director ?? 'Unknown',
               genres:
@@ -79,10 +101,13 @@ export function Home() {
     loadMovies();
   }, []);
 
+  const initialLoadRef = useRef(true);
+
   useEffect(() => {
-    if (movies.length > 0) {
+    if (movies.length > 0 && initialLoadRef.current) {
       setIndex(0);
       setPreviewIndex(1);
+      initialLoadRef.current = false;
     }
   }, [movies]);
 
@@ -203,11 +228,27 @@ export function Home() {
       });
       return;
     }
+    // --- Registro de interação ---
+    const swipedMovie = movies[index % movies.length];
+    if (!swipedMovie) {
+      console.warn('[SWIPE] No movie found at index:', index);
+      return;
+    }
+    const interactionType = offsetX > 0 ? 'like' : 'dislike';
+
+    if (user?.id) {
+      registerSwipeInteraction(user.id, swipedMovie.id, interactionType);
+    }
 
     // animação de changing pra ir de preview pra main card
     const direction = offsetX > 0 ? 1 : -1;
     setSwipeDirection(direction);
     setIsSwiping(true);
+
+    const nextBackgorundMovie = movies[(index + 1) % movies.length];
+    if (nextBackgorundMovie?.banner) {
+      setDynamicBg(nextBackgorundMovie.banner);
+    }
 
     // stabilizador pra evitar valores estranhos
     mainX.set(mainX.get());
@@ -239,8 +280,16 @@ export function Home() {
                 requestAnimationFrame(() => {
                   setTimeout(() => {
                     // atualiza os indices enquanto o faux existir
-                    setIndex(prev => prev + 1);
-                    setPreviewIndex(prev => prev + 1);
+
+                    const newIndex = index + 1;
+                    setIndex(newIndex);
+                    setPreviewIndex(newIndex + 1);
+
+                    // recarrega o indice qundo chegar nos ultimos 5 filmes
+                    const remaining = movies.length - newIndex;
+                    if (remaining <= 5) {
+                      replenishMovies();
+                    }
 
                     // reseta o crossfade e mainX pro inicio
                     contentSwapProgress.set(0);
@@ -266,6 +315,44 @@ export function Home() {
     // fade do preview quanto mais se aproxima do centro
     animate(previewOpacity, 1, { type: 'spring', stiffness: 150, damping: 18 });
   };
+
+  async function replenishMovies() {
+    if (!user?.id) return;
+
+    try {
+      const profileId = user.id;
+      const rec = await fetchRecommendationsViaWorker(profileId, 10);
+
+      // Normaliza filmes novos
+      const normalized = await Promise.all(
+        rec.map(async (m: any) => {
+          const banner = await upgradeImageUrlSafe(m.banner ?? '');
+          return {
+            id: m.id,
+            title: m.title,
+            director: m.director ?? 'Unknown',
+            genres:
+              m.genres?.map((g: { name: any }) => g.name).join(', ') ??
+              'Unknown',
+            actors: Array.isArray(m.actors)
+              ? m.actors.join(', ')
+              : typeof m.actors === 'string'
+                ? m.actors
+                : 'Unknown',
+            banner,
+          };
+        }),
+      );
+      setMovies(prev => {
+        const newUnique = normalized.filter(
+          m => !prev.some(p => p.id === m.id),
+        );
+        return [...prev, ...newUnique]; // junta, não corta para evitar montagem errada
+      });
+    } catch (e) {
+      console.error('Replenish failed:', e);
+    }
+  }
 
   async function upgradeImageUrlSafe(originalUrl: string): Promise<string> {
     try {
@@ -356,8 +443,8 @@ export function Home() {
     }
   }
 
-  const movie = movies[index % movies.length];
-  const nextMovie = movies[previewIndex % movies.length];
+  const movie = movies[index];
+  const nextMovie = movies[index + 1];
 
   useEffect(() => {
     if (movie?.banner) {
@@ -404,8 +491,8 @@ export function Home() {
               <>
                 {/*-------------------------------------------- PREVIEW --------------------------------------------------- */}
                 <motion.div
-                  key={`preview-${nextMovie.id}-${swipeDirection}`}
-                  className={styles.poster}
+                  key={`preview-${previewIndex % movies.length}-${swipeDirection}`}
+                  className={`${styles.poster} ${styles.noSelect}`}
                   style={{
                     backgroundImage: `url(${nextMovie.banner})`,
                     backgroundSize: 'cover',
@@ -426,8 +513,8 @@ export function Home() {
 
                 {/*-------------------------------------------- FAUX (cortina até as coisas ficarem boas) ------------------------------*/}
                 <motion.div
-                  key={`faux-${nextMovie.id}`}
-                  className={styles.poster}
+                  key={`faux-${previewIndex % movies.length}`}
+                  className={`${styles.poster} ${styles.noSelect}`}
                   style={{
                     backgroundImage: `url(${nextMovie.banner})`,
                     backgroundSize: 'cover',
@@ -449,7 +536,7 @@ export function Home() {
                 {/*-------------------------------------------- MAIN ---------------------------------------------*/}
                 <motion.div
                   key={'main-card'}
-                  className={styles.poster}
+                  className={`${styles.poster} ${styles.noSelect}`}
                   drag='x'
                   onDrag={handleDrag}
                   onDragEnd={handleDragEnd}

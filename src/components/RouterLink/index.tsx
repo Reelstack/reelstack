@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 
-// Converts 'href' prop to 'to' prop for Link for consistent API
+// conversão de href pra to
 
 type RouterLinkProps = {
   children: React.ReactNode;
