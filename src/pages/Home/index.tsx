@@ -14,7 +14,6 @@ import { RouterLink } from '../../components/RouterLink';
 import { fetchRecommendationsViaWorker } from '../../services/api/recommendations/recommendationFetcher';
 import { useBackground } from '../../contexts/BackgroundContext/backgroundContext';
 import { useAuth } from '../../contexts/AuthContext/authContext';
-import { registerSwipeInteraction } from '../../services/api/userInteractions/userMovieInteractions';
 
 export function Home() {
   const [index, setIndex] = useState(0);
@@ -64,18 +63,17 @@ export function Home() {
 
         const normalized = await Promise.all(
           rec.map(async (m: any, i: number) => {
-            // console.log(
-            //   '%c[U-UPGRADE TEST] original:',
-            //   'color: yellow',
-            //   m.banner,
-            // );
+            console.log(
+              '%c[U-UPGRADE TEST] original:',
+              'color: yellow',
+              m.banner,
+            );
             // caso erro retorna original
             const banner = await upgradeImageUrlSafe(m.banner ?? '');
-            // console.log('%c[U-UPGRADE TEST] upgraded:', 'color: cyan', banner);
+            console.log('%c[U-UPGRADE TEST] upgraded:', 'color: cyan', banner);
 
             return {
-              id: m.id,
-              displayIndex: i + 1, // index local pra ordenar os filmes
+              id: i + 1,
               title: m.title,
               director: m.director ?? 'Unknown',
               genres:
@@ -228,17 +226,6 @@ export function Home() {
         damping: 20,
       });
       return;
-    }
-    // --- Registro de interação ---
-    const swipedMovie = movies[index % movies.length];
-    if (!swipedMovie) {
-      console.warn('[SWIPE] No movie found at index:', index);
-      return;
-    }
-    const interactionType = offsetX > 0 ? 'like' : 'dislike';
-
-    if (user?.id) {
-      registerSwipeInteraction(user.id, swipedMovie.id, interactionType);
     }
 
     // animação de changing pra ir de preview pra main card
@@ -520,7 +507,7 @@ export function Home() {
               <>
                 {/*-------------------------------------------- PREVIEW --------------------------------------------------- */}
                 <motion.div
-                  key={`preview-${previewIndex % movies.length}-${swipeDirection}`}
+                  key={`preview-${nextMovie.id}-${swipeDirection}`}
                   className={`${styles.poster} ${styles.noSelect}`}
                   style={{
                     backgroundImage: `url(${nextMovie.banner})`,
@@ -542,7 +529,7 @@ export function Home() {
 
                 {/*-------------------------------------------- FAUX (cortina até as coisas ficarem boas) ------------------------------*/}
                 <motion.div
-                  key={`faux-${previewIndex % movies.length}`}
+                  key={`faux-${nextMovie.id}`}
                   className={`${styles.poster} ${styles.noSelect}`}
                   style={{
                     backgroundImage: `url(${nextMovie.banner})`,
