@@ -1,7 +1,7 @@
 import { RouterLink } from '../../components/RouterLink';
 import settings from '../../assets/settings-svgrepo-com.svg';
 import styles from './style.module.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ProfileSpace } from '../../components/ProfileSpace';
 import { SettingSpace } from '../../components/SettingSpace';
 import { useBackground } from '../../contexts/BackgroundContext/backgroundContext';
@@ -9,6 +9,13 @@ import { useBackground } from '../../contexts/BackgroundContext/backgroundContex
 export function Profile() {
   const [showSettings, setShowSettings] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { setDynamicBg } = useBackground();
+
+  useEffect(() => {
+    return () => {
+      setDynamicBg(null); // limpar imagem apos sair da home
+    };
+  }, []);
 
   return (
     <div className={styles.page}>

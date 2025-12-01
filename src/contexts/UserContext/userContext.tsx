@@ -6,7 +6,10 @@ import { supabase } from '../../lib/supabaseClient';
 interface ContextProps {
   state: State;
   getUsers: () => Promise<void>;
-  addUser: (user: { email: string; password: string }) => Promise<UserProfile | null>;
+  addUser: (user: {
+    email: string;
+    password: string;
+  }) => Promise<UserProfile | null>;
   updateUser: (id: string, email: string) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
 }
@@ -17,7 +20,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(userReducer, {
     users: [] as UserProfile[],
     loading: false,
-    error: null
+    error: null,
   });
 
   async function getUsers() {
@@ -56,8 +59,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       const newUser: UserProfile = {
         id: data.user.id,
         profile_name: uniqueProfileName, // valor único e não sensível
-        avatar_url: null,   // valor padrão null
-        bio: null,         // valor padrão null
+        avatar_url: null, // valor padrão null
+        bio: null, // valor padrão null
         created_at: new Date().toISOString(), // ou deixe o banco preencher
         updated_at: new Date().toISOString(), // ou deixe o banco preencher
       };

@@ -32,10 +32,12 @@ export function MovieStack({
   const shouldScroll = useRef(false);
   const [isHover, setHover] = useState<string | null>(null);
   const [removingMovieId, setRemovingMovieId] = useState<string | null>(null);
-  const [newlyAddedMovieId, setNewlyAddedMovieId] = useState<string | null>(null);
+  const [newlyAddedMovieId, setNewlyAddedMovieId] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
-    // Skip loading if movies are already provided
+    // pula o loading quando ja tiver sido fornecido
     if (movies.length > 0) {
       return;
     }
@@ -62,7 +64,7 @@ export function MovieStack({
         if (userMovies && userMovies.length > 0) {
           setMovies(userMovies);
         } else {
-          setMovies([]); // Explicitly set empty array if no movies
+          setMovies([]); // empty se n tiver mfilme
         }
       } catch (err) {
         toast.error(
@@ -91,11 +93,16 @@ export function MovieStack({
 
       const profileId = session.user.id;
 
-      const allMoviesToCheck = allUserMovies.length > 0 ? allUserMovies : movies;
+      const allMoviesToCheck =
+        allUserMovies.length > 0 ? allUserMovies : movies;
       const isDuplicate = allMoviesToCheck.some(m => m.tconst === movie.tconst);
       if (isDuplicate) {
-        const duplicateMovie = allMoviesToCheck.find(m => m.tconst === movie.tconst);
-        toast.error(`"${duplicateMovie?.primary_title || 'This movie'}" is already in your list.`);
+        const duplicateMovie = allMoviesToCheck.find(
+          m => m.tconst === movie.tconst,
+        );
+        toast.error(
+          `"${duplicateMovie?.primary_title || 'This movie'}" is already in your list.`,
+        );
         setLoading(false);
         return;
       }
@@ -109,8 +116,11 @@ export function MovieStack({
           .maybeSingle();
 
         if (existing) {
-          const interactionTypeText = existing.interaction_type === 'like' ? 'liked' : 'disliked';
-          toast.error(`This movie is already in your ${interactionTypeText} list.`);
+          const interactionTypeText =
+            existing.interaction_type === 'like' ? 'liked' : 'disliked';
+          toast.error(
+            `This movie is already in your ${interactionTypeText} list.`,
+          );
           setLoading(false);
           return;
         }
@@ -132,7 +142,6 @@ export function MovieStack({
       setTimeout(() => {
         setNewlyAddedMovieId(null);
       }, 350);
-
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -174,11 +183,12 @@ export function MovieStack({
           setPage(newTotalPages - 1);
         }
 
-
         setMovies(updatedMovies);
         setRemovingMovieId(null);
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Failed to remove movie');
+        toast.error(
+          err instanceof Error ? err.message : 'Failed to remove movie',
+        );
         setRemovingMovieId(null);
       }
     }, 250);
@@ -220,7 +230,11 @@ export function MovieStack({
         onClose={() => setIsSearchModalOpen(false)}
         onSelectMovie={handleSelectMovie}
         loading={loading}
-        excludedMovieIds={allUserMovies.length > 0 ? allUserMovies.map(m => m.tconst) : movies.map(m => m.tconst)}
+        excludedMovieIds={
+          allUserMovies.length > 0
+            ? allUserMovies.map(m => m.tconst)
+            : movies.map(m => m.tconst)
+        }
       />
 
       {loading && (
@@ -238,35 +252,35 @@ export function MovieStack({
         {current.map(m => (
           <div
             key={m.tconst}
-            className={`${styles.moviePoster} ${removingMovieId === m.tconst ? styles.removing : ''
-              } ${newlyAddedMovieId === m.tconst ? styles.adding : ''
-              }`}
+            className={`${styles.moviePoster} ${
+              removingMovieId === m.tconst ? styles.removing : ''
+            } ${newlyAddedMovieId === m.tconst ? styles.adding : ''}`}
             onMouseEnter={() => !removingMovieId && setHover(m.tconst)} // passa o id
             onMouseLeave={() => setHover(null)} // reseta
           >
             <img
               src={m.banner || '/placeholder-poster.jpg'}
-
               alt={m.primary_title ?? 'Movie poster'}
               onError={e => {
                 (e.target as HTMLImageElement).src = '/placeholder-poster.jpg';
               }}
             />
-            {isHover === m.tconst && !removingMovieId && ( // checa o id
-              <div className={styles.movieName}>
-                <button
-                  className={styles.deleteButton}
-                  onClick={(e) => handleRemoveMovie(m, e)}
-                  disabled={loading || removingMovieId !== null}
-                  aria-label={`Remove ${m.primary_title ?? 'movie'}`}
-                  title="Remove movie"
-                >
-                  ×
-                </button>
-                <p>{m.primary_title ?? 'Unknown Title'}</p>
-                <p>({m.start_year ?? 'Unknown Year'})</p>
-              </div>
-            )}
+            {isHover === m.tconst &&
+              !removingMovieId && ( // checa o id
+                <div className={styles.movieName}>
+                  <button
+                    className={styles.deleteButton}
+                    onClick={e => handleRemoveMovie(m, e)}
+                    disabled={loading || removingMovieId !== null}
+                    aria-label={`Remove ${m.primary_title ?? 'movie'}`}
+                    title='Remove movie'
+                  >
+                    ×
+                  </button>
+                  <p>{m.primary_title ?? 'Unknown Title'}</p>
+                  <p>({m.start_year ?? 'Unknown Year'})</p>
+                </div>
+              )}
           </div>
         ))}
       </div>

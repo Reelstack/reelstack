@@ -40,16 +40,19 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
           setOriginalProfileName(profile.profile_name || '');
           if (profile.created_at) {
             const date = new Date(profile.created_at);
-            setAccountCreated(date.toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            }));
+            setAccountCreated(
+              date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }),
+            );
           }
         }
       } catch (err: any) {
         console.error('Error loading profile:', err);
-        const errorMessage = err?.message || 'Failed to load profile information';
+        const errorMessage =
+          err?.message || 'Failed to load profile information';
         toast.error(errorMessage);
       } finally {
         setLoading(false);
@@ -60,7 +63,7 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
   }, [user]);
 
   useEffect(() => {
-    // Notify parent when loading state changes
+    // notifica quando estado muda
     if (onLoadingChange) {
       onLoadingChange(loading);
     }
@@ -81,9 +84,7 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
       return 'Profile name must be less than 50 characters';
     }
 
-    // Allow letters (including accented/Unicode), numbers, spaces, and most special characters
-    // Only exclude null bytes and control characters that could be problematic
-    // This allows: letters (any language), numbers, spaces, punctuation, and symbols
+    // permitir simbolos
     if (/[\x00-\x1F\x7F]/.test(trimmed)) {
       return 'Profile name contains invalid control characters';
     }
@@ -129,13 +130,15 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
 
     const isUnique = await checkProfileNameUniqueness(trimmedName);
     if (!isUnique) {
-      setProfileNameError('This profile name is already taken. Please choose another one.');
+      setProfileNameError(
+        'This profile name is already taken. Please choose another one.',
+      );
       return;
     }
 
     setSaving(true);
     try {
-      // Update profile_name in profiles table
+      // att nome do usuário
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
@@ -146,14 +149,13 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
 
       if (profileError) throw profileError;
 
-      // Update display_name in user metadata
+      // att nome no supa
       const { error: authError } = await supabase.auth.updateUser({
-        data: { display_name: trimmedName }
+        data: { display_name: trimmedName },
       });
 
       if (authError) {
         console.warn('Failed to update display_name in auth.users:', authError);
-        // Don't throw - profile_name was updated successfully
       }
 
       toast.success('Profile updated successfully!');
@@ -163,9 +165,11 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
     } catch (err: any) {
       console.error('Error updating profile:', err);
 
-      // Handle specific errors
+      // erros especificos
       if (err.code === '23505' || err.message?.includes('unique')) {
-        setProfileNameError('This profile name is already taken. Please choose another one.');
+        setProfileNameError(
+          'This profile name is already taken. Please choose another one.',
+        );
       } else if (err.message) {
         setProfileNameError(err.message);
       } else {
@@ -236,24 +240,24 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
     <>
       <ConfirmationModal
         isOpen={logoutModalOpen}
-        title="Logout"
-        message="Are you sure you want to log out?"
-        confirmText="Logout"
-        cancelText="Cancel"
+        title='Logout'
+        message='Are you sure you want to log out?'
+        confirmText='Logout'
+        cancelText='Cancel'
         onConfirm={confirmLogout}
         onCancel={() => setLogoutModalOpen(false)}
-        variant="default"
+        variant='default'
       />
 
       <ConfirmationModal
         isOpen={deleteModalOpen}
-        title="Delete Account"
-        message="Are you sure you want to permanently delete your account? This action cannot be undone and will delete all your data including movies, collections, and preferences."
-        confirmText="Delete Account"
-        cancelText="Cancel"
+        title='Delete Account'
+        message='Are you sure you want to permanently delete your account? This action cannot be undone and will delete all your data including movies, collections, and preferences.'
+        confirmText='Delete Account'
+        cancelText='Cancel'
         onConfirm={confirmDeleteAccount}
         onCancel={() => setDeleteModalOpen(false)}
-        variant="danger"
+        variant='danger'
       />
 
       <div className={styles.settingsContainer}>
@@ -279,16 +283,16 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Profile Settings</h2>
           <div className={styles.formGroup}>
-            <label htmlFor="profileName">Profile Name</label>
+            <label htmlFor='profileName'>Profile Name</label>
             <input
-              id="profileName"
-              type="text"
+              id='profileName'
+              type='text'
               value={profileName}
-              onChange={(e) => {
+              onChange={e => {
                 setProfileName(e.target.value);
                 setProfileNameError(null);
               }}
-              placeholder="Enter your profile name"
+              placeholder='Enter your profile name'
               className={`${styles.input} ${profileNameError ? styles.inputError : ''}`}
               maxLength={50}
             />
@@ -296,7 +300,8 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
               <span className={styles.errorMessage}>{profileNameError}</span>
             )}
             <span className={styles.helpText}>
-              Must be 3-50 characters. Letters, numbers, spaces, and special characters are allowed.
+              Must be 3-50 characters. Letters, numbers, spaces, and special
+              characters are allowed.
             </span>
           </div>
           <button
@@ -310,10 +315,7 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
 
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Session</h2>
-          <button
-            onClick={handleLogout}
-            className={styles.logoutButton}
-          >
+          <button onClick={handleLogout} className={styles.logoutButton}>
             Logout
           </button>
         </div>
@@ -321,12 +323,10 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
         <div className={`${styles.section} ${styles.dangerZone}`}>
           <h2 className={styles.sectionTitle}>Danger Zone</h2>
           <p className={styles.warningText}>
-            Permanently delete your account and all associated data. This action cannot be undone.
+            Permanently delete your account and all associated data. This action
+            cannot be undone.
           </p>
-          <button
-            onClick={handleDeleteAccount}
-            className={styles.deleteButton}
-          >
+          <button onClick={handleDeleteAccount} className={styles.deleteButton}>
             Delete Account
           </button>
         </div>
