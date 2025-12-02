@@ -245,9 +245,9 @@ export function Home() {
     setSwipeDirection(direction);
     setIsSwiping(true);
 
-    const nextBackgorundMovie = movies[(index + 1) % movies.length];
-    if (nextBackgorundMovie?.banner) {
-      setDynamicBg(nextBackgorundMovie.banner);
+    const nextBackgroundMovie = movies[(index + 1) % movies.length];
+    if (nextBackgroundMovie?.banner) {
+      setDynamicBg(nextBackgroundMovie.banner);
     }
 
     // stabilizador pra evitar valores estranhos
