@@ -22,7 +22,7 @@ export function Login() {
 
   // mostra usuarios no log
   useEffect(() => {
-    console.log(users.map(user => user.profile_name));
+    console.log(users.map(user => user.display_name));
   }, [users]);
 
   return (

@@ -272,7 +272,6 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
               <label>Email</label>
               <p>{user?.email || 'N/A'}</p>
             </div>
-            {/* User ID removed for security reasons - exposing UUIDs can be a privacy/security risk */}
             <div className={styles.infoItem}>
               <label>Account Created</label>
               <p>{accountCreated || 'N/A'}</p>
