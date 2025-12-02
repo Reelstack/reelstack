@@ -79,7 +79,7 @@ async function fetchMoviesFromSupabase(): Promise<Movie[]> {
     primary_title,
     director,
     actors,
-    banner, 
+    banner,
     average_rating,
     movie_genres:movie_genres(
       genre_id,

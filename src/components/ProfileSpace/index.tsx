@@ -5,7 +5,7 @@ import type { Movie } from '../../services/api/supa-api/movies';
 import { MoviesService } from '../../services/api/supa-api/movies';
 import { supabase } from '../../lib/supabaseClient';
 
-// calcular favoritos
+// Calculate favorite items from user interactions
 function getMostFrequent<T>(
   items: T[],
   extractor: (item: T) => string | string[] | null,
@@ -183,7 +183,7 @@ export function ProfileSpace({ onLoadingChange }: ProfileSpaceProps) {
   ]);
 
   useEffect(() => {
-    // só mostra loading na montagem inicial
+    // Only show loading on initial mount
     if (!hasLoadedOnce) {
       loadProfileData(true);
     }

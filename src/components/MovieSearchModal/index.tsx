@@ -157,7 +157,7 @@ export function MovieSearchModal({
 
   const handleSelectMovie = useCallback(
     (movie: Movie) => {
-      // previne selecionar filmes ja colocados
+      // Prevent selecting already added movies
       if (excludedMovieIds.includes(movie.tconst)) {
         return;
       }

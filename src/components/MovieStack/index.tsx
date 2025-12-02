@@ -64,7 +64,7 @@ export function MovieStack({
         if (userMovies && userMovies.length > 0) {
           setMovies(userMovies);
         } else {
-          setMovies([]); // empty se n tiver mfilme
+          setMovies([]); // Set empty array if no movies found
         }
       } catch (err) {
         toast.error(

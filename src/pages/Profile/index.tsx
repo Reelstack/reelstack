@@ -15,7 +15,7 @@ export function Profile() {
     return () => {
       setDynamicBg(null); // limpar imagem apos sair da home
     };
-  }, []);
+  }, [setDynamicBg]);
 
   return (
     <div className={styles.page}>
