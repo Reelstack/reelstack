@@ -138,7 +138,7 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
 
     setSaving(true);
     try {
-      // att nome do usuário
+      // Update user profile name in database
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
