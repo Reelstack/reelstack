@@ -235,7 +235,7 @@ export function ProfileSpace({ onLoadingChange }: ProfileSpaceProps) {
     <div className={styles.profileSpace}>
       <div className={styles.userSpace}>
         <div className={styles.userInfo}>
-          <h1>{displayName || 'No name set'}</h1>
+          <h1>{displayName || 'Loading name...'}</h1>
           <h3>{email || 'Loading email...'}</h3>
         </div>
         {/* componentizar no futuro*/}

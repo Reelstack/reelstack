@@ -9,6 +9,7 @@ interface ContextProps {
   addUser: (user: {
     email: string;
     password: string;
+    display_name: string;
   }) => Promise<UserProfile | null>;
   updateUser: (id: string, email: string) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
@@ -42,9 +43,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   async function addUser({
     email,
     password,
+    display_name,
   }: {
     email: string;
     password: string;
+    display_name: string;
   }): Promise<UserProfile | null> {
     const { data, error } = await supabase.auth.signUp({ email, password });
 
@@ -55,10 +58,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     if (data.user) {
       // Gera um identificador único e não sensível para profile_name
-      const uniqueProfileName = `user_${crypto.randomUUID()}`;
       const newUser: UserProfile = {
         id: data.user.id,
-        profile_name: uniqueProfileName, // valor único e não sensível
+        display_name,
         avatar_url: null, // valor padrão null
         bio: null, // valor padrão null
         created_at: new Date().toISOString(), // ou deixe o banco preencher
