@@ -27,27 +27,22 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
       if (!user) return;
 
       try {
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('profile_name, created_at')
-          .eq('id', user.id)
-          .single();
-
+        const { data: authData, error } = await supabase.auth.getUser();
         if (error) throw error;
 
-        if (profile) {
-          setProfileName(profile.profile_name || '');
-          setOriginalProfileName(profile.profile_name || '');
-          if (profile.created_at) {
-            const date = new Date(profile.created_at);
-            setAccountCreated(
-              date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              }),
-            );
-          }
+        const u = authData?.user;
+
+        setProfileName(u?.user_metadata?.display_name || '');
+        setOriginalProfileName(u?.user_metadata?.display_name || '');
+        if (u.created_at) {
+          const date = new Date(u.created_at);
+          setAccountCreated(
+            date.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            }),
+          );
         }
       } catch (err: any) {
         console.error('Error loading profile:', err);
@@ -92,25 +87,6 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
     return null;
   }
 
-  async function checkProfileNameUniqueness(name: string): Promise<boolean> {
-    if (!user) return false;
-
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('profile_name', name.trim())
-        .neq('id', user.id)
-        .maybeSingle();
-
-      if (error) throw error;
-      return !data;
-    } catch (err) {
-      console.error('Error checking profile name uniqueness:', err);
-      return true;
-    }
-  }
-
   async function handleSaveProfile() {
     if (!user) return;
 
@@ -128,26 +104,23 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
       return;
     }
 
-    const isUnique = await checkProfileNameUniqueness(trimmedName);
-    if (!isUnique) {
-      setProfileNameError(
-        'This profile name is already taken. Please choose another one.',
-      );
-      return;
-    }
-
     setSaving(true);
     try {
       // att nome do usuário
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          profile_name: trimmedName,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
+      const { error: profileError } = await supabase.auth.updateUser({
+        data: { display_name: trimmedName },
+      });
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        setProfileNameError('Failed to update profile name');
+        return;
+      }
+
+      toast.success('Profile updated successfully!');
+      setOriginalProfileName(trimmedName);
+
+      // notifica listeners
+      window.dispatchEvent(new CustomEvent('profileUpdated'));
 
       // att nome no supa
       const { error: authError } = await supabase.auth.updateUser({
@@ -272,6 +245,7 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
               <label>Email</label>
               <p>{user?.email || 'N/A'}</p>
             </div>
+
             <div className={styles.infoItem}>
               <label>Account Created</label>
               <p>{accountCreated || 'N/A'}</p>

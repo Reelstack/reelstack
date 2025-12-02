@@ -5,6 +5,7 @@ import { useUsers } from '../../contexts/UserContext/userHook';
 import toast from 'react-hot-toast';
 import type { Movie } from '../../services/api/supa-api/movies';
 import { MovieSearchModal } from '../MovieSearchModal';
+import { supabase } from '../../lib/supabaseClient';
 
 type SignUpFormProps = {
   onSwitch: () => void;
@@ -77,6 +78,33 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
 
     // call addUser
     const authUser = await addUser({ email, password, display_name: name });
+    if (authUser) {
+      const userId = authUser.id;
+
+      // payloads de interação
+      const interactions = [
+        ...likedMovies.map(m => ({
+          profile_id: userId,
+          movie_id: m.tconst,
+          interaction_type: 'like',
+        })),
+        ...dislikedMovies.map(m => ({
+          profile_id: userId,
+          movie_id: m.tconst,
+          interaction_type: 'dislike',
+        })),
+      ];
+
+      // inserção do db
+      const { error: interactionsError } = await supabase
+        .from('user_movie_interactions')
+        .insert(interactions);
+
+      if (interactionsError) {
+        console.error(interactionsError);
+        toast.error('Could not save your initial preferences.');
+      }
+    }
 
     setLoading(false);
 
@@ -159,6 +187,14 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
           <div className={styles.formGroup}>
             <h4>Select at least 5 movies you LIKE</h4>
 
+            <ul className={styles.selectedList}>
+              {likedMovies.map(m => (
+                <li key={m.tconst} className={styles.selectedItem}>
+                  {m.primary_title}
+                </li>
+              ))}
+            </ul>
+
             <button
               type='button'
               className={styles.formButton}
@@ -166,12 +202,6 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
             >
               Add Liked Movie
             </button>
-
-            <ul>
-              {likedMovies.map(m => (
-                <li key={m.tconst}>{m.primary_title}</li>
-              ))}
-            </ul>
           </div>
         </div>
 
@@ -180,6 +210,14 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
           <div className={styles.formGroup}>
             <h4>Select at least 5 movies you DISLIKE</h4>
 
+            <ul className={styles.selectedList}>
+              {dislikedMovies.map(m => (
+                <li key={m.tconst} className={styles.selectedItem}>
+                  {m.primary_title}
+                </li>
+              ))}
+            </ul>
+
             <button
               type='button'
               className={styles.formButton}
@@ -187,12 +225,6 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
             >
               Add Disliked Movie
             </button>
-
-            <ul>
-              {dislikedMovies.map(m => (
-                <li key={m.tconst}>{m.primary_title}</li>
-              ))}
-            </ul>
           </div>
         </div>
       </div>
