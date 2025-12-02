@@ -52,11 +52,15 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    transition: background 0.2s;
+    transition: background 0.2s ease;
 }
 
 .closeButton:hover {
     background: var(--blue-light);
+}
+
+.closeButton:active {
+    transform: scale(0.95);
 }
 
 .searchContainer {
@@ -132,29 +136,51 @@
     background: var(--blue-light);
     border-radius: 0.8rem;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    transition: background 0.2s ease, transform 0.2s ease;
     border: 2px solid transparent;
 }
 
 .resultItem:hover,
 .resultItem.selected {
-    background: var(--contrast);
+    background: var(--blue-dark);
     transform: translateX(0.3rem);
     border-color: var(--contrast);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .resultItem.selected .movieTitle,
 .resultItem.selected .originalTitle {
-    color: var(--blue-standard);
+    color: var(--text-default);
 }
 
 .resultItem.selected .metaItem {
-    background: rgba(38, 35, 53, 0.3);
-    color: var(--blue-standard);
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-default);
 }
 
 .resultItem:active {
-    transform: translateX(0.1rem);
+    transform: translateX(0.2rem);
+}
+
+.resultItem.alreadyAdded {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: rgba(120, 120, 120, 0.2);
+    border-color: rgba(120, 120, 120, 0.3);
+}
+
+.resultItem.alreadyAdded:hover {
+    background: rgba(120, 120, 120, 0.3);
+    transform: none;
+}
+
+.alreadyAddedLabel {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    padding: 0.3rem 0.8rem;
+    background: rgba(120, 120, 120, 0.2);
+    border-radius: 0.4rem;
+    font-weight: 500;
 }
 
 .resultContent {
@@ -176,7 +202,7 @@
 }
 
 .resultItem:hover .movieTitle {
-    color: var(--blue-standard);
+    color: var(--text-default);
 }
 
 .originalTitle {
@@ -187,8 +213,8 @@
 }
 
 .resultItem:hover .originalTitle {
-    color: var(--blue-standard);
-    opacity: 0.8;
+    color: var(--text-default);
+    opacity: 0.9;
 }
 
 .movieMeta {
@@ -206,8 +232,8 @@
 }
 
 .resultItem:hover .metaItem {
-    background: rgba(38, 35, 53, 0.3);
-    color: var(--blue-standard);
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-default);
 }
 
 .moviePoster {

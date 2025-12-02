@@ -1,35 +1,59 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useBackground } from '../../contexts/BackgroundContext/backgroundContext';
 
-const backgroundImages = {
-  '/home/': '/goncha.jpg',
+const staticImages = {
   '/profile/': '/profile.png',
   '/': '/profile.png',
-  // rotas
 };
 
 export function BackgroundBody() {
   const location = useLocation();
+  const { dynamicBg, setDynamicBg } = useBackground();
 
   useEffect(() => {
     const body = document.body;
-    body.classList.add('blur-background');
+    const path = location.pathname;
+    const isHome = path === '/home/';
 
-    // Clear class to avoid conflicts
-    body.classList.remove('home-background');
+    body.classList.remove('home-background', 'home-no-image');
+    body.classList.remove('bg-transition-hide');
 
-    const bgImg =
-      backgroundImages[location.pathname as keyof typeof backgroundImages];
+    if (!isHome) {
+      const img =
+        staticImages[path as keyof typeof staticImages] ?? '/profile.png';
 
-    if (bgImg) {
-      body.style.setProperty('--bg-image', `url(${bgImg})`);
+      body.style.transition = 'none';
+      body.style.setProperty('--bg-image', `url(${img})`);
+      body.classList.add('blur-background');
+
+      body.classList.remove('home-background', 'home-no-image');
+      return;
     }
 
-    // If on the home page
-    if (location.pathname === '/home/') {
-      body.classList.add('home-background');
+    // ---------- HOME ------------
+
+    if (dynamicBg === null) {
+      body.style.transition = 'none';
+      body.style.setProperty('--bg-image', 'none');
+      body.classList.add('blur-background', 'home-no-image');
+      setTimeout(() => {
+        body.style.transition = '';
+      }, 0);
+      return;
     }
-  }, [location.pathname]);
+
+    if (dynamicBg) {
+      body.style.transition = '';
+      body.classList.add('blur-background', 'home-background');
+
+      body.classList.add('bg-transition-hide');
+      setTimeout(() => {
+        body.style.setProperty('--bg-image', `url(${dynamicBg})`);
+        body.classList.remove('bg-transition-hide');
+      }, 300);
+    }
+  }, [location.pathname, dynamicBg, setDynamicBg]);
 
   return null;
 }

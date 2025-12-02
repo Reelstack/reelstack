@@ -1,29 +1,84 @@
+.profileSpace {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .userSpace {
   display: flex;
-  height: 20rem;
-  justify-content: space-between;
+  flex-direction: column;
+  min-height: auto;
+  padding: 1rem 2rem 2rem 2rem;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  max-width: 120rem;
+  margin: 0 auto;
 }
 
 .userInfo {
-  margin-left: 20rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.5rem;
+}
+
+.userInfo h1 {
+  font-size: 2rem;
+  margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: left;
+  width: 100%;
+}
+
+.userInfo h3 {
+  font-size: 1.4rem;
+  margin: 0;
+  color: var(--text-muted);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: left;
+  width: 100%;
 }
 
 .userStats {
   display: flex;
-  margin-right: 20rem;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 2rem;
   text-align: center;
+  width: 100%;
 }
 
 .statsRow {
   display: flex;
   flex-direction: column;
-  margin: 0rem 2rem;
-  gap: 0.3rem;
+  gap: 1.2rem;
+  padding: 1.5rem;
+  background: var(--blue-light);
+  border-radius: 1rem;
+  box-shadow: inset 6px 0px 12px -3px rgba(0, 0, 0, 0.55);
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.statsRow h4 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--text-default);
+  font-weight: normal;
+  line-height: 1.4;
 }
 
 .stats {
-  font-size: 2rem;
+  font-size: 1.6rem;
   color: var(--contrast);
+  margin: 0;
+  font-weight: bold;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 .history {
@@ -74,6 +129,165 @@
 .collections {
   height: auto;
 }
-.footer {
-  height: 10rem;
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  gap: 2rem;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.loadingSpinner {
+  width: 4rem;
+  height: 4rem;
+  border: 4px solid var(--blue-light);
+  border-top-color: var(--contrast);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingContainer p {
+  font-size: 1.6rem;
+  color: var(--text-muted);
+}
+
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+}
+
+.errorMessage {
+  font-size: 1.6rem;
+  color: var(--error);
+  text-align: center;
+  padding: 2rem;
+  background: rgba(220, 38, 38, 0.1);
+  border: 2px solid var(--error);
+  border-radius: 1rem;
+}
+
+/* Responsive breakpoints */
+@media (min-width: 768px) {
+  .userSpace {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 3rem 3rem 3rem;
+    gap: 3rem;
+  }
+
+  .userInfo {
+    flex: 0 1 auto;
+    align-items: flex-start;
+    text-align: left;
+    max-width: 40rem;
+  }
+
+  .userInfo h1 {
+    font-size: 2.4rem;
+  }
+
+  .userInfo h3 {
+    font-size: 1.6rem;
+  }
+
+  .userStats {
+    flex: 0 1 auto;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 2rem;
+    max-width: 60rem;
+  }
+
+  .statsRow {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .statsRow h4 {
+    font-size: 1.6rem;
+  }
+
+  .stats {
+    font-size: 1.8rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .userSpace {
+    padding: 1rem 4rem 4rem 4rem;
+    gap: 4rem;
+  }
+
+  .userInfo h1 {
+    font-size: 2.8rem;
+  }
+
+  .userInfo h3 {
+    font-size: 1.8rem;
+  }
+
+  .statsRow {
+    min-width: calc(33.333% - 1.33rem);
+  }
+
+  .statsRow h4 {
+    font-size: 1.7rem;
+  }
+
+  .stats {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .userSpace {
+    padding: 5rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .userSpace {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .userInfo h1 {
+    font-size: 1.8rem;
+  }
+
+  .userInfo h3 {
+    font-size: 1.2rem;
+  }
+
+  .userStats {
+    gap: 1.5rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .statsRow {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .statsRow h4 {
+    font-size: 1.4rem;
+  }
+
+  .stats {
+    font-size: 1.4rem;
+  }
 }

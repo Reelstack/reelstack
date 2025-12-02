@@ -3,10 +3,11 @@ import './styles/theme.css';
 import { MainRouter } from './routers/MainRouter';
 
 import { Toaster } from 'react-hot-toast';
-import TestAuth from './tests/TestAuth';
+// import TestAuth from './tests/TestAuth';
 import { useEffect, useRef } from 'react';
-import { testUserRecommendations } from './tests/TestAlgoritm';
+// import { testUserRecommendations } from './tests/TestAlgoritm';
 import { prepareLocalMovieCache } from './services/api/recommendations/movieLocalStorage';
+import { BackgroundProvider } from './contexts/BackgroundContext/backgroundContext';
 
 export default function App() {
   const ranOnce = useRef(false);
@@ -19,10 +20,9 @@ export default function App() {
       console.log('Preparando cache de filmes...');
       await prepareLocalMovieCache(); // Espera o cache
       console.log('Cache pronto. Rodando recomendações...');
-      testUserRecommendations(); // roda o algoritmo em segundo plano
+      //testUserRecommendations(); // roda o algoritmo em segundo plano
     }
 
-    // Defer cache preparation to avoid blocking initial render
     if ('requestIdleCallback' in window) {
       (window as any).requestIdleCallback(prepareAndRun);
     } else {
@@ -31,9 +31,10 @@ export default function App() {
   }, []);
   return (
     <>
-      <TestAuth />
+      <BackgroundProvider>
+        <MainRouter />
+      </BackgroundProvider>
 
-      <MainRouter />
       <Toaster position='top-center' toastOptions={{ duration: 3000 }} />
     </>
   );
