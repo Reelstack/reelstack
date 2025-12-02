@@ -95,6 +95,7 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
       );
       setEmail('');
       setPassword('');
+      setName('');
       setConfirm('');
       console.log('User signed up:', authUser);
     } else {
@@ -113,76 +114,90 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
       onSubmit={handleSubmit}
     >
       <h2>Sign Up</h2>
-      <div className={styles.formGroup}>
-        <input
-          className={styles.formInput}
-          type='text'
-          placeholder='Name'
-          value={name}
-          onChange={e => setName(e.target.value)}
-        />
 
-        <input
-          className={styles.formInput}
-          type='text'
-          placeholder='Email'
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
+      {/* ------------------ 3 colunas ------------------ */}
+      <div className={styles.columns}>
+        {/* esquerda/inputs */}
+        <div className={styles.column}>
+          <div className={styles.formGroup}>
+            <input
+              className={styles.formInput}
+              type='text'
+              placeholder='Name'
+              value={name}
+              onChange={e => setName(e.target.value)}
+            />
 
-        <input
-          className={styles.formInput}
-          type='password'
-          placeholder='Password'
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
+            <input
+              className={styles.formInput}
+              type='text'
+              placeholder='Email'
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+            />
 
-        <input
-          className={styles.formInput}
-          type='password'
-          placeholder='Confirm Password'
-          value={confirm}
-          onChange={e => setConfirm(e.target.value)}
-        />
+            <input
+              className={styles.formInput}
+              type='password'
+              placeholder='Password'
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+            />
+
+            <input
+              className={styles.formInput}
+              type='password'
+              placeholder='Confirm Password'
+              value={confirm}
+              onChange={e => setConfirm(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* meio/liked */}
+        <div className={styles.column}>
+          <div className={styles.formGroup}>
+            <h4>Select at least 5 movies you LIKE</h4>
+
+            <button
+              type='button'
+              className={styles.formButton}
+              onClick={() => setOpenLikeModal(true)}
+            >
+              Add Liked Movie
+            </button>
+
+            <ul>
+              {likedMovies.map(m => (
+                <li key={m.tconst}>{m.primary_title}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* direita/disliked */}
+        <div className={styles.column}>
+          <div className={styles.formGroup}>
+            <h4>Select at least 5 movies you DISLIKE</h4>
+
+            <button
+              type='button'
+              className={styles.formButton}
+              onClick={() => setOpenDislikeModal(true)}
+            >
+              Add Disliked Movie
+            </button>
+
+            <ul>
+              {dislikedMovies.map(m => (
+                <li key={m.tconst}>{m.primary_title}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
 
-      <div className={styles.formGroup}>
-        <h4>Select at least 5 movies you LIKE</h4>
-
-        <button
-          type='button'
-          className={styles.formButton}
-          onClick={() => setOpenLikeModal(true)}
-        >
-          Add Liked Movie
-        </button>
-
-        <ul>
-          {likedMovies.map(m => (
-            <li key={m.tconst}>{m.primary_title}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div className={styles.formGroup}>
-        <h4>Select at least 5 movies you DISLIKE</h4>
-
-        <button
-          type='button'
-          className={styles.formButton}
-          onClick={() => setOpenDislikeModal(true)}
-        >
-          Add Disliked Movie
-        </button>
-
-        <ul>
-          {dislikedMovies.map(m => (
-            <li key={m.tconst}>{m.primary_title}</li>
-          ))}
-        </ul>
-      </div>
-
+      {/* ------------------ erros e submit ------------------ */}
       <div className={styles.formGroup}>
         {error.length > 0 && (
           <div>
@@ -239,6 +254,7 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
           {loading ? 'Signing Up...' : 'Sign Up'}
         </button>
       </div>
+
       <div className={styles.formGroup}>
         <div className={styles.signup}>
           Already have an account?
