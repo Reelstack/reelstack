@@ -187,7 +187,7 @@ export function ProfileSpace({ onLoadingChange }: ProfileSpaceProps) {
   ]);
 
   useEffect(() => {
-    // só mostra loading na montagem inicial
+    // Only show loading on initial mount
     if (!hasLoadedOnce) {
       loadProfileData(true);
     }
