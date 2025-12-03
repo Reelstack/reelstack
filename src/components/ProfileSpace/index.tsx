@@ -141,12 +141,8 @@ export function ProfileSpace({ onLoadingChange }: ProfileSpaceProps) {
       }
 
       setEmail(user.email ?? null);
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('profile_name')
-        .eq('id', user.id)
-        .single();
-      if (profile?.profile_name) setDisplayName(profile.profile_name);
+      const authUser = authData.user;
+      setDisplayName(authUser?.user_metadata?.display_name ?? null);
 
       // stats do liked e disliked
       const [liked, disliked] = await Promise.all([
@@ -235,7 +231,7 @@ export function ProfileSpace({ onLoadingChange }: ProfileSpaceProps) {
     <div className={styles.profileSpace}>
       <div className={styles.userSpace}>
         <div className={styles.userInfo}>
-          <h1>{displayName || 'No name set'}</h1>
+          <h1>{displayName || 'Loading name...'}</h1>
           <h3>{email || 'Loading email...'}</h3>
         </div>
         {/* componentizar no futuro*/}

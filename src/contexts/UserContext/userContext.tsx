@@ -9,8 +9,13 @@ interface ContextProps {
   addUser: (user: {
     email: string;
     password: string;
+    display_name: string;
   }) => Promise<UserProfile | null>;
-  updateUser: (id: string, email: string) => Promise<void>;
+  updateUser: (
+    id: string,
+    email: string,
+    display_name: string,
+  ) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
 }
 
@@ -24,62 +29,91 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   });
 
   async function getUsers() {
-    const { data } = await supabase.from('profiles').select();
-    if (data) dispatch({ type: 'SET_USERS', payload: data });
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    dispatch({
+      type: 'SET_USERS',
+      payload: [
+        {
+          ...profile,
+          display_name: user.user_metadata?.display_name ?? null,
+        },
+      ],
+    });
   }
 
-  async function updateUser(id: string, email: string) {
+  async function updateUser(id: string, email: string, display_name: string) {
+    // updates the metadata
+    await supabase.auth.updateUser({
+      email,
+      data: { display_name },
+    });
+
+    // atualizar table caso necessário (bio,imagem)
     const { data } = await supabase
       .from('profiles')
-      .update({ email })
+      .update({})
       .eq('id', id)
       .select()
       .single();
 
-    if (data) dispatch({ type: 'UPDATE_USER', payload: data });
+    dispatch({
+      type: 'UPDATE_USER',
+      payload: {
+        ...data,
+        display_name,
+      },
+    });
   }
 
   async function addUser({
     email,
     password,
+    display_name,
   }: {
     email: string;
     password: string;
-  }): Promise<UserProfile | null> {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    display_name: string;
+  }) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          display_name,
+        },
+      },
+    });
 
     if (error) {
       console.error('Signup error:', error.message);
       return null;
     }
 
-    if (data.user) {
-      // Gera um identificador único e não sensível para profile_name
-      const uniqueProfileName = `user_${crypto.randomUUID()}`;
-      const newUser: UserProfile = {
-        id: data.user.id,
-        profile_name: uniqueProfileName, // valor único e não sensível
-        avatar_url: null, // valor padrão null
-        bio: null, // valor padrão null
-        created_at: new Date().toISOString(), // ou deixe o banco preencher
-        updated_at: new Date().toISOString(), // ou deixe o banco preencher
-      };
-      // Insert the new user into the 'profiles' table
-      const { error: insertError } = await supabase
-        .from('profiles')
-        .insert([newUser]);
-      if (insertError) {
-        console.error(
-          'Error inserting user into profiles table:',
-          insertError.message,
-        );
-        return null;
-      }
-      dispatch({ type: 'ADD_USER', payload: newUser });
-      return newUser;
-    }
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .insert([
+        {
+          id: data.user!.id,
+        },
+      ])
+      .select()
+      .single();
 
-    return null;
+    return {
+      ...profileData,
+      display_name,
+    };
   }
 
   async function deleteUser(id: string) {

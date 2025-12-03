@@ -3,6 +3,9 @@ import styles from './styles.module.css';
 import { useState } from 'react';
 import { useUsers } from '../../contexts/UserContext/userHook';
 import toast from 'react-hot-toast';
+import type { Movie } from '../../services/api/supa-api/movies';
+import { MovieSearchModal } from '../MovieSearchModal';
+import { supabase } from '../../lib/supabaseClient';
 
 type SignUpFormProps = {
   onSwitch: () => void;
@@ -12,7 +15,12 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
   const { addUser } = useUsers();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [likedMovies, setLikedMovies] = useState<Movie[]>([]);
+  const [dislikedMovies, setDislikedMovies] = useState<Movie[]>([]);
+  const [openLikeModal, setOpenLikeModal] = useState(false);
+  const [openDislikeModal, setOpenDislikeModal] = useState(false);
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState<string[]>([]);
 
@@ -24,6 +32,15 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
       {
         test: () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
         msg: 'Invalid email format.',
+      },
+      { test: () => !!name.trim(), msg: 'Name is required.' },
+      {
+        test: () => likedMovies.length >= 5,
+        msg: 'Please select at least 5 movies you like.',
+      },
+      {
+        test: () => dislikedMovies.length >= 5,
+        msg: 'Please select at least 5 movies you dislike.',
       },
       { test: () => !!password, msg: 'Password is required.' },
       {
@@ -60,7 +77,34 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
     setLoading(true);
 
     // call addUser
-    const authUser = await addUser({ email, password });
+    const authUser = await addUser({ email, password, display_name: name });
+    if (authUser) {
+      const userId = authUser.id;
+
+      // payloads de interação
+      const interactions = [
+        ...likedMovies.map(m => ({
+          profile_id: userId,
+          movie_id: m.tconst,
+          interaction_type: 'like',
+        })),
+        ...dislikedMovies.map(m => ({
+          profile_id: userId,
+          movie_id: m.tconst,
+          interaction_type: 'dislike',
+        })),
+      ];
+
+      // inserção no db
+      const { error: interactionsError } = await supabase
+        .from('user_movie_interactions')
+        .insert(interactions);
+
+      if (interactionsError) {
+        console.error(interactionsError);
+        toast.error('Could not save your initial preferences.');
+      }
+    }
 
     setLoading(false);
 
@@ -75,10 +119,11 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
           <br />
           <br />
           Welcome to ReelStack!
-        </>
+        </>,
       );
       setEmail('');
       setPassword('');
+      setName('');
       setConfirm('');
       console.log('User signed up:', authUser);
     } else {
@@ -97,32 +142,94 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
       onSubmit={handleSubmit}
     >
       <h2>Sign Up</h2>
-      <div className={styles.formGroup}>
-        <input
-          className={styles.formInput}
-          type='text'
-          placeholder='Email'
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
 
-        <input
-          className={styles.formInput}
-          type='password'
-          placeholder='Password'
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
+      {/* ------------------ 3 colunas ------------------ */}
+      <div className={styles.columns}>
+        {/* esquerda/inputs */}
+        <div className={styles.column}>
+          <div className={styles.formGroup}>
+            <input
+              className={styles.formInput}
+              type='text'
+              placeholder='Name'
+              value={name}
+              onChange={e => setName(e.target.value)}
+            />
 
-        <input
-          className={styles.formInput}
-          type='password'
-          placeholder='Confirm Password'
-          value={confirm}
-          onChange={e => setConfirm(e.target.value)}
-        />
+            <input
+              className={styles.formInput}
+              type='text'
+              placeholder='Email'
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+            />
+
+            <input
+              className={styles.formInput}
+              type='password'
+              placeholder='Password'
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+            />
+
+            <input
+              className={styles.formInput}
+              type='password'
+              placeholder='Confirm Password'
+              value={confirm}
+              onChange={e => setConfirm(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* meio/liked */}
+        <div className={styles.column}>
+          <div className={styles.formGroup}>
+            <h4>Select at least 5 movies you LIKE</h4>
+
+            <ul className={styles.selectedList}>
+              {likedMovies.map(m => (
+                <li key={m.tconst} className={styles.selectedItem}>
+                  {m.primary_title}
+                </li>
+              ))}
+            </ul>
+
+            <button
+              type='button'
+              className={styles.formButton}
+              onClick={() => setOpenLikeModal(true)}
+            >
+              Add Liked Movie
+            </button>
+          </div>
+        </div>
+
+        {/* direita/disliked */}
+        <div className={styles.column}>
+          <div className={styles.formGroup}>
+            <h4>Select at least 5 movies you DISLIKE</h4>
+
+            <ul className={styles.selectedList}>
+              {dislikedMovies.map(m => (
+                <li key={m.tconst} className={styles.selectedItem}>
+                  {m.primary_title}
+                </li>
+              ))}
+            </ul>
+
+            <button
+              type='button'
+              className={styles.formButton}
+              onClick={() => setOpenDislikeModal(true)}
+            >
+              Add Disliked Movie
+            </button>
+          </div>
+        </div>
       </div>
 
+      {/* ------------------ erros e submit ------------------ */}
       <div className={styles.formGroup}>
         {error.length > 0 && (
           <div>
@@ -143,10 +250,43 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
           </div>
         )}
 
+        <MovieSearchModal
+          isOpen={openLikeModal}
+          onClose={() => setOpenLikeModal(false)}
+          onSelectMovie={movie =>
+            setLikedMovies(prev =>
+              prev.some(m => m.tconst === movie.tconst)
+                ? prev
+                : [...prev, movie],
+            )
+          }
+          excludedMovieIds={[
+            ...likedMovies.map(m => m.tconst),
+            ...dislikedMovies.map(m => m.tconst),
+          ]}
+        />
+
+        <MovieSearchModal
+          isOpen={openDislikeModal}
+          onClose={() => setOpenDislikeModal(false)}
+          onSelectMovie={movie =>
+            setDislikedMovies(prev =>
+              prev.some(m => m.tconst === movie.tconst)
+                ? prev
+                : [...prev, movie],
+            )
+          }
+          excludedMovieIds={[
+            ...likedMovies.map(m => m.tconst),
+            ...dislikedMovies.map(m => m.tconst),
+          ]}
+        />
+
         <button className={styles.formButton} disabled={loading}>
           {loading ? 'Signing Up...' : 'Sign Up'}
         </button>
       </div>
+
       <div className={styles.formGroup}>
         <div className={styles.signup}>
           Already have an account?
