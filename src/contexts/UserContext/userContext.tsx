@@ -53,7 +53,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function updateUser(id: string, email: string, display_name: string) {
-    // atualiza a metadata
+    // updates the metadata
     await supabase.auth.updateUser({
       email,
       data: { display_name },
