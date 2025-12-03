@@ -166,16 +166,17 @@ export async function recommendMovies(
   console.log('📊 Total de gêneros:', allGenres.length);
 
   // frequencia para equalizar generos de alta ocorrência com os de rara ocorrência
-  const genreFrequency = allGenres.map(
-    g =>
-      1 /
-      Math.log(
-        1 +
-          allMoviesForScoring.filter(m => m.genres.some(gg => gg.name === g))
-            .length *
-            0.3,
-      ),
-  );
+  const genreFrequency = allGenres.map(g => {
+    const freq =
+      allMoviesForScoring.filter(m => m.genres.some(gg => gg.name === g))
+        .length || 1;
+
+    // fórmula suavizada
+    const raw = 1 / (Math.log(1 + freq * 0.3) + 0.5); // +0.5 evita explosão e suaviza raros
+
+    // limita a no máximo 1.8x
+    return Math.min(raw, 1.8);
+  });
 
   const L = likedVectors.length;
   const D = dislikedVectors.length;
