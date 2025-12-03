@@ -106,7 +106,7 @@ export function SettingSpace({ onLoadingChange }: SettingSpaceProps) {
 
     setSaving(true);
     try {
-      // att nome do usuário
+      // update user name
       const { error: profileError } = await supabase.auth.updateUser({
         data: { display_name: trimmedName },
       });
