@@ -172,10 +172,13 @@ export async function recommendMovies(
         .length || 1;
 
     // fórmula suavizada
-    const raw = 1 / (Math.log(1 + freq * 0.3) + 0.5); // +0.5 evita explosão e suaviza raros
+    let raw = 1 / (Math.log(1 + freq * 0.3) + 0.5);
 
-    // limita a no máximo 1.8x
-    return Math.min(raw, 1.8);
+    // clamp: evita extremos
+    raw = Math.max(raw, 0.5); // nunca deixe comuns ficarem muito fracos
+    raw = Math.min(raw, 1.8); // impede raros de enviezarem
+
+    return raw;
   });
 
   const L = likedVectors.length;
