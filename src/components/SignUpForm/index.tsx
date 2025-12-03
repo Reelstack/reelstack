@@ -95,7 +95,7 @@ export function SignUpForm({ onSwitch }: SignUpFormProps) {
         })),
       ];
 
-      // inserção do db
+      // inserção no db
       const { error: interactionsError } = await supabase
         .from('user_movie_interactions')
         .insert(interactions);
