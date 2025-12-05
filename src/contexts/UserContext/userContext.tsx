@@ -105,6 +105,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       .insert([
         {
           id: data.user!.id,
+          bio: null,
+          avatar_url: null,
         },
       ])
       .select()
