@@ -73,6 +73,13 @@
   min-height: 100vh;
 }
 
+.swipeHelper {
+  position: fixed;
+  bottom: 20%;
+  width: 70px;
+  pointer-events: none;
+}
+
 .wrapper {
   position: relative;
   display: inline-block;

@@ -7,6 +7,9 @@ import {
   useTransform,
   animate,
 } from 'motion/react';
+import leftArrow from '../../assets/curved-arrow-arrow-svgrepo-com (1).svg';
+import rightArrow from '../../assets/curved-arrow-arrow-svgrepo-com.svg';
+
 // import expand from '../../assets/arrow-increase.svg';
 // import shrink from '../../assets/arrow-decrease.svg';
 import filter from '../../assets/filter.svg';
@@ -26,6 +29,54 @@ export function Home() {
   const [movies, setMovies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { user, loading: authLoading } = useAuth();
+  const hiddenState = { opacity: 0, rotate: 0 };
+
+  const leftWiggle = {
+    opacity: 1,
+    rotate: [-5, -15, -5],
+    transition: {
+      duration: 1.2,
+      repeat: Infinity,
+      repeatDelay: 1,
+      easing: 'ease-in-out',
+    },
+  };
+
+  const rightWiggle = {
+    opacity: 1,
+    rotate: [5, 15, 5],
+    transition: {
+      duration: 1.2,
+      repeat: Infinity,
+      repeatDelay: 1,
+      easing: 'ease-in-out',
+    },
+  };
+
+  const [showHelpers, setShowHelpers] = useState(false);
+
+  useEffect(() => {
+    let idleTimer: NodeJS.Timeout | undefined = undefined;
+
+    const resetIdle = () => {
+      setShowHelpers(false);
+      if (idleTimer) clearTimeout(idleTimer);
+
+      idleTimer = setTimeout(() => {
+        setShowHelpers(true);
+      }, 4000); // 4 secs
+    };
+
+    const events = ['mousedown', 'touchstart', 'keydown'];
+    events.forEach(event => window.addEventListener(event, resetIdle));
+    resetIdle();
+
+    return () => {
+      events.forEach(event => window.removeEventListener(event, resetIdle));
+      clearTimeout(idleTimer);
+    };
+  }, []);
+
   const indexRef = useRef(0);
   const moviesRef = useRef<any[]>([]);
 
@@ -482,6 +533,24 @@ export function Home() {
       </div>
 
       <div className={styles.page}>
+        <motion.img
+          src={leftArrow}
+          alt='Swipe left'
+          className={styles.swipeHelper}
+          style={{ left: '10%' }}
+          initial={hiddenState}
+          animate={showHelpers ? leftWiggle : hiddenState}
+        />
+
+        <motion.img
+          src={rightArrow}
+          alt='Swipe right'
+          className={styles.swipeHelper}
+          style={{ right: '10%' }}
+          initial={hiddenState}
+          animate={showHelpers ? rightWiggle : hiddenState}
+        />
+
         <div
           className={styles.wrapper}
           style={{ position: 'relative', width: '55rem', height: '80rem' }}
