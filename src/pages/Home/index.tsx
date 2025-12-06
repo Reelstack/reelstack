@@ -67,11 +67,12 @@ export function Home() {
       }, 4000); // 4 secs
     };
 
-    window.addEventListener('mousedown', resetIdle);
+    const events = ['mousedown', 'touchstart', 'keydown'];
+    events.forEach(event => window.addEventListener(event, resetIdle));
     resetIdle();
 
     return () => {
-      window.removeEventListener('mousedown', resetIdle);
+      events.forEach(event => window.removeEventListener(event, resetIdle));
       clearTimeout(idleTimer);
     };
   }, []);
