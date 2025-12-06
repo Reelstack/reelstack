@@ -56,11 +56,11 @@ export function Home() {
   const [showHelpers, setShowHelpers] = useState(false);
 
   useEffect(() => {
-    let idleTimer: NodeJS.Timeout;
+    let idleTimer: NodeJS.Timeout | undefined = undefined;
 
     const resetIdle = () => {
       setShowHelpers(false);
-      clearTimeout(idleTimer);
+      if (idleTimer) clearTimeout(idleTimer);
 
       idleTimer = setTimeout(() => {
         setShowHelpers(true);
