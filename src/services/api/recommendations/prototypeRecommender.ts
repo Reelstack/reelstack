@@ -212,8 +212,8 @@ export async function recommendMovies(
   const wDislike = total > 0 ? D / total : 0;
 
   // Beta controla a sensibilidade dos dislikes
-  // aplica a frequencia de generos nos likes e dislikes
-  const beta = 0.8 - 0.3 * Math.min(1, D / (2 * L + 1)); // o coeficiente diminui quanto mais ratio de like para 2x dislike, até 0.5
+  const likeRatio = L / (L + D + 1e-6);
+  const beta = 0.3 * Math.sqrt(likeRatio);
 
   // constroi o perfil
   const userProfile = likedProfile.map(
@@ -284,7 +284,7 @@ export async function recommendMovies(
         ? movie.average_rating / 10
         : 0.5;
       const finalScore =
-        0.9 * Math.pow(boostedSimilarity, 2) + 0.1 * ratingScore;
+        0.9 * Math.pow(boostedSimilarity, 1) + 0.1 * ratingScore;
       return { ...movie, similarity, boostedSimilarity, finalScore };
     })
     .filter(Boolean)
