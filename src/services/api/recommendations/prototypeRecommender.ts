@@ -355,5 +355,20 @@ export async function recommendMovies(
     .slice(0, limit);
 
   console.timeEnd('Scoring movies');
+  console.log(
+    'FINAL RECOMMENDATIONS (TOP 10):\n',
+    JSON.stringify(
+      final.map((m, i) => ({
+        rank: i + 1,
+        title: m.title,
+        similarity: Number(m.similarity.toFixed(4)),
+        boosted: Number(m.boostedSimilarity.toFixed(4)),
+        finalScore: Number(m.finalScore.toFixed(4)),
+      })),
+      null,
+      2,
+    ),
+  );
+
   return final;
 }
