@@ -60,7 +60,7 @@ export function Home() {
       try {
         const profileId = user!.id;
 
-        const rec = await fetchRecommendationsViaWorker(profileId, 10);
+        const rec = await fetchRecommendationsViaWorker(profileId, 20);
 
         const normalized = await Promise.all(
           rec.map(async (m: any, i: number) => {
@@ -321,7 +321,7 @@ export function Home() {
 
     try {
       const profileId = user.id;
-      const rec = await fetchRecommendationsViaWorker(profileId, 10);
+      const rec = await fetchRecommendationsViaWorker(profileId, 20);
 
       // Normaliza filmes novos
       const normalized = await Promise.all(

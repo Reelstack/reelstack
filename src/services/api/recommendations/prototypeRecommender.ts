@@ -106,7 +106,7 @@ export async function fetchUserMovies(
 // logica de recomendação
 export async function recommendMovies(
   profileId: string,
-  limit = 10,
+  limit = 20,
   likedMoviesId?: Movie[],
   dislikedMoviesId?: Movie[],
 ) {
